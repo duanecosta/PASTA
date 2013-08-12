@@ -421,20 +421,19 @@ li.mapBrowse {
 
 /* Support for browse page */
 
-.searchcat {
-    color: #0247A8;
+.browsegroup {
+    color: midnightblue;
     font-weight: bold;
-    font-size: 100%;  
 }
                     
-.searchsubcat {
-    font-size: 95%;  
+.browseterm {
+    color: blue;
     font-weight: normal;
 }
-
-a.searchsubcat:hover {
-    color: #669966;
-    text-decoration: underline; 
+                    
+.browsetermnolink {
+    color: lightslategray;
+    font-weight: normal;
 }
-
+                    
 /* End support for browse page */
