@@ -61,6 +61,7 @@ import edu.lternet.pasta.common.security.token.AuthToken;
 import edu.lternet.pasta.datamanager.EMLDataManager;
 import edu.lternet.pasta.datapackagemanager.ConfigurationListener;
 import edu.lternet.pasta.datapackagemanager.checksum.DigestUtilsWrapper;
+import edu.lternet.pasta.doi.DOIException;
 import edu.lternet.pasta.doi.DOIScanner;
 import edu.lternet.pasta.doi.Resource;
 import edu.lternet.pasta.metadatamanager.MetacatMetadataCatalog;
@@ -110,7 +111,6 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	private static String dbUser = null;
 	private static String dbPassword = null;
 	private static String databaseAdapterName = null;
-	private static String eventmanagerHost = null;
 	private static String metacatUrl = null;
 	private static String pastaUriHead = null;
 	private static String pastaUser = null;
@@ -730,7 +730,15 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 					ArrayList<Resource> resourceList = dataPackageRegistry.listDataPackageResources(packageId);
 					if (resourceList != null) {
 						for (Resource resource : resourceList) {
-							doiScanner.processOneResource(resource);
+							if (resource.getResourceType().equals("dataPackage")) {
+								try {
+									doiScanner.processOneResource(resource);
+								}
+								catch (DOIException e) {
+									logger.error(e.getMessage());
+									e.printStackTrace();
+								}
+							}
 						}
 					}
 				}
@@ -1301,8 +1309,6 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 			DataPackage.setScopeRegistry(scopeRegistry);
 
 			// Load PASTA service options
-			eventmanagerHost = options
-			    .getOption("datapackagemanager.eventmanager.host");
 			resourceDir = options.getOption("datapackagemanager.metadataDir");
 			metacatUrl = options
 			    .getOption("datapackagemanager.metadatacatalog.metacatUrl");
