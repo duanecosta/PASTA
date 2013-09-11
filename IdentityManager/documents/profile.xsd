@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:element name="profile">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="surName" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="givenName" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="nickName" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="email" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="institution" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="dataUse" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="identityProvider" minOccurs="1" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="identifier" minOccurs="1" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="userId" type="xs:string"/>
+                                    </xs:sequence>
+                                    <xs:attribute name="verifyDate" type="xs:dateTimeStamp"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="providerId" type="xs:string" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="profileId" type="xs:integer" use="required"/>
+            <xs:attribute name="active" type="xs:boolean" use="required"/>
+            <xs:attribute name="createDate" type="xs:dateTimeStamp" use="required"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
