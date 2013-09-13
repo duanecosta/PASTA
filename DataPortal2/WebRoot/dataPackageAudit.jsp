@@ -99,7 +99,7 @@
 					<div class="row-fluid">
 						<div class="span12">
 							<div class="recent_title">
-								<h2>Data Package Access Report Viewer</h2>
+								<h2>Data Package Access Reports</h2>
 							</div>
 							<span class="row-fluid separator_border"></span>
 						</div>
@@ -119,7 +119,7 @@
 											</tr>
 											<tr>
 												<td><label for="scope">Scope</label>
-												<input autofocus="" name="scope" placeholder="knb-lter-xyz" size="30px" type="text" />
+												<input autofocus name="scope" placeholder="knb-lter-xyz" size="30px" type="text" />
 												</td>
 												<td><label for="identifier">Identifier</label>
 												<input name="identifier" size="5px" type="number" />
@@ -161,15 +161,15 @@
 														<a class="checkbox-deselect" href="#">
 														Cancel</a> </li>
 														<li>
-														<input name="report" type="checkbox" value="value3" />
-														<p>Report</p>
+														<input name="entity" type="checkbox" value="value4" />
+														<p>Data</p>
 														<a class="checkbox-select" href="#">
 														Select</a>
 														<a class="checkbox-deselect" href="#">
 														Cancel</a> </li>
 														<li>
-														<input name="entity" type="checkbox" value="value4" />
-														<p>Entity</p>
+														<input name="report" type="checkbox" value="value3" />
+														<p>Report</p>
 														<a class="checkbox-select" href="#">
 														Select</a>
 														<a class="checkbox-deselect" href="#">
@@ -215,8 +215,8 @@
 											<tr>
 												<td></td>
 												<td colspan="3">
-												<input class="btn btn-info btn-default" name="submit" type="submit" value="submit" />
-												<input class="btn btn-info btn-default" name="reset" type="reset" value="reset" />
+												<input class="btn btn-info btn-default" name="submit" type="submit" value="Submit" />
+												<input class="btn btn-info btn-default" name="reset" type="reset" value="Clear" />
 												</td>
 											</tr>
 										</table>
