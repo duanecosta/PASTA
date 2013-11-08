@@ -1,1 +1,1 @@
-DROP SCHEMA authtoken CASCADE;
+DROP SCHEMA identity CASCADE;
