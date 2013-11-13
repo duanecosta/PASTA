@@ -3,13 +3,14 @@
     <xs:element name="authtoken">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="identityProvider" minOccurs="1" maxOccurs="unbounded">
+                <xs:element name="identity" minOccurs="1" maxOccurs="unbounded">
                     <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name="userId" type="xs:string" minOccurs="1"
-                                maxOccurs="unbounded"/>
-                        </xs:sequence>
-                        <xs:attribute name="providerId" type="xs:string" use="required"/>
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute name="provider" type="xs:string" use="required" />
+                                <xs:attribute name="verificationDate" type="xs:dateTime" use="required" />
+                            </xs:extension>
+                        </xs:simpleContent>
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>
