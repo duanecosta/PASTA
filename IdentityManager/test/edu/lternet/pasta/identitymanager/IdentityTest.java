@@ -45,7 +45,8 @@ public class IdentityTest {
 
   /* Class variables */
 
-  private static final Logger logger = Logger.getLogger(edu.lternet.pasta.identity.IdentityTest.class);
+  private static final Logger logger =
+      Logger.getLogger(edu.lternet.pasta.identitymanager.IdentityTest.class);
 
   private static String userId;
   private static int providerId = -1;

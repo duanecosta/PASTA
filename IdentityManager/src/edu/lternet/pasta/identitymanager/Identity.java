@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import java.sql.Timestamp;
 
 
 /**
@@ -43,11 +44,10 @@ public class Identity {
 
   /* Instance variables */
 
-  private static final Logger logger =
-      Logger.getLogger(Identity.class);
   String userId;
   int providerId;
-  int profileId = -1;
+  int profileId;
+  Timestamp verifyTimestamp;
 
   private String dbDriver;   // database driver
   private String dbURL;      // database URL
@@ -56,7 +56,9 @@ public class Identity {
 
   /* Class variables */
 
- 
+  private static final Logger logger =
+      Logger.getLogger(edu.lternet.pasta.identitymanager.Identity.class);
+
   /* Constructors */
 
   public Identity(String userId, int providerId)
@@ -79,7 +81,7 @@ public class Identity {
   }
 
   /*
-   * Loads local properties from identity.properties
+   * Load local properties from identity.properties
    */
   private void loadConfiguration() throws PastaConfigurationException {
 
