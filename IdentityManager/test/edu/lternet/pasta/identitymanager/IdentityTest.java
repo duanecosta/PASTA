@@ -16,12 +16,13 @@
  * language governing permissions and limitations under the License.
  */
 
-package edu.lternet.pasta.identity;
+package edu.lternet.pasta.identitymanager;
 
 import edu.lternet.pasta.identitymanager.ConfigurationListener;
 
+import edu.lternet.pasta.identitymanager.Identity;
+import edu.lternet.pasta.identitymanager.PastaConfigurationException;
 import org.junit.*;
-import static org.junit.Assert.*;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
@@ -74,10 +75,8 @@ public class IdentityTest {
   }
 
   @Test
-  public void testConstruction() {
+  public void testNothing() {
 
-    System.err.printf("%s\n", identity.getUserIdentity());
-    assert(true);
 
   }
 
@@ -93,7 +92,8 @@ public class IdentityTest {
     Configuration options = ConfigurationListener.getOptions();
 
     if (options == null) {
-      fail("Failed to load the IdentityManager properties file: 'identity.properties'");
+      String gripe = "Failed to load the IdentityManager properties file: 'identity.properties'";
+      throw new PastaConfigurationException(gripe);
     } else {
       try {
         userId = options.getString("identity.testuseridentity");
@@ -102,6 +102,7 @@ public class IdentityTest {
       catch (Exception e) {
         logger.error(e.getMessage());
         e.printStackTrace();
+        throw new PastaConfigurationException(e.getMessage());
       }
     }
 
