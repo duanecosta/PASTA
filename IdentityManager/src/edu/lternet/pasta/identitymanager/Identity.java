@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.Date;
 
 
 /**
@@ -44,40 +45,116 @@ public class Identity {
 
   /* Instance variables */
 
-  String userId;
-  int providerId;
-  int profileId;
-  Timestamp verifyTimestamp;
-
-  private String dbDriver;   // database driver
-  private String dbURL;      // database URL
-  private String dbUser;     // database user name
-  private String dbPassword; // database user password
+  String userId = null;
+  Integer providerId = null;
+  Integer profileId = null;
+  Timestamp verifyTimestamp = null;
 
   /* Class variables */
 
   private static final Logger logger =
       Logger.getLogger(edu.lternet.pasta.identitymanager.Identity.class);
 
+  private static String dbDriver;   // database driver
+  private static String dbURL;      // database URL
+  private static String dbUser;     // database user name
+  private static String dbPassword; // database user password
+
   /* Constructors */
 
-  public Identity(String userId, int providerId)
-      throws PastaConfigurationException, SQLException, ClassNotFoundException {
+  /**
+   * Creates a new "empty" <em>Identity</em> object.
+   *
+   * @throws PastaConfigurationException
+   */
+  public Identity() throws PastaConfigurationException {
 
     loadConfiguration();
-    initIdentity(userId, providerId);
 
   }
 
   /* Instance methods */
 
   /**
-   * Returns the user identity for the given identity object.
+   * Returns the user identifier of the <em>Identity</em> object.
    *
-   * @return The user identity
+   * @return The user identifier
    */
-  public String getUserIdentity() {
+  public String getUserIdentifier() {
     return this.userId;
+  }
+
+  /**
+   * Sets the user identifier of the <em>Identity</em> object.
+   *
+   * @param userId The user identifier
+   */
+  public void setUserIdentifier(String userId) {
+    this.userId = userId;
+  }
+
+  /**
+   * Returns the provider identifier of the <em>Identity</em> object.
+   *
+   * @return The provider identifier
+   */
+  public Integer getProviderIdentifier() {
+    return this.providerId;
+  }
+
+  /**
+   * Sets the provider identifier of the <em>Identity</em> object.
+   *
+   * @param providerId The provider identifier
+   */
+  public void setProviderIdentifier(Integer providerId) {
+    this.providerId = providerId;
+  }
+
+  /**
+   * Returns the profile identifier of the <em>Identity</em> object.
+   *
+   * @return The profile identifier
+   */
+  public Integer getProfileIdentifier() {
+    return this.profileId;
+  }
+
+  /**
+   * Sets the profile identifier of the <em>Identity</em> object.
+   *
+   * @param profileId The profile identifier
+   */
+  public void setProfileIdentifier(Integer profileId) {
+    this.profileId = profileId;
+  }
+
+  /**
+   * Returns the last verify timestamp of the <em>Identity</em> object if
+   * it exists or null.
+   *
+   * @return The verify timestamp
+   */
+  public Date getVerifyTimestamp() {
+
+    Date date = null;
+
+    if (this.verifyTimestamp != null) date =
+        new Date(this.verifyTimestamp.getTime());
+
+    return date;
+  }
+
+  /**
+   * Sets the verify timestamp of the <em>Identity</em> object.
+   *
+   * @param verifyTimestamp The verify timestamp
+   */
+  public void setVerifyTimestamp(Date verifyTimestamp) {
+
+    if (verifyTimestamp != null)
+        this.verifyTimestamp = new Timestamp(verifyTimestamp.getTime());
+
   }
 
   /*
@@ -93,10 +170,10 @@ public class Identity {
       throw new PastaConfigurationException(gripe);
     } else {
       try {
-        this.dbDriver = options.getString("db.Driver");
-        this.dbURL = options.getString("db.URL");
-        this.dbUser = options.getString("db.User");
-        this.dbPassword = options.getString("db.Password");
+        dbDriver = options.getString("db.Driver");
+        dbURL = options.getString("db.URL");
+        dbUser = options.getString("db.User");
+        dbPassword = options.getString("db.Password");
       }
       catch (Exception e) {
         logger.error(e.getMessage());
@@ -117,11 +194,11 @@ public class Identity {
 
     // Load the JDBC driver
     try {
-      Class.forName(this.dbDriver);
+      Class.forName(dbDriver);
     }
     catch (ClassNotFoundException e) {
-      logger.error("Can't load driver " + e.getMessage());
-      throw (e);
+      logger.error("getConnection: " + e.getMessage());
+      throw e;
     }
 
     // Make the database connection
@@ -150,17 +227,23 @@ public class Identity {
 
   }
 
-  /*
+  /**
    * Initialize the identity object and update entry with current
    * verification date/time or create new entry if does not exist.
+   *
+   * @param userId The user identifier
+   * @param providerId The provider identifier
+   * @throws SQLException
+   * @throws ClassNotFoundException
    */
-  private void initIdentity(String userId, int providerId)
+  public void initIdentity(String userId, int providerId)
       throws SQLException, ClassNotFoundException {
 
     this.userId = userId;
     this.providerId = providerId;
 
-    String sql = "SELECT identity.identity.profile_id FROM " +
+    String sql = "SELECT identity.identity.profile_id," +
+                 "identity.identity.verify_timestamp FROM " +
                  "identity.identity WHERE " +
                  "identity.identity.user_id='" + userId + "' AND " +
                  "identity.identity.provider_id=" +
@@ -182,31 +265,8 @@ public class Identity {
       ResultSet rs = stmt.executeQuery(sql);
 
       if (rs.next()) {
-
         this.profileId = rs.getInt("profile_id");
-
-        // Identity already in database, perform "update".
-        sql = "UPDATE identity.identity " +
-              "SET verification_date=now() " +
-              "WHERE identity.identity.user_id='" + userId + "' AND " +
-              "identity.identity.provider_id=" +
-              Integer.toString(providerId) + ";";
-
-        if (stmt.executeUpdate(sql) == 0) {
-          String gripe = "initIdentity: update '" + sql + "' failed";
-          throw new SQLException(gripe);
-        }
-
-      } else {
-
-        // Identity not in database, perform "insert".
-        sql = "INSERT INTO identity.identity VALUES " +
-                  "('" + userId + "'," + providerId + ", NULL, now());";
-
-        if (stmt.executeUpdate(sql) == 0) {
-          String gripe = "initIdentity: insert '" + sql + "' failed";
-          throw new SQLException(gripe);
-        }
+        this.verifyTimestamp = rs.getTimestamp("verify_timestamp");
       }
     }
     catch (SQLException e) {
@@ -221,6 +281,93 @@ public class Identity {
 
   }
 
+  public void insertIdentity() throws ClassNotFoundException, SQLException {
+
+    String sql = "INSERT INTO identity.identity " +
+                 "(user_id,provider_id,profile_id,verify_timestamp) VALUES (" +
+                 "'" + this.userId + "'," + this.providerId + "," +
+                 this.profileId + ",now());";
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("insertIdentity: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "insertIdentity: insert '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("insertIdentity: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
+  public void updateVerifyTimestamp() throws ClassNotFoundException, SQLException {
+
+    String sql = "UPDATE identity.identity " +
+                 "SET verify_timestamp=now() " +
+                 "WHERE identity.identity.user_id='" + this.userId + "' AND " +
+                 "identity.identity.provider_id=" +
+                 Integer.toString(this.providerId) + ";";
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("updateIdentity: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "updateIdentity: insert '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("updateIdentity: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
   /* Class methods */
+
+  /*
+   * Sets the database URL to a new connection string (intended use is for unit
+   * testing).
+   */
+  protected static void setDatabase(String name) {
+    dbURL = "jdbc:postgresql://localhost/" + name;
+  }
 
 }
