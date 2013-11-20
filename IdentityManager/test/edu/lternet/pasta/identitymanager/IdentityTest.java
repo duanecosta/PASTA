@@ -21,6 +21,8 @@ package edu.lternet.pasta.identitymanager;
 import org.junit.*;
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
+
+import java.sql.*;
 import java.util.Date;
 
 import static org.junit.Assert.*;
@@ -45,6 +47,11 @@ public class IdentityTest {
 
   private static final Logger logger =
       Logger.getLogger(edu.lternet.pasta.identitymanager.IdentityTest.class);
+
+  private static String dbDriver;   // database driver
+  private static String dbURL;      // database URL
+  private static String dbUser;     // database user name
+  private static String dbPassword; // database user password
 
   private static String userIdUnknown = "unknown";
   private static Integer profileIdUnknown = 0;
@@ -83,14 +90,8 @@ public class IdentityTest {
   @After
   public void tearDown() throws Exception {
 
-    try {
-      identity.initIdentity(IdentityTest.userIdJack, IdentityTest.providerIdLTERX);
-      identity.deleteIdentity();
-    }
-    catch (Exception e) {
-      // Squashing exception message
-    }
     identity = null;
+    IdentityTest.purgeIdentity(userIdJack, providerIdLTERX);
 
   }
 
@@ -100,7 +101,7 @@ public class IdentityTest {
   @Test
   public void testSetUserIdentifier() {
 
-    String batman = new String("batman");
+    String batman = new String(userIdJack);
     String userId;
 
     identity.setUserIdentifier(batman);
@@ -117,7 +118,7 @@ public class IdentityTest {
   @Test
   public void testSetProviderIdentifier() {
 
-    Integer batId = 1024;
+    Integer batId = providerIdLTERX;
     Integer providerId;
 
     identity.setProviderIdentifier(batId);
@@ -134,7 +135,7 @@ public class IdentityTest {
   @Test
   public void testSetProfileIdentifier() {
 
-    Integer batId = 1024;
+    Integer batId = profileIdJack;
     Integer profileId;
 
     identity.setProfileIdentifier(batId);
@@ -324,6 +325,138 @@ public class IdentityTest {
 
   }
 
+  private static void purgeIdentity(String userId, Integer providerId) throws Exception {
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("SELECT identity.identity.profile_id,");
+    strBuilder.append("identity.identity.verify_timestamp FROM ");
+    strBuilder.append("identity.identity WHERE identity.identity.user_id='");
+    strBuilder.append(userId);
+    strBuilder.append("' AND identity.identity.provider_id=");
+    strBuilder.append(Integer.toString(providerId));
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("initIdentity: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+      ResultSet rs = stmt.executeQuery(sql);
+
+      if (rs.next()) { // Record exists
+
+        strBuilder = new StringBuilder();
+        strBuilder.append("DELETE FROM identity.identity ");
+        strBuilder.append("WHERE identity.identity.user_id='");
+        strBuilder.append(userId);
+        strBuilder.append("' AND identity.identity.provider_id=");
+        strBuilder.append(Integer.toString(providerId));
+        strBuilder.append(";");
+
+
+        sql = strBuilder.toString();
+
+        stmt = dbConn.createStatement();
+
+        if (stmt.executeUpdate(sql) == 0) {
+          String gripe = "deleteIdentity: '" + sql + "' failed";
+          throw new SQLException(gripe);
+        }
+
+      }
+    }
+    catch (SQLException e) {
+      logger.error("initIdentity: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
+
+  /*
+   * Returns a connection to the database.
+   */
+  private static Connection getConnection() throws ClassNotFoundException {
+
+    Connection conn = null;
+    SQLWarning warn;
+
+    // Load the JDBC driver
+    try {
+      Class.forName(dbDriver);
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("getConnection: " + e.getMessage());
+      throw e;
+    }
+
+    // Make the database connection
+    try {
+      conn = DriverManager.getConnection(dbURL, dbUser, dbPassword);
+
+      // If a SQLWarning object is available, print its warning(s).
+      // There may be multiple warnings chained.
+      warn = conn.getWarnings();
+
+      if (warn != null) {
+        while (warn != null) {
+          logger.warn("SQLState: " + warn.getSQLState());
+          logger.warn("Message:  " + warn.getMessage());
+          logger.warn("Vendor: " + warn.getErrorCode());
+          warn = warn.getNextWarning();
+        }
+      }
+    }
+    catch (SQLException e) {
+      logger.error("Database access failed: " + e);
+    }
+
+    return conn;
+
+  }
+
+  /*
+ * Load local properties from identity.properties
+ */
+  private static void loadConfiguration() throws Exception {
+
+    ConfigurationListener.configure();
+    Configuration options = ConfigurationListener.getOptions();
+
+    if (options == null) {
+      String gripe = "Failed to load the IdentityManager properties file: 'identity.properties'";
+      throw new PastaConfigurationException(gripe);
+    } else {
+      try {
+        dbDriver = options.getString("db.Driver");
+        dbURL = options.getString("db.URL.junit");
+        dbUser = options.getString("db.User");
+        dbPassword = options.getString("db.Password");
+      }
+      catch (Exception e) {
+        logger.error(e.getMessage());
+        e.printStackTrace();
+        throw new PastaConfigurationException(e.getMessage());
+      }
+    }
+
+  }
+
  /* Class methods */
 
   /**
@@ -332,6 +465,7 @@ public class IdentityTest {
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
 
+    IdentityTest.loadConfiguration();
 
   }
 
