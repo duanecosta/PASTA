@@ -9,7 +9,3 @@ db.Name=pasta
 db.User=pasta
 db.Password=HIDEPASSWORD
 db.MaxConnections=10
-
-# JUnit properties
-identity.testuseridentity=uid=ucarroll,org=LTER,dc=ecoinformatics,dc=org
-identity.testprovideridentity=1
