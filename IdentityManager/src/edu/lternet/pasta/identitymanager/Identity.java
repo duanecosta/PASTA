@@ -157,6 +157,500 @@ public class Identity {
 
   }
 
+  /**
+   * Initialize the identity object with the user identifier and provider
+   * identifier and set profile identifier and verify timestamp from an
+   * existing database Identity record or set both to NULL.
+   *
+   * @param userId The user identifier
+   * @param providerId The provider identifier
+   * @throws SQLException
+   * @throws ClassNotFoundException
+   */
+  public void initIdentity(String userId, int providerId)
+      throws SQLException, ClassNotFoundException {
+
+    this.userId = userId;
+    this.providerId = providerId;
+    this.profileId = null;
+    this.verifyTimestamp = null;
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("SELECT identity.identity.profile_id,");
+    strBuilder.append("identity.identity.verify_timestamp FROM ");
+    strBuilder.append("identity.identity WHERE identity.identity.user_id='");
+    strBuilder.append(this.userId);
+    strBuilder.append("' AND identity.identity.provider_id=");
+    strBuilder.append(Integer.toString(this.providerId));
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("initIdentity: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+      ResultSet rs = stmt.executeQuery(sql);
+
+      if (rs.next()) {
+        this.profileId = rs.getInt("profile_id");
+        this.verifyTimestamp = rs.getTimestamp("verify_timestamp");
+      }
+    }
+    catch (SQLException e) {
+      logger.error("initIdentity: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
+  /**
+   * Inserts the Identity object information into the Identity database.
+   *
+   * @throws ClassNotFoundException
+   * @throws SQLException
+   */
+  public void insertIdentity() throws ClassNotFoundException, SQLException {
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("INSERT INTO identity.identity ");
+    strBuilder.append("(user_id,provider_id,profile_id,verify_timestamp) ");
+    strBuilder.append("VALUES ('");
+    strBuilder.append(this.userId);
+    strBuilder.append("',");
+    strBuilder.append(this.providerId);
+    strBuilder.append(",");
+    strBuilder.append(this.profileId);
+    strBuilder.append(",'");
+    strBuilder.append(this.verifyTimestamp);
+    strBuilder.append("');");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("insertIdentity: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "insertIdentity: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("insertIdentity: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
+  /**
+   * Updates the Identity database record with the contents of instance
+   * variables profile identifier and verify timestamp (assumes these variables
+   * have been updated through available setters).  Note that variables
+   * for the user identifier and provider identifier cannot be updated.
+   *
+   * @throws ClassNotFoundException
+   * @throws SQLException
+   */
+  public void updateIdentity() throws ClassNotFoundException, SQLException {
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("UPDATE identity.identity SET ");
+    strBuilder.append("verify_timestamp='");
+    strBuilder.append(this.verifyTimestamp);
+    strBuilder.append(", profile_id=");
+    strBuilder.append(this.profileId);
+    strBuilder.append(" WHERE identity.identity.user_id='");
+    strBuilder.append(this.userId);
+    strBuilder.append("' AND identity.identity.provider_id=");
+    strBuilder.append(Integer.toString(this.providerId));
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("updateIdentity: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "updateIdentity: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("updateIdentity: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
+  /**
+   * Updates the Identity database record with the provided profile identifier
+   * and verify timestamp.  Note that variables for the user identifier and
+   * provider identifier cannot be updated.
+   *
+   * @param profileId Profile identifier
+   * @param verifyTimestamp Verify timestamp
+   * @throws ClassNotFoundException
+   * @throws SQLException
+   */
+  public void updateIdentity(Integer profileId, Timestamp verifyTimestamp)
+      throws ClassNotFoundException, SQLException {
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("UPDATE identity.identity SET ");
+    strBuilder.append("verify_timestamp='");
+    strBuilder.append(verifyTimestamp);
+    strBuilder.append(", profile_id=");
+    strBuilder.append(profileId);
+    strBuilder.append(" WHERE identity.identity.user_id='");
+    strBuilder.append(this.userId);
+    strBuilder.append("' AND identity.identity.provider_id=");
+    strBuilder.append(Integer.toString(this.providerId));
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("updateIdentity: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "updateIdentity: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("updateIdentity: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
+  /**
+   * Updates the database Identity record with the instance variable for the
+   * profile identifier.
+   *
+   * @throws ClassNotFoundException
+   * @throws SQLException
+   */
+  public void updateProfileId() throws ClassNotFoundException, SQLException {
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("UPDATE identity.identity SET profile_id=");
+    strBuilder.append(this.profileId);
+    strBuilder.append(" WHERE identity.identity.user_id='");
+    strBuilder.append(this.userId);
+    strBuilder.append("' AND identity.identity.provider_id=");
+    strBuilder.append(Integer.toString(this.providerId));
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("updateProfileId: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "updateProfileId: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("updateProfileId: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
+  /**
+   * Updates the Identity database record with the provided profile identifier.
+   *
+   * @param profileId Profile identifier
+   * @throws ClassNotFoundException
+   * @throws SQLException
+   */
+  public void updateProfileId(Integer profileId) throws ClassNotFoundException,
+      SQLException {
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("UPDATE identity.identity SET profile_id=");
+    strBuilder.append(profileId);
+    strBuilder.append(" WHERE identity.identity.user_id='");
+    strBuilder.append(this.userId);
+    strBuilder.append("' AND identity.identity.provider_id=");
+    strBuilder.append(Integer.toString(this.providerId));
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("updateProfileId: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "updateProfileId: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("updateProfileId: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
+  /**
+   * Updates the database Identity record with the instance variable for the
+   * verify timestamp.
+   *
+   * @throws ClassNotFoundException
+   * @throws SQLException
+   */
+  public void updateVerifyTimestamp() throws ClassNotFoundException, SQLException {
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("UPDATE identity.identity SET verify_timestamp='");
+    strBuilder.append(this.verifyTimestamp);
+    strBuilder.append("' WHERE identity.identity.user_id='");
+    strBuilder.append(this.userId);
+    strBuilder.append("' AND identity.identity.provider_id=");
+    strBuilder.append(Integer.toString(this.providerId));
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("updateVerifyTimestamp: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "updateVerifyTimestamp: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("updateVerifyTimestamp: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
+  /**
+   * Updates the database Identity record with the provided verify timestamp.
+   *
+   * @throws ClassNotFoundException
+   * @throws SQLException
+   */
+  public void updateVerifyTimestamp(Timestamp verifyTimestamp)
+      throws ClassNotFoundException, SQLException {
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("UPDATE identity.identity SET verify_timestamp='");
+    strBuilder.append(verifyTimestamp);
+    strBuilder.append("' WHERE identity.identity.user_id='");
+    strBuilder.append(this.userId);
+    strBuilder.append("' AND identity.identity.provider_id=");
+    strBuilder.append(Integer.toString(this.providerId));
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("updateVerifyTimestamp: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "updateVerifyTimestamp: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("updateVerifyTimestamp: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
+  /*
+   * Deletes the Identity database record for the instance Identity and sets
+   * Identity instance variables to NULL.
+   */
+  protected void deleteIdentity() throws ClassNotFoundException, SQLException {
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("DELETE FROM identity.identity ");
+    strBuilder.append("WHERE identity.identity.user_id='");
+    strBuilder.append(this.userId);
+    strBuilder.append("' AND identity.identity.provider_id=");
+    strBuilder.append(Integer.toString(this.providerId));
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("deleteIdentity: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "deleteIdentity: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("deleteIdentity: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+    this.userId = null;
+    this.providerId = null;
+    this.profileId = null;
+    this.verifyTimestamp = null;
+
+  }
+
   /*
    * Load local properties from identity.properties
    */
@@ -203,8 +697,7 @@ public class Identity {
 
     // Make the database connection
     try {
-      conn = DriverManager.getConnection(this.dbURL, this.dbUser,
-                                            this.dbPassword);
+      conn = DriverManager.getConnection(dbURL, dbUser, dbPassword);
 
       // If a SQLWarning object is available, print its warning(s).
       // There may be multiple warnings chained.
@@ -224,259 +717,6 @@ public class Identity {
     }
 
     return conn;
-
-  }
-
-  /**
-   * Initialize the identity object and update entry with current
-   * verification date/time or create new entry if does not exist.
-   *
-   * @param userId The user identifier
-   * @param providerId The provider identifier
-   * @throws SQLException
-   * @throws ClassNotFoundException
-   */
-  public void initIdentity(String userId, int providerId)
-      throws SQLException, ClassNotFoundException {
-
-    this.userId = userId;
-    this.providerId = providerId;
-    this.profileId = null;
-    this.verifyTimestamp = null;
-
-    String sql = "SELECT identity.identity.profile_id," +
-                 "identity.identity.verify_timestamp FROM " +
-                 "identity.identity WHERE " +
-                 "identity.identity.user_id='" + userId + "' AND " +
-                 "identity.identity.provider_id=" +
-                 Integer.toString(providerId) + ";";
-
-    Connection dbConn;
-
-    try {
-      dbConn = getConnection();
-    }
-    catch (ClassNotFoundException e) {
-      logger.error("initIdentity: " + e);
-      e.printStackTrace();
-      throw e;
-    }
-
-    try {
-      Statement stmt = dbConn.createStatement();
-      ResultSet rs = stmt.executeQuery(sql);
-
-      if (rs.next()) {
-        this.profileId = rs.getInt("profile_id");
-        this.verifyTimestamp = rs.getTimestamp("verify_timestamp");
-      }
-    }
-    catch (SQLException e) {
-      logger.error("initIdentity: " + e);
-      logger.error(sql);
-      e.printStackTrace();
-      throw e;
-    }
-    finally {
-      dbConn.close();
-    }
-
-  }
-
-  public void insertIdentity() throws ClassNotFoundException, SQLException {
-
-    String sql = "INSERT INTO identity.identity " +
-                 "(user_id,provider_id,profile_id,verify_timestamp) VALUES (" +
-                 "'" + this.userId + "'," + this.providerId + "," +
-                 this.profileId + ",'" + this.verifyTimestamp + "');";
-
-    Connection dbConn;
-
-    try {
-      dbConn = getConnection();
-    }
-    catch (ClassNotFoundException e) {
-      logger.error("insertIdentity: " + e);
-      e.printStackTrace();
-      throw e;
-    }
-
-    try {
-      Statement stmt = dbConn.createStatement();
-
-      if (stmt.executeUpdate(sql) == 0) {
-        String gripe = "insertIdentity: '" + sql + "' failed";
-        throw new SQLException(gripe);
-      }
-
-    }
-    catch (SQLException e) {
-      logger.error("insertIdentity: " + e);
-      logger.error(sql);
-      e.printStackTrace();
-      throw e;
-    }
-    finally {
-      dbConn.close();
-    }
-
-  }
-
-  public void updateIdentity() throws ClassNotFoundException, SQLException {
-
-    String sql = "UPDATE identity.identity SET" +
-                 "verify_timestamp=now(), profile_id=" + this.profileId +
-                 "+ WHERE identity.identity.user_id='" + this.userId +
-                 "' AND identity.identity.provider_id=" +
-                 Integer.toString(this.providerId) + ";";
-
-    Connection dbConn;
-
-    try {
-      dbConn = getConnection();
-    }
-    catch (ClassNotFoundException e) {
-      logger.error("updateIdentity: " + e);
-      e.printStackTrace();
-      throw e;
-    }
-
-    try {
-      Statement stmt = dbConn.createStatement();
-
-      if (stmt.executeUpdate(sql) == 0) {
-        String gripe = "updateIdentity: '" + sql + "' failed";
-        throw new SQLException(gripe);
-      }
-
-    }
-    catch (SQLException e) {
-      logger.error("updateIdentity: " + e);
-      logger.error(sql);
-      e.printStackTrace();
-      throw e;
-    }
-    finally {
-      dbConn.close();
-    }
-
-  }
-
-  public void updateProfileId() throws ClassNotFoundException, SQLException {
-
-    String sql = "UPDATE identity.identity SET profile_id=" + this.profileId +
-                 "+ WHERE identity.identity.user_id='" + this.userId +
-                 "' AND identity.identity.provider_id=" +
-                 Integer.toString(this.providerId) + ";";
-
-    Connection dbConn;
-
-    try {
-      dbConn = getConnection();
-    }
-    catch (ClassNotFoundException e) {
-      logger.error("updateProfileId: " + e);
-      e.printStackTrace();
-      throw e;
-    }
-
-    try {
-      Statement stmt = dbConn.createStatement();
-
-      if (stmt.executeUpdate(sql) == 0) {
-        String gripe = "updateProfileId: '" + sql + "' failed";
-        throw new SQLException(gripe);
-      }
-
-    }
-    catch (SQLException e) {
-      logger.error("updateProfileId: " + e);
-      logger.error(sql);
-      e.printStackTrace();
-      throw e;
-    }
-    finally {
-      dbConn.close();
-    }
-
-  }
-
-  public void updateVerifyTimestamp() throws ClassNotFoundException, SQLException {
-
-    String sql = "UPDATE identity.identity SET verify_timestamp='" +
-                 this.verifyTimestamp + "' " +
-                 "WHERE identity.identity.user_id='" + this.userId + "' AND " +
-                 "identity.identity.provider_id=" +
-                 Integer.toString(this.providerId) + ";";
-
-    Connection dbConn;
-
-    try {
-      dbConn = getConnection();
-    }
-    catch (ClassNotFoundException e) {
-      logger.error("updateVerifyTimestamp: " + e);
-      e.printStackTrace();
-      throw e;
-    }
-
-    try {
-      Statement stmt = dbConn.createStatement();
-
-      if (stmt.executeUpdate(sql) == 0) {
-        String gripe = "updateVerifyTimestamp: '" + sql + "' failed";
-        throw new SQLException(gripe);
-      }
-
-    }
-    catch (SQLException e) {
-      logger.error("updateVerifyTimestamp: " + e);
-      logger.error(sql);
-      e.printStackTrace();
-      throw e;
-    }
-    finally {
-      dbConn.close();
-    }
-
-  }
-
-  public void deleteIdentity() throws ClassNotFoundException, SQLException {
-
-    String sql = "DELETE FROM identity.identity " +
-                 "WHERE identity.identity.user_id='" + this.userId + "' AND " +
-                 "identity.identity.provider_id=" +
-                 Integer.toString(this.providerId) + ";";
-
-    Connection dbConn;
-
-    try {
-      dbConn = getConnection();
-    }
-    catch (ClassNotFoundException e) {
-      logger.error("deleteIdentity: " + e);
-      e.printStackTrace();
-      throw e;
-    }
-
-    try {
-      Statement stmt = dbConn.createStatement();
-
-      if (stmt.executeUpdate(sql) == 0) {
-        String gripe = "deleteIdentity: '" + sql + "' failed";
-        throw new SQLException(gripe);
-      }
-
-    }
-    catch (SQLException e) {
-      logger.error("deleteIdentity: " + e);
-      logger.error(sql);
-      e.printStackTrace();
-      throw e;
-    }
-    finally {
-      dbConn.close();
-    }
 
   }
 
