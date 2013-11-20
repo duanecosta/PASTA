@@ -46,12 +46,21 @@ public class IdentityTest {
   private static final Logger logger =
       Logger.getLogger(edu.lternet.pasta.identitymanager.IdentityTest.class);
 
-  private static String userIdKnown = null;
-  private static String userIdUnknown = null;
-  private static Integer providerIdKnown = null;
-  private static Integer providerIdUnknown = null;
-  private static Integer profileId = null;
-  private static Date verifyTimestamp = null;
+  private static String userIdUnknown = "unknown";
+  private static Integer profileIdUnknown = 0;
+  private static Date verifyTimestampUnknown = new Date(0L);
+
+  private static String userIdCarroll = "uid=ucarroll,org=LTER,dc=ecoinformatics,dc=org";
+  private static Integer profileIdCarroll = 1;
+  private static Date verifyTimestampCarroll = new Date(1384893613000L);
+
+  private static String userIdJack = "uid=cjack,org=LTER,dc=ecoinformatics,dc=org";
+  private static Integer profileIdJack = 2;
+  private static Date verifyTimestampJack = new Date(1384917912619L);
+
+  private static Integer providerIdUnknown = 0;
+  private static Integer providerIdLTER = 1;
+  private static Integer providerIdLTERX = 2;
 
   /* Constructors */
 
@@ -74,6 +83,13 @@ public class IdentityTest {
   @After
   public void tearDown() throws Exception {
 
+    try {
+      identity.initIdentity(IdentityTest.userIdJack, IdentityTest.providerIdLTERX);
+      identity.deleteIdentity();
+    }
+    catch (Exception e) {
+      // Squashing exception message
+    }
     identity = null;
 
   }
@@ -155,7 +171,7 @@ public class IdentityTest {
   @Test
   public void testInitIdentityKnown() throws Exception {
 
-    identity.initIdentity(IdentityTest.userIdKnown, IdentityTest.providerIdKnown);
+    identity.initIdentity(IdentityTest.userIdCarroll, IdentityTest.providerIdLTER);
 
     String userId = identity.getUserIdentifier();
     Integer providerId = identity.getProviderIdentifier();
@@ -169,17 +185,17 @@ public class IdentityTest {
 
 
     String message = "Identity object initialization failed for user '" +
-                         IdentityTest.userIdKnown + "' with provider identifier '" +
-                         IdentityTest.providerIdKnown + "'!";
+                         IdentityTest.userIdCarroll + "' with provider identifier '" +
+                         IdentityTest.providerIdLTER + "'!";
 
     if (profileId != null) {
-      assertTrue(message, IdentityTest.profileId.equals(profileId));
+      assertTrue(message, IdentityTest.profileIdCarroll.equals(profileId));
     } else {
       fail(message);
     }
 
     if (verifyTimestamp != null) {
-      assertTrue(message, IdentityTest.verifyTimestamp.equals(verifyTimestamp));
+      assertTrue(message, IdentityTest.verifyTimestampCarroll.equals(verifyTimestamp));
     } else {
       fail(message);
     }
@@ -225,7 +241,7 @@ public class IdentityTest {
   @Test
   public void testInitIdentityUnknownUserId() throws Exception {
 
-    identity.initIdentity(IdentityTest.userIdUnknown, IdentityTest.providerIdKnown);
+    identity.initIdentity(IdentityTest.userIdUnknown, IdentityTest.providerIdLTER);
 
     String userId = identity.getUserIdentifier();
     Integer providerId = identity.getProviderIdentifier();
@@ -239,8 +255,8 @@ public class IdentityTest {
 
 
     String message = "Identity object initialization failed for user '" +
-                     IdentityTest.userIdUnknown + "' with provider identifier '" +
-                     IdentityTest.providerIdKnown + "'!";
+                     IdentityTest.userIdJack + "' with provider identifier '" +
+                     IdentityTest.providerIdUnknown + "'!";
     assertNull(message, profileId);
     assertNull(message, verifyTimestamp);
 
@@ -248,14 +264,14 @@ public class IdentityTest {
 
   /**
    * Test to see if a the <em>Identity</em> object is correctly initialized
-   * with an known user identifier and unknown provider identifier.
+   * with a known user identifier and an unknown provider identifier.
    *
    * @throws Exception
    */
   @Test
   public void testInitIdentityUnknownProviderId() throws Exception {
 
-    identity.initIdentity(IdentityTest.userIdKnown, IdentityTest.providerIdUnknown);
+    identity.initIdentity(IdentityTest.userIdCarroll, IdentityTest.providerIdUnknown);
 
     String userId = identity.getUserIdentifier();
     Integer providerId = identity.getProviderIdentifier();
@@ -269,10 +285,42 @@ public class IdentityTest {
 
 
     String message = "Identity object initialization failed for user '" +
-                         IdentityTest.userIdKnown + "' with provider identifier '" +
+                         IdentityTest.userIdCarroll + "' with provider identifier '" +
                          IdentityTest.providerIdUnknown + "'!";
     assertNull(message, profileId);
     assertNull(message, verifyTimestamp);
+
+  }
+
+  @Test
+  public void testInsertIdentity() throws Exception {
+
+    String message = null;
+
+    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.setProfileIdentifier(profileIdJack);
+    identity.setVerifyTimestamp(verifyTimestampJack);
+    identity.insertIdentity();
+
+    identity.initIdentity(userIdJack, providerIdLTERX);
+
+    Integer profileId = identity.getProfileIdentifier();
+    if (profileId != null) {
+      message = "Expected profile identifier '" + profileIdJack +
+                "', but received '" + profileId + "'!";
+      assertTrue(message, profileIdJack.equals(profileId));
+    } else {
+      fail("Profile identifier returned is 'NULL'");
+    }
+
+    Date verifyTimestamp = identity.getVerifyTimestamp();
+    if (verifyTimestamp != null) {
+      message = "Expected verify timestamp '" + verifyTimestampJack +
+                    "', but received '" + verifyTimestamp + "'!";
+      assertTrue(message, verifyTimestampJack.equals(verifyTimestamp));
+    } else {
+      fail("Verify timestamp returned is 'NULL'");
+    }
 
   }
 
@@ -284,27 +332,6 @@ public class IdentityTest {
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
 
-    ConfigurationListener.configure();
-    Configuration options = ConfigurationListener.getOptions();
-
-    if (options == null) {
-      String gripe = "Failed to load the IdentityManager properties file: 'identity.properties'";
-      throw new PastaConfigurationException(gripe);
-    } else {
-      try {
-        IdentityTest.userIdKnown = options.getString("test.userid.known");
-        IdentityTest.userIdUnknown = options.getString("test.userid.unknown");
-        IdentityTest.providerIdKnown = options.getInt("test.providerid.known");
-        IdentityTest.providerIdUnknown = options.getInt("test.providerid.unknown");
-        IdentityTest.profileId = options.getInt("test.profileid");
-        IdentityTest.verifyTimestamp = new Date(options.getLong("test.verifytimestamp"));
-      }
-      catch (Exception e) {
-        logger.error(e.getMessage());
-        e.printStackTrace();
-        throw new PastaConfigurationException(e.getMessage());
-      }
-    }
 
   }
 
