@@ -357,14 +357,16 @@ public class Identity {
    * @throws ClassNotFoundException
    * @throws SQLException
    */
-  public void updateIdentity(Integer profileId, Timestamp verifyTimestamp)
+  public void updateIdentity(Integer profileId, Date timestamp)
       throws ClassNotFoundException, SQLException {
+
+    Timestamp verifyTimestamp = new Timestamp(timestamp.getTime());
 
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("UPDATE identity.identity SET ");
     strBuilder.append("verify_timestamp='");
     strBuilder.append(verifyTimestamp);
-    strBuilder.append(", profile_id=");
+    strBuilder.append("', profile_id=");
     strBuilder.append(profileId);
     strBuilder.append(" WHERE identity.identity.user_id='");
     strBuilder.append(this.userId);
@@ -569,8 +571,10 @@ public class Identity {
    * @throws ClassNotFoundException
    * @throws SQLException
    */
-  public void updateVerifyTimestamp(Timestamp verifyTimestamp)
+  public void updateVerifyTimestamp(Date timestamp)
       throws ClassNotFoundException, SQLException {
+
+    Timestamp verifyTimestamp = new Timestamp(timestamp.getTime());
 
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("UPDATE identity.identity SET verify_timestamp='");
