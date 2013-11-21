@@ -273,6 +273,23 @@ public class Identity {
 
   }
 
+  @Override
+  public String toString() {
+
+    String userId = "NULL";
+    String providerId = "NULL";
+    String profileId = "NULL";
+    String verifyTimestamp = "NULL";
+
+    if (this.userId != null) userId = this.userId;
+    if (this.providerId != null) providerId = this.providerId.toString();
+    if (this.profileId != null) profileId = this.profileId.toString();
+    if (this.verifyTimestamp != null) verifyTimestamp = this.verifyTimestamp.toString();
+
+    return userId + ", " + providerId + ", " + profileId + ", " + verifyTimestamp;
+
+  }
+
   /**
    * Updates the Identity database record with the contents of instance
    * variables profile identifier and verify timestamp (assumes these variables
