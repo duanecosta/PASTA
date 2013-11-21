@@ -325,7 +325,89 @@ public class IdentityTest {
 
   }
 
-  private static void purgeIdentity(String userId, Integer providerId) throws Exception {
+  @Test
+  public void testUpdateIdentity() throws Exception {
+
+    /*
+     * Load new Identity record for Cactus Jack with verify date about the same
+     * time as the release date for the Rollings Stones - Let it Bleed album
+     */
+    Date verifyTimestamp = new Date(0l);
+    IdentityTest.insertIdentity(userIdJack, providerIdLTERX, profileIdJack, verifyTimestamp);
+
+    // Initialize Identity object ca. Rolling Stones and update to current date
+    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.setProfileIdentifier(profileIdJack);
+    Date now = new Date();
+    identity.setVerifyTimestamp(now);
+    identity.updateIdentity();
+    identity.initIdentity(userIdJack, providerIdLTERX);
+    verifyTimestamp = identity.getVerifyTimestamp();
+
+    String message = "Expected verify timestamp '" + now.toString() +
+                     "', but received '" + verifyTimestamp + "'!";
+    assertTrue(message, now.equals(verifyTimestamp));
+
+  }
+
+  private static void insertIdentity(String userId, Integer providerId,
+      Integer profileId, Date verifyTimestamp) throws Exception {
+
+    Timestamp timestamp = new Timestamp(verifyTimestamp.getTime());
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("INSERT INTO identity.identity ");
+    strBuilder.append("(user_id,provider_id,profile_id,verify_timestamp) ");
+    strBuilder.append("VALUES ('");
+    strBuilder.append(userId);
+    strBuilder.append("',");
+    strBuilder.append(providerId);
+    strBuilder.append(",");
+    strBuilder.append(profileId);
+    strBuilder.append(",'");
+    strBuilder.append(timestamp);
+    strBuilder.append("');");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("insertIdentity: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "insertIdentity: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("insertIdentity: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
+  /*
+   * Removes the Identity record from the Identity database if the record exists
+   * for the given user identifier and provider identifier.
+   */
+  private static void purgeIdentity(String userId, Integer providerId)
+      throws Exception {
 
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("SELECT identity.identity.profile_id,");
