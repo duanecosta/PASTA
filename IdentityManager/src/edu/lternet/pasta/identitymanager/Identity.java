@@ -288,7 +288,7 @@ public class Identity {
     strBuilder.append("UPDATE identity.identity SET ");
     strBuilder.append("verify_timestamp='");
     strBuilder.append(this.verifyTimestamp);
-    strBuilder.append(", profile_id=");
+    strBuilder.append("', profile_id=");
     strBuilder.append(this.profileId);
     strBuilder.append(" WHERE identity.identity.user_id='");
     strBuilder.append(this.userId);
