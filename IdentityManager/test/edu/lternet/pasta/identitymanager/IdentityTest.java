@@ -739,8 +739,8 @@ public class IdentityTest {
   }
 
   /*
- * Load local properties from identity.properties
- */
+   * Load local properties from identity.properties
+   */
   private static void loadConfiguration() throws Exception {
 
     ConfigurationListener.configure();
