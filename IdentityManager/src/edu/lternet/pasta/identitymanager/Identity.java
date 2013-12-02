@@ -39,7 +39,9 @@ import java.util.Date;
  * Project: NIS
  * Package: edu.lternet.pasta.identity
  * <p/>
- * <class description>
+ *
+ * Manages Identity objects for users who have been successfully identified
+ * through an Identity Provider.
  */
 public class Identity {
 
@@ -80,7 +82,7 @@ public class Identity {
    *
    * @return The user identifier
    */
-  public String getUserIdentifier() {
+  public String getUserId() {
     return this.userId;
   }
 
@@ -89,7 +91,7 @@ public class Identity {
    *
    * @param userId The user identifier
    */
-  public void setUserIdentifier(String userId) {
+  public void setUserId(String userId) {
     this.userId = userId;
   }
 
@@ -98,7 +100,7 @@ public class Identity {
    *
    * @return The provider identifier
    */
-  public Integer getProviderIdentifier() {
+  public Integer getProviderId() {
     return this.providerId;
   }
 
@@ -107,7 +109,7 @@ public class Identity {
    *
    * @param providerId The provider identifier
    */
-  public void setProviderIdentifier(Integer providerId) {
+  public void setProviderId(Integer providerId) {
     this.providerId = providerId;
   }
 
@@ -116,7 +118,7 @@ public class Identity {
    *
    * @return The profile identifier
    */
-  public Integer getProfileIdentifier() {
+  public Integer getProfileId() {
     return this.profileId;
   }
 
@@ -125,7 +127,7 @@ public class Identity {
    *
    * @param profileId The profile identifier
    */
-  public void setProfileIdentifier(Integer profileId) {
+  public void setProfileId(Integer profileId) {
     this.profileId = profileId;
   }
 

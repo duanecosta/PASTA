@@ -101,8 +101,8 @@ public class IdentityTest {
   @Test
   public void testSetUserIdentifier() {
 
-    identity.setUserIdentifier(userIdJack);
-    String userId = identity.getUserIdentifier();
+    identity.setUserId(userIdJack);
+    String userId = identity.getUserId();
     String message = "Expected user identifier '" + userIdJack +
                      "', but received '" + userId + "'!";
     assertTrue(message, userIdJack.equals(userId));
@@ -115,8 +115,8 @@ public class IdentityTest {
   @Test
   public void testSetProviderIdentifier() {
 
-    identity.setProviderIdentifier(providerIdLTERX);
-    Integer providerId = identity.getProviderIdentifier();
+    identity.setProviderId(providerIdLTERX);
+    Integer providerId = identity.getProviderId();
     String message = "Expected provider identifier '" + providerIdLTERX +
                          "', but received '" + providerId + "'!";
     assertTrue(message, providerIdLTERX.equals(providerId));
@@ -129,8 +129,8 @@ public class IdentityTest {
   @Test
   public void testSetProfileIdentifier() {
 
-    identity.setProfileIdentifier(profileIdJack);
-    Integer profileId = identity.getProfileIdentifier();
+    identity.setProfileId(profileIdJack);
+    Integer profileId = identity.getProfileId();
     String message = "Expected provider identifier '" + profileIdJack +
                          "', but received '" + profileId + "'!";
     assertTrue(message, profileIdJack.equals(profileId));
@@ -169,7 +169,7 @@ public class IdentityTest {
 
     identity.initIdentity(userIdCarroll, providerIdLTER);
 
-    Integer profileId = identity.getProfileIdentifier();
+    Integer profileId = identity.getProfileId();
     Date verifyTimestamp = identity.getVerifyTimestamp();
     System.out.printf("%s\n", identity.toString());
 
@@ -205,7 +205,7 @@ public class IdentityTest {
 
     identity.initIdentity(userIdUnknown, providerIdUnknown);
 
-    Integer profileId = identity.getProfileIdentifier();
+    Integer profileId = identity.getProfileId();
     Date verifyTimestamp = identity.getVerifyTimestamp();
     System.out.printf("%s\n", identity.toString());
 
@@ -232,7 +232,7 @@ public class IdentityTest {
 
     identity.initIdentity(userIdUnknown, providerIdLTER);
 
-    Integer profileId = identity.getProfileIdentifier();
+    Integer profileId = identity.getProfileId();
     Date verifyTimestamp = identity.getVerifyTimestamp();
     System.out.printf("%s\n", identity.toString());
 
@@ -259,7 +259,7 @@ public class IdentityTest {
 
     identity.initIdentity(userIdCarroll, providerIdUnknown);
 
-    Integer profileId = identity.getProfileIdentifier();
+    Integer profileId = identity.getProfileId();
     Date verifyTimestamp = identity.getVerifyTimestamp();
     System.out.printf("%s\n", identity.toString());
 
@@ -284,13 +284,13 @@ public class IdentityTest {
     System.out.printf("\n%s\n", header);
 
     identity.initIdentity(userIdJack, providerIdLTERX);
-    identity.setProfileIdentifier(profileIdJack);
+    identity.setProfileId(profileIdJack);
     identity.setVerifyTimestamp(verifyTimestampJack);
     identity.insertIdentity();
     identity.initIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
 
-    Integer profileId = identity.getProfileIdentifier();
+    Integer profileId = identity.getProfileId();
     if (profileId != null) {
       String message = "Expected profile identifier '" + profileIdJack +
                 "', but received '" + profileId + "'!";
@@ -335,14 +335,14 @@ public class IdentityTest {
     // Initialize incorrect Identity object
     identity.initIdentity(userIdJack, providerIdLTERX);
       System.out.printf("%s\n", identity.toString());
-    identity.setProfileIdentifier(profileIdJack);
+    identity.setProfileId(profileIdJack);
     Date now = new Date();
     identity.setVerifyTimestamp(now);
     identity.updateIdentity();
     identity.initIdentity(userIdJack, providerIdLTERX);
       System.out.printf("%s\n", identity.toString());
     verifyTimestamp = identity.getVerifyTimestamp();
-    Integer profileId = identity.getProfileIdentifier();
+    Integer profileId = identity.getProfileId();
 
     String message = "Expected profile identifier '" + profileIdJack +
                          "', but received '" + profileId + "'!";
@@ -383,7 +383,7 @@ public class IdentityTest {
     identity.initIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
     verifyTimestamp = identity.getVerifyTimestamp();
-    Integer profileId = identity.getProfileIdentifier();
+    Integer profileId = identity.getProfileId();
 
     String message = "Expected profile identifier '" + profileIdJack +
                          "', but received '" + profileId + "'!";
@@ -417,11 +417,11 @@ public class IdentityTest {
     // Initialize incorrect Identity object
     identity.initIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
-    identity.setProfileIdentifier(profileIdJack);
+    identity.setProfileId(profileIdJack);
     identity.updateProfileId();
     identity.initIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
-    Integer profileId = identity.getProfileIdentifier();
+    Integer profileId = identity.getProfileId();
 
     String message = "Expected profile identifier '" + profileIdJack +
                          "', but received '" + profileId + "'!";
@@ -454,7 +454,7 @@ public class IdentityTest {
     identity.updateProfileId(profileIdJack);
     identity.initIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
-    Integer profileId = identity.getProfileIdentifier();
+    Integer profileId = identity.getProfileId();
 
     String message = "Expected profile identifier '" + profileIdJack +
                          "', but received '" + profileId + "'!";
@@ -560,7 +560,7 @@ public class IdentityTest {
     identity.initIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
 
-    Integer profileId = identity.getProfileIdentifier();
+    Integer profileId = identity.getProfileId();
     Date verifyTimestamp = identity.getVerifyTimestamp();
 
     String message = "Expected NULL values for both the profile identifier " +
