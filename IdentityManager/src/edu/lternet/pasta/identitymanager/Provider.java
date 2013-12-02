@@ -35,7 +35,9 @@ import java.util.ArrayList;
  * Project: NIS
  * Package: edu.lternet.pasta.identitymanager
  * <p/>
- * <class description>
+ *
+ * Manages Identity Provider objects, which describe an Identity Provider,
+ * including provider connection information and contact information.
  */
 public class Provider {
 
@@ -70,9 +72,19 @@ public class Provider {
 
   /* Instance methods */
 
+  public void setProviderId(Integer providerId) {
+    this.providerId = providerId;
+  }
+
+  public Integer getProviderId() {
+    return providerId;
+  }
+
+
+
   /*
-   * Load local properties from identity.properties
-   */
+       * Load local properties from identity.properties
+       */
   private void loadConfiguration() throws PastaConfigurationException {
 
     ConfigurationListener.configure();
