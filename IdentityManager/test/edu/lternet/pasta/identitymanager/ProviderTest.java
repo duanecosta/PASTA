@@ -20,15 +20,14 @@ package edu.lternet.pasta.identitymanager;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * User: servilla
@@ -56,6 +55,12 @@ public class ProviderTest {
   private static String dbUser;     // database user name
   private static String dbPassword; // database user password
 
+  private static String providerNameLTER = "LTER";
+  private static String providerConnectionLTER = "ldaps://ldap.lternet.edu:636";
+  private static String contactNameLTER = "System Administrator";
+  private static String contactPhoneLTER = "505-277-2551";
+  private static String contactEmailLTER = "tech-support@lternet.edu";
+
   /* Constructors */
 
   /* Instance methods */
@@ -66,6 +71,8 @@ public class ProviderTest {
   @Before
   public void setUp() throws Exception {
 
+    provider = new Provider();
+    Provider.setDatabase("junit");
 
   }
 
@@ -75,10 +82,22 @@ public class ProviderTest {
   @After
   public void tearDown() throws Exception {
 
+    provider = null;
 
   }
 
+  @Test
+  public void testSetProviderName() {
 
+    provider.setProviderName(providerNameLTER);
+    String providerName = provider.getProviderName();
+    String message = "Expected provider name '" + providerNameLTER +
+                     "', but received '" + providerName + "'!";
+    assertTrue(message, providerNameLTER.equals(providerName));
+
+  }
+
+  /* Class methods */
 
   /*
    * Returns a connection to the database.
@@ -148,8 +167,6 @@ public class ProviderTest {
     }
 
   }
-
-  /* Class methods */
 
   /**
    * @throws Exception
