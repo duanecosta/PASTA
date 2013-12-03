@@ -83,7 +83,7 @@ public class Identity {
    * @return The user identifier
    */
   public String getUserId() {
-    return this.userId;
+    return userId;
   }
 
   /**
@@ -101,7 +101,7 @@ public class Identity {
    * @return The provider identifier
    */
   public Integer getProviderId() {
-    return this.providerId;
+    return providerId;
   }
 
   /**
@@ -119,7 +119,7 @@ public class Identity {
    * @return The profile identifier
    */
   public Integer getProfileId() {
-    return this.profileId;
+    return profileId;
   }
 
   /**
@@ -355,7 +355,7 @@ public class Identity {
    * provider identifier cannot be updated.
    *
    * @param profileId Profile identifier
-   * @param verifyTimestamp Verify timestamp
+   * @param timestamp Verify timestamp
    * @throws ClassNotFoundException
    * @throws SQLException
    */
