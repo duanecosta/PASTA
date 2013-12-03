@@ -296,7 +296,8 @@ public class Identity {
    * Updates the Identity database record with the contents of instance
    * variables profile identifier and verify timestamp (assumes these variables
    * have been updated through available setters).  Note that variables
-   * for the user identifier and provider identifier cannot be updated.
+   * for the user identifier and provider identifier should not be updated by
+   * any user - they should be considered static and final.
    *
    * @throws ClassNotFoundException
    * @throws SQLException
