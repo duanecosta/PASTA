@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" hash="3981830559">
-    <data-source source="LOCAL" name="personnelDB" product="MySQL" version="5.1.69-0ubuntu0.10.04.1" jdbc-version="3.0" driver-name="MySQL-AB JDBC Driver" driver-version="mysql-connector-java-5.1.12 ( Revision: ${bzr.revision-id} )" uuid="f1d96449-7954-4dc2-aaee-91fed8b7db19">
-      <extra-name-characters>#@</extra-name-characters>
-      <identifier-quote-string>`</identifier-quote-string>
+    <data-source source="LOCAL" name="personnelDB" uuid="f1d96449-7954-4dc2-aaee-91fed8b7db19">
+      <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://sunshine.lternet.edu:3306/</jdbc-url>
