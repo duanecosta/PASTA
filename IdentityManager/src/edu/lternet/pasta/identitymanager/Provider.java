@@ -72,19 +72,123 @@ public class Provider {
 
   /* Instance methods */
 
+  /**
+   * Sets the provider identifier of the <em>Provider</em> object.
+   *
+   * @param providerId The provider identifier
+   */
   public void setProviderId(Integer providerId) {
     this.providerId = providerId;
   }
 
+  /**
+   * Gets the provider identifier of the <em>Provider</em> object.
+   *
+   * @return The provider identifier
+   */
   public Integer getProviderId() {
     return providerId;
   }
 
+  /**
+   * Sets the provider name of the <em>Provider</em> object.
+   *
+   * @param providerName The provider name
+   */
+  public void setProviderName(String providerName) {
+    this.providerName = providerName;
+  }
 
+  /**
+   * Gets the provider name of the <em>Provider</em> object.
+   *
+   * @return The provider name
+   */
+  public String getProviderName() {
+    return providerName;
+  }
+
+  /**
+   * Sets the network-based provider connection information for the
+   * <em>Provider</em> object.
+   *
+   * @param providerConnection The provider connection information
+   */
+  public void setProviderConnection(String providerConnection) {
+    this.providerConnection = providerConnection;
+  }
+
+  /**
+   * Gets the network-based provider connection information for the
+   * <em>Provider</em> object.
+   *
+   * @return The provider connection information
+   */
+  public String getProviderConnection() {
+    return providerConnection;
+  }
+
+  /**
+   * Sets the contact name of the provider for the <em>Provider</em> object.
+   *
+   * @param contactName The provider's contact name
+   */
+  public void setContactName(String contactName) {
+    this.contactName = contactName;
+  }
+
+  /**
+   * Gets the contact name of the provider for the <em>Provider</em> object.
+   *
+   * @return The provider's contact name
+   */
+  public String getContactName() {
+    return contactName;
+  }
+
+  /**
+   * Sets the contact's phone number of the provider for the <em>Provider</em>
+   * object.
+   *
+   * @param contactPhone The contact's phone number
+   */
+  public void setContactPhone(String contactPhone) {
+    this.contactPhone = contactPhone;
+  }
+
+  /**
+   * Gets the contact's phone number of the provider for the <em>Provider</em>
+   * object.
+   *
+   * @return The contact's phone number
+   */
+  public String getContactPhone() {
+    return contactPhone;
+  }
+
+  /**
+   * Sets the contact's email address of the provider for the <em>Provider</em>
+   * object.
+   *
+   * @param contactEmail The contact's email address
+   */
+  public void setContactEmail(String contactEmail) {
+    this.contactEmail = contactEmail;
+  }
+
+  /**
+   * Gets the contact's email address of the provider for the <em>Provider</em>
+   * object.
+   *
+   * @return The contact's email address
+   */
+  public String getContactEmail() {
+    return contactEmail;
+  }
 
   /*
-       * Load local properties from identity.properties
-       */
+   * Load local properties from identity.properties
+   */
   private void loadConfiguration() throws PastaConfigurationException {
 
     ConfigurationListener.configure();
