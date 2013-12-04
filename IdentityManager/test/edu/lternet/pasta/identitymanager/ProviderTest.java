@@ -86,6 +86,9 @@ public class ProviderTest {
 
   }
 
+  /**
+   * Test to ensure that a new provider name is correctly set.
+   */
   @Test
   public void testSetProviderName() {
 
@@ -94,6 +97,62 @@ public class ProviderTest {
     String message = "Expected provider name '" + providerNameLTER +
                      "', but received '" + providerName + "'!";
     assertTrue(message, providerNameLTER.equals(providerName));
+
+  }
+
+  /**
+   * Test to ensure that a new provider connection is correctly set.
+   */
+  @Test
+  public void testSetProviderConnection() {
+
+    provider.setProviderConnection(providerConnectionLTER);
+    String providerConnection = provider.getProviderConnection();
+    String message = "Expected provider connection '" + providerConnectionLTER +
+                     "', but received '" + providerConnection + "'!";
+    assertTrue(message, providerConnectionLTER.equals(providerConnection));
+
+  }
+
+  /**
+   * Test to ensure that a new provider connection is correctly set.
+   */
+  @Test
+  public void testSetContactName() {
+
+    provider.setContactName(contactNameLTER);
+    String contactName = provider.getContactName();
+    String message = "Expected contact name '" + contactNameLTER +
+                         "', but received '" + contactName + "'!";
+    assertTrue(message, contactNameLTER.equals(contactName));
+
+  }
+
+  /**
+   * Test to ensure that a new provider connection is correctly set.
+   */
+  @Test
+  public void testSetContactPhone() {
+
+    provider.setContactPhone(contactPhoneLTER);
+    String contactPhone = provider.getContactPhone();
+    String message = "Expected contact phone '" + contactPhoneLTER +
+                         "', but received '" + contactPhone + "'!";
+    assertTrue(message, contactPhoneLTER.equals(contactPhone));
+
+  }
+
+  /**
+   * Test to ensure that a new provider connection is correctly set.
+   */
+  @Test
+  public void testSetContactEmail() {
+
+    provider.setContactEmail(contactEmailLTER);
+    String contactEmail = provider.getContactEmail();
+    String message = "Expected contact email '" + contactEmailLTER +
+                         "', but received '" + contactEmail + "'!";
+    assertTrue(message, contactEmailLTER.equals(contactEmail));
 
   }
 
