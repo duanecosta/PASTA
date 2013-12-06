@@ -22,10 +22,9 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 import org.junit.*;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Date;
 
 import static org.junit.Assert.assertTrue;
 
@@ -60,6 +59,11 @@ public class ProviderTest {
   private static String contactNameLTER = "System Administrator";
   private static String contactPhoneLTER = "505-277-2551";
   private static String contactEmailLTER = "tech-support@lternet.edu";
+
+  private static String userIdJack = "uid=cjack,org=LTER,dc=ecoinformatics,dc=org";
+  private static Integer profileIdJack = 2;
+  private static Date verifyTimestampJack = new Date(1384917912619L);
+  private static Integer providerIdLTER = 1;
 
   /* Constructors */
 
@@ -156,8 +160,144 @@ public class ProviderTest {
 
   }
 
+  @Test
+  public void testGetIdentities() throws Exception {
+
+    ProviderTest.insertIdentity(userIdJack, providerIdLTER,
+                                   profileIdJack, verifyTimestampJack);
+
+    ArrayList<Identity> identityList = new ArrayList<Identity>();
+
+
+
+
+  }
+
   /* Class methods */
 
+  /*
+   * Inserts a test Identity object record into the Identity database for the
+   * given user identifier, provider identifier, profile identifier, and verify
+   * timestamp.
+   */
+  private static void insertIdentity(String userId, Integer providerId,
+                                     Integer profileId, Date verifyTimestamp) throws Exception {
+
+    Timestamp timestamp = new Timestamp(verifyTimestamp.getTime());
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("INSERT INTO identity.identity ");
+    strBuilder.append("(user_id,provider_id,profile_id,verify_timestamp) ");
+    strBuilder.append("VALUES ('");
+    strBuilder.append(userId);
+    strBuilder.append("',");
+    strBuilder.append(providerId);
+    strBuilder.append(",");
+    strBuilder.append(profileId);
+    strBuilder.append(",'");
+    strBuilder.append(timestamp);
+    strBuilder.append("');");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("insertIdentity: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "insertIdentity: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("insertIdentity: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
+  /*
+   * Removes the Identity record from the Identity database if the record exists
+   * for the given user identifier and provider identifier.
+   */
+  private static void purgeIdentity(String userId, Integer providerId)
+      throws Exception {
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("SELECT identity.identity.profile_id,");
+    strBuilder.append("identity.identity.verify_timestamp FROM ");
+    strBuilder.append("identity.identity WHERE identity.identity.user_id='");
+    strBuilder.append(userId);
+    strBuilder.append("' AND identity.identity.provider_id=");
+    strBuilder.append(Integer.toString(providerId));
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("initIdentity: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+      ResultSet rs = stmt.executeQuery(sql);
+
+      if (rs.next()) { // Record exists
+
+        strBuilder = new StringBuilder();
+        strBuilder.append("DELETE FROM identity.identity ");
+        strBuilder.append("WHERE identity.identity.user_id='");
+        strBuilder.append(userId);
+        strBuilder.append("' AND identity.identity.provider_id=");
+        strBuilder.append(Integer.toString(providerId));
+        strBuilder.append(";");
+
+
+        sql = strBuilder.toString();
+
+        stmt = dbConn.createStatement();
+
+        if (stmt.executeUpdate(sql) == 0) {
+          String gripe = "deleteIdentity: '" + sql + "' failed";
+          throw new SQLException(gripe);
+        }
+
+      }
+    }
+    catch (SQLException e) {
+      logger.error("initIdentity: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
   /*
    * Returns a connection to the database.
    */

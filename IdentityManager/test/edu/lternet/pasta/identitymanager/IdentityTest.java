@@ -695,7 +695,6 @@ public class IdentityTest {
 
   }
 
-
   /*
    * Returns a connection to the database.
    */

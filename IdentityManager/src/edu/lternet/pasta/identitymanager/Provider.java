@@ -186,6 +186,19 @@ public class Provider {
     return contactEmail;
   }
 
+  /**
+   * Gets the list of identities associated with this <em>Provider</em> object.
+   *
+   * @return List of identities
+   */
+  public ArrayList<Identity> getIdentities() {
+
+    ArrayList<Identity> identities = new ArrayList<Identity>();
+
+    return identities;
+
+  }
+
   /*
    * Load local properties from identity.properties
    */
