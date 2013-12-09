@@ -75,6 +75,62 @@ public class Identity {
 
   }
 
+  public Identity(String userId, Integer providerId)
+      throws PastaConfigurationException, ClassNotFoundException, SQLException,
+      IdentityDoesNotExistException {
+
+    loadConfiguration();
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("SELECT identity.identity.profile_id, ");
+    strBuilder.append("identity.identity.verify_timestamp FROM ");
+    strBuilder.append("identity.identity WHERE ");
+    strBuilder.append("identity.identity.user_id='");
+    strBuilder.append(userId);
+    strBuilder.append("' AND identity.identity.provider_id=");
+    strBuilder.append(providerId);
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("initIdentity: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+      ResultSet rs = stmt.executeQuery(sql);
+
+      if (rs.next()) {
+        this.userId = userId;
+        this.providerId = providerId;
+        this.profileId = rs.getInt("profile_id");
+        this.verifyTimestamp = rs.getTimestamp("verify_timestamp");
+      } else {
+        String gripe = "Identity does not exist for userId '" + userId +
+                       "' and providerId '" + providerId + "'!\n";
+        throw new IdentityDoesNotExistException(gripe);
+      }
+    }
+    catch (SQLException e) {
+      logger.error("getIdentities: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
   /* Instance methods */
 
   /**
@@ -745,13 +801,5 @@ public class Identity {
   }
 
   /* Class methods */
-
-  /*
-   * Sets the database URL to a new connection string (intended use is for unit
-   * testing).
-   */
-  protected static void setDatabase(String name) {
-    dbURL = "jdbc:postgresql://localhost/" + name;
-  }
 
 }
