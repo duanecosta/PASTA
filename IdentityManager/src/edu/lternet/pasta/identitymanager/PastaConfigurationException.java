@@ -46,7 +46,7 @@ public class PastaConfigurationException extends Exception {
    *
    * @param gripe
    *          The cause of the exception in natural language text as a String
-   *          object.
+   *          object
    */
   public PastaConfigurationException(String gripe) {
     super(gripe);
