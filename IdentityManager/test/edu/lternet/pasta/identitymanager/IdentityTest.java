@@ -80,7 +80,6 @@ public class IdentityTest {
   public void setUp() throws Exception {
 
     identity = new Identity();
-    Identity.setDatabase("junit");
 
   }
 
@@ -104,7 +103,7 @@ public class IdentityTest {
     identity.setUserId(userIdJack);
     String userId = identity.getUserId();
     String message = "Expected user identifier '" + userIdJack +
-                     "', but received '" + userId + "'!";
+                     "', but received '" + userId + "'!\n";
     assertTrue(message, userIdJack.equals(userId));
 
   }
@@ -118,7 +117,7 @@ public class IdentityTest {
     identity.setProviderId(providerIdLTERX);
     Integer providerId = identity.getProviderId();
     String message = "Expected provider identifier '" + providerIdLTERX +
-                         "', but received '" + providerId + "'!";
+                         "', but received '" + providerId + "'!\n";
     assertTrue(message, providerIdLTERX.equals(providerId));
 
   }
@@ -132,7 +131,7 @@ public class IdentityTest {
     identity.setProfileId(profileIdJack);
     Integer profileId = identity.getProfileId();
     String message = "Expected provider identifier '" + profileIdJack +
-                         "', but received '" + profileId + "'!";
+                         "', but received '" + profileId + "'!\n";
     assertTrue(message, profileIdJack.equals(profileId));
 
   }
@@ -150,7 +149,7 @@ public class IdentityTest {
     verifyTimestamp = identity.getVerifyTimestamp();
 
     String message = "Expected verify timestamp '" + now +
-                         "', but received '" + verifyTimestamp + "'!";
+                         "', but received '" + verifyTimestamp + "'!\n";
     assertTrue(message, now.equals(verifyTimestamp));
 
   }
@@ -175,7 +174,7 @@ public class IdentityTest {
 
     String message = "Identity object initialization failed for user '" +
                      IdentityTest.userIdCarroll + "' with provider identifier '" +
-                     IdentityTest.providerIdLTER + "'!";
+                     IdentityTest.providerIdLTER + "'!\n";
 
     if (profileId != null) {
       assertTrue(message, profileIdCarroll.equals(profileId));
@@ -212,7 +211,7 @@ public class IdentityTest {
 
     String message = "Identity object initialization failed for user '" +
                      userIdUnknown + "' with provider identifier '" +
-                     providerIdUnknown + "'!";
+                     providerIdUnknown + "'!\n";
     assertNull(message, profileId);
     assertNull(message, verifyTimestamp);
 
@@ -239,7 +238,7 @@ public class IdentityTest {
 
     String message = "Identity object initialization failed for user '" +
                      userIdJack + "' with provider identifier '" +
-                     providerIdUnknown + "'!";
+                     providerIdUnknown + "'!\n";
     assertNull(message, profileId);
     assertNull(message, verifyTimestamp);
 
@@ -265,7 +264,7 @@ public class IdentityTest {
 
     String message = "Identity object initialization failed for user '" +
                      userIdCarroll + "' with provider identifier '" +
-                     providerIdUnknown + "'!";
+                     providerIdUnknown + "'!\n";
     assertNull(message, profileId);
     assertNull(message, verifyTimestamp);
 
@@ -293,19 +292,19 @@ public class IdentityTest {
     Integer profileId = identity.getProfileId();
     if (profileId != null) {
       String message = "Expected profile identifier '" + profileIdJack +
-                "', but received '" + profileId + "'!";
+                "', but received '" + profileId + "'!\n";
       assertTrue(message, profileIdJack.equals(profileId));
     } else {
-      fail("Profile identifier returned is 'NULL'");
+      fail("Profile identifier returned is 'NULL'\n");
     }
 
     Date verifyTimestamp = identity.getVerifyTimestamp();
     if (verifyTimestamp != null) {
       String message = "Expected verify timestamp '" + verifyTimestampJack +
-                    "', but received '" + verifyTimestamp + "'!";
+                    "', but received '" + verifyTimestamp + "'!\n";
       assertTrue(message, verifyTimestampJack.equals(verifyTimestamp));
     } else {
-      fail("Verify timestamp returned is 'NULL'");
+      fail("Verify timestamp returned is 'NULL'\n");
     }
 
   }
@@ -345,11 +344,11 @@ public class IdentityTest {
     Integer profileId = identity.getProfileId();
 
     String message = "Expected profile identifier '" + profileIdJack +
-                         "', but received '" + profileId + "'!";
+                         "', but received '" + profileId + "'!\n";
     assertTrue(message, profileIdJack.equals(profileId));
 
     message = "Expected verify timestamp '" + now.toString() +
-                     "', but received '" + verifyTimestamp + "'!";
+                     "', but received '" + verifyTimestamp + "'!\n";
     assertTrue(message, now.equals(verifyTimestamp));
 
   }
@@ -386,11 +385,11 @@ public class IdentityTest {
     Integer profileId = identity.getProfileId();
 
     String message = "Expected profile identifier '" + profileIdJack +
-                         "', but received '" + profileId + "'!";
+                         "', but received '" + profileId + "'!\n";
     assertTrue(message, profileIdJack.equals(profileId));
 
     message = "Expected verify timestamp '" + now.toString() +
-                         "', but received '" + verifyTimestamp + "'!";
+                         "', but received '" + verifyTimestamp + "'!\n";
     assertTrue(message, now.equals(verifyTimestamp));
 
   }
@@ -424,7 +423,7 @@ public class IdentityTest {
     Integer profileId = identity.getProfileId();
 
     String message = "Expected profile identifier '" + profileIdJack +
-                         "', but received '" + profileId + "'!";
+                         "', but received '" + profileId + "'!\n";
     assertTrue(message, profileIdJack.equals(profileId));
 
   }
@@ -457,7 +456,7 @@ public class IdentityTest {
     Integer profileId = identity.getProfileId();
 
     String message = "Expected profile identifier '" + profileIdJack +
-                         "', but received '" + profileId + "'!";
+                         "', but received '" + profileId + "'!\n";
     assertTrue(message, profileIdJack.equals(profileId));
 
   }
@@ -495,7 +494,7 @@ public class IdentityTest {
     verifyTimestamp = identity.getVerifyTimestamp();
 
     String message = "Expected verify timestamp '" + now.toString() +
-                         "', but received '" + verifyTimestamp + "'!";
+                         "', but received '" + verifyTimestamp + "'!\n";
     assertTrue(message, now.equals(verifyTimestamp));
 
   }
@@ -531,7 +530,7 @@ public class IdentityTest {
     verifyTimestamp = identity.getVerifyTimestamp();
 
     String message = "Expected verify timestamp '" + now.toString() +
-                  "', but received '" + verifyTimestamp + "'!";
+                  "', but received '" + verifyTimestamp + "'!\n";
     assertTrue(message, now.equals(verifyTimestamp));
 
   }
@@ -565,7 +564,7 @@ public class IdentityTest {
 
     String message = "Expected NULL values for both the profile identifier " +
                      "and verify timestamp, but received '" + profileId +
-                     "' and '" + verifyTimestamp + "'!";
+                     "' and '" + verifyTimestamp + "'!\n";
     assertNull(message, profileId);
     assertNull(message, verifyTimestamp);
 
@@ -751,7 +750,7 @@ public class IdentityTest {
     } else {
       try {
         dbDriver = options.getString("db.Driver");
-        dbURL = options.getString("db.URL.junit");
+        dbURL = options.getString("db.URL");
         dbUser = options.getString("db.User");
         dbPassword = options.getString("db.Password");
       }
