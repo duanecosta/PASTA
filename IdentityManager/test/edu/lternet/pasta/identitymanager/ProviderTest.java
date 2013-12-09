@@ -26,6 +26,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -76,7 +77,6 @@ public class ProviderTest {
   public void setUp() throws Exception {
 
     provider = new Provider();
-    Provider.setDatabase("junit");
 
   }
 
@@ -86,6 +86,7 @@ public class ProviderTest {
   @After
   public void tearDown() throws Exception {
 
+    ProviderTest.purgeIdentity(userIdJack, providerIdLTER);
     provider = null;
 
   }
@@ -99,7 +100,7 @@ public class ProviderTest {
     provider.setProviderName(providerNameLTER);
     String providerName = provider.getProviderName();
     String message = "Expected provider name '" + providerNameLTER +
-                     "', but received '" + providerName + "'!";
+                     "', but received '" + providerName + "'!\n";
     assertTrue(message, providerNameLTER.equals(providerName));
 
   }
@@ -113,7 +114,7 @@ public class ProviderTest {
     provider.setProviderConnection(providerConnectionLTER);
     String providerConnection = provider.getProviderConnection();
     String message = "Expected provider connection '" + providerConnectionLTER +
-                     "', but received '" + providerConnection + "'!";
+                     "', but received '" + providerConnection + "'!\n";
     assertTrue(message, providerConnectionLTER.equals(providerConnection));
 
   }
@@ -127,7 +128,7 @@ public class ProviderTest {
     provider.setContactName(contactNameLTER);
     String contactName = provider.getContactName();
     String message = "Expected contact name '" + contactNameLTER +
-                         "', but received '" + contactName + "'!";
+                         "', but received '" + contactName + "'!\n";
     assertTrue(message, contactNameLTER.equals(contactName));
 
   }
@@ -141,7 +142,7 @@ public class ProviderTest {
     provider.setContactPhone(contactPhoneLTER);
     String contactPhone = provider.getContactPhone();
     String message = "Expected contact phone '" + contactPhoneLTER +
-                         "', but received '" + contactPhone + "'!";
+                         "', but received '" + contactPhone + "'!\n";
     assertTrue(message, contactPhoneLTER.equals(contactPhone));
 
   }
@@ -155,21 +156,36 @@ public class ProviderTest {
     provider.setContactEmail(contactEmailLTER);
     String contactEmail = provider.getContactEmail();
     String message = "Expected contact email '" + contactEmailLTER +
-                         "', but received '" + contactEmail + "'!";
+                         "', but received '" + contactEmail + "'!\n";
     assertTrue(message, contactEmailLTER.equals(contactEmail));
 
   }
 
+  /**
+   * Test to ensure that user 'Cactus Jack' is in identity list for the
+   * provider LTER.
+   * 
+   * @throws Exception
+   */
   @Test
   public void testGetIdentities() throws Exception {
 
     ProviderTest.insertIdentity(userIdJack, providerIdLTER,
                                    profileIdJack, verifyTimestampJack);
 
-    ArrayList<Identity> identityList = new ArrayList<Identity>();
+    provider.setProviderId(providerIdLTER);
+    ArrayList<Identity> identityList = provider.getIdentities();
+    String message = "Expected identityList to contain identities but " +
+                     "received null!\n";
+    assertFalse(message,  identityList == null);
 
-
-
+    boolean hasUserIdJack = false;
+    for (Identity i : identityList) {
+      if (i.getUserId().equals(userIdJack)) hasUserIdJack = true;
+    }
+    message = "Expected identityList to contain identity for 'Cactus Jack', " +
+              "but 'Cactus Jack' not in list!\n";
+    assertTrue(message, hasUserIdJack);
 
   }
 
@@ -298,6 +314,7 @@ public class ProviderTest {
     }
 
   }
+
   /*
    * Returns a connection to the database.
    */
@@ -354,7 +371,7 @@ public class ProviderTest {
     } else {
       try {
         dbDriver = options.getString("db.Driver");
-        dbURL = options.getString("db.URL.junit");
+        dbURL = options.getString("db.URL");
         dbUser = options.getString("db.User");
         dbPassword = options.getString("db.Password");
       }
@@ -373,6 +390,7 @@ public class ProviderTest {
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
 
+    ProviderTest.loadConfiguration();
 
   }
 
