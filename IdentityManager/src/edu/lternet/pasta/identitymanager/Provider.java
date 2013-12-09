@@ -21,10 +21,7 @@ package edu.lternet.pasta.identitymanager;
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
+import java.sql.*;
 import java.util.ArrayList;
 
 /**
@@ -50,8 +47,6 @@ public class Provider {
   String contactPhone;
   String contactEmail;
 
-  ArrayList<Identity> identities;
- 
   /* Class variables */
 
   private static final Logger logger =
@@ -191,9 +186,61 @@ public class Provider {
    *
    * @return List of identities
    */
-  public ArrayList<Identity> getIdentities() {
+  public ArrayList<Identity> getIdentities() throws ClassNotFoundException,
+      SQLException {
 
-    ArrayList<Identity> identities = new ArrayList<Identity>();
+    ArrayList<Identity> identities = null;
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("SELECT identity.identity.user_id FROM ");
+    strBuilder.append("identity.identity WHERE ");
+    strBuilder.append("identity.identity.provider_id=");
+    strBuilder.append(this.providerId);
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("initIdentity: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+      ResultSet rs = stmt.executeQuery(sql);
+
+      while (rs.next()) {
+        String userId = rs.getString("user_id");
+        identities = new ArrayList<Identity>();
+        try {
+          Identity identity = new Identity(userId, this.providerId);
+          identities.add(identity);
+        }
+        catch (PastaConfigurationException e) {
+          logger.error("getIdentities: " + e.getMessage());
+          e.printStackTrace();
+        }
+        catch (IdentityDoesNotExistException e) {
+          logger.error("getIdentities: " + e.getMessage());
+          e.printStackTrace();
+        }
+      }
+    }
+    catch (SQLException e) {
+      logger.error("getIdentities: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
 
     return identities;
 
@@ -269,13 +316,5 @@ public class Provider {
   }
 
   /* Class methods */
-
-  /*
-   * Sets the database URL to a new connection string (intended use is for unit
-   * testing).
-   */
-  protected static void setDatabase(String name) {
-    dbURL = "jdbc:postgresql://localhost/" + name;
-  }
 
 }
