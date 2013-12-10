@@ -36,7 +36,7 @@ import java.util.ArrayList;
  * Manages Identity Provider objects, which describe an Identity Provider,
  * including provider connection information and contact information.
  */
-public class Provider {
+public abstract class Provider {
 
   /* Instance variables */
 
@@ -50,7 +50,7 @@ public class Provider {
   /* Class variables */
 
   private static final Logger logger =
-      Logger.getLogger(edu.lternet.pasta.identitymanager.Provider.class);
+      Logger.getLogger(Provider.class);
 
   private static String dbDriver;   // database driver
   private static String dbURL;      // database URL
@@ -245,6 +245,8 @@ public class Provider {
     return identities;
 
   }
+
+  public abstract boolean validateUser();
 
   /*
    * Load local properties from identity.properties
