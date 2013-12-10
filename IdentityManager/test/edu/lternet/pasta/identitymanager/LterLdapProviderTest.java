@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
  * <p/>
  * <class description>
  */
-public class ProviderTest {
+public class LterLdapProviderTest {
 
   /* Instance variables */
 
@@ -48,7 +48,7 @@ public class ProviderTest {
   /* Class variables */
 
   private static final Logger logger =
-      Logger.getLogger(edu.lternet.pasta.identitymanager.ProviderTest.class);
+      Logger.getLogger(LterLdapProviderTest.class);
 
   private static String dbDriver;   // database driver
   private static String dbURL;      // database URL
@@ -86,7 +86,7 @@ public class ProviderTest {
   @After
   public void tearDown() throws Exception {
 
-    ProviderTest.purgeIdentity(userIdJack, providerIdLTER);
+    LterLdapProviderTest.purgeIdentity(userIdJack, providerIdLTER);
     provider = null;
 
   }
@@ -170,8 +170,8 @@ public class ProviderTest {
   @Test
   public void testGetIdentities() throws Exception {
 
-    ProviderTest.insertIdentity(userIdJack, providerIdLTER,
-                                   profileIdJack, verifyTimestampJack);
+    LterLdapProviderTest.insertIdentity(userIdJack, providerIdLTER,
+                                           profileIdJack, verifyTimestampJack);
 
     provider.setProviderId(providerIdLTER);
     ArrayList<Identity> identityList = provider.getIdentities();
@@ -390,7 +390,7 @@ public class ProviderTest {
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
 
-    ProviderTest.loadConfiguration();
+    LterLdapProviderTest.loadConfiguration();
 
   }
 
