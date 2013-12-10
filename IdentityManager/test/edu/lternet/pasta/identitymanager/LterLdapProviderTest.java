@@ -43,7 +43,7 @@ public class LterLdapProviderTest {
 
   /* Instance variables */
 
-  Provider provider;
+  LterLdapProvider provider;
 
   /* Class variables */
 
@@ -76,7 +76,7 @@ public class LterLdapProviderTest {
   @Before
   public void setUp() throws Exception {
 
-    provider = new Provider();
+    provider = new LterLdapProvider();
 
   }
 
