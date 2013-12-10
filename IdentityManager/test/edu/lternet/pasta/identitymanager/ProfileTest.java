@@ -49,7 +49,7 @@ public class ProfileTest {
   /* Class variables */
 
   private static final Logger logger =
-      Logger.getLogger(edu.lternet.pasta.identitymanager.ProviderTest.class);
+      Logger.getLogger(LterLdapProviderTest.class);
 
   private static String dbDriver;   // database driver
   private static String dbURL;      // database URL
