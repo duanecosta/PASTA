@@ -9,3 +9,16 @@ db.Name=pasta
 db.User=pasta
 db.Password=HIDEPASSWORD
 db.MaxConnections=10
+
+# LTER LDAP configuration parameters
+ldap.Host=ldap.lternet.edu
+ldap.Port=389
+ldap.Keystore=lternet.jks
+
+# JUNIT parameters
+junit.cjack.dn=uid=cjack\,o=LTER\,dc=ecoinformatics\,dc=org
+junit.cjack.password=HIDEPASSWORD
+junit.ucarroll.dn=uid=ucarroll\,o=LTER\,dc=ecoinformatics\,dc=org
+junit.ucarroll.password=HIDEPASSWORD
+
+
