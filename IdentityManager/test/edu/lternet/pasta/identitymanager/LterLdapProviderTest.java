@@ -56,12 +56,13 @@ public class LterLdapProviderTest {
   private static String dbPassword; // database user password
 
   private static String providerNameLTER = "LTER";
-  private static String providerConnectionLTER = "ldaps://ldap.lternet.edu:636";
+  private static String providerConnectionLTER = "ldap://ldap.lternet.edu:389";
   private static String contactNameLTER = "System Administrator";
   private static String contactPhoneLTER = "505-277-2551";
   private static String contactEmailLTER = "tech-support@lternet.edu";
 
-  private static String userIdJack = "uid=cjack,org=LTER,dc=ecoinformatics,dc=org";
+  private static String userIdJack;
+  private static String passwordJack;
   private static Integer profileIdJack = 2;
   private static Date verifyTimestampJack = new Date(1384917912619L);
   private static Integer providerIdLTER = 1;
@@ -186,6 +187,17 @@ public class LterLdapProviderTest {
     message = "Expected identityList to contain identity for 'Cactus Jack', " +
               "but 'Cactus Jack' not in list!\n";
     assertTrue(message, hasUserIdJack);
+
+  }
+
+  @Test
+  public void testValidateUser() {
+
+    Credential credential = new Credential();
+    credential.setUser(userIdJack);
+    credential.setPassword(passwordJack);
+
+    assertTrue(provider.validateUser(credential));
 
   }
 
@@ -374,6 +386,8 @@ public class LterLdapProviderTest {
         dbURL = options.getString("db.URL");
         dbUser = options.getString("db.User");
         dbPassword = options.getString("db.Password");
+        userIdJack = options.getString("junit.cjack.dn");
+        passwordJack = options.getString("junit.cjack.password");
       }
       catch (Exception e) {
         logger.error(e.getMessage());
