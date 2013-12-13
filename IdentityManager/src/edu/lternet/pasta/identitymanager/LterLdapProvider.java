@@ -66,7 +66,7 @@ public class LterLdapProvider extends Provider {
    * Validates the user's identity based on the provided credentials.
    *
    * @param credential
-   * @return
+   * @return The validation state of the user's identity
    */
   public boolean validateUser(Credential credential) {
 

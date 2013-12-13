@@ -246,7 +246,13 @@ public abstract class Provider {
 
   }
 
-  public abstract boolean validateUser();
+  /**
+   * Validates the user's identity based on the provided credentials.
+   *
+   * @param credential
+   * @return The validation state of the user's identity
+   */
+  public abstract boolean validateUser(Credential credential);
 
   /*
    * Load local properties from identity.properties
