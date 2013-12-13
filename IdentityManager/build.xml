@@ -48,6 +48,9 @@
       <fileset dir="${shared.lib.dir}/owasp">
         <include name="esapi-2.0.1.jar"/>
       </fileset>    
+      <fileset dir="${shared.lib.dir}/unboundid">
+        <include name="unboundid-ldapsdk-se.jar"/>
+      </fileset>    
     </copy>
   </target>
 
