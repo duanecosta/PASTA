@@ -33,8 +33,8 @@ import java.util.ArrayList;
  * Package: edu.lternet.pasta.identitymanager
  * <p/>
  *
- * Manages Identity Provider objects, which describe an Identity Provider,
- * including provider connection information and contact information.
+ * An abstract class that describes and manages an Identity Provider.
+ *
  */
 public abstract class Provider {
 
@@ -68,7 +68,7 @@ public abstract class Provider {
   /* Instance methods */
 
   /**
-   * Sets the provider identifier of the <em>Provider</em> object.
+   * Sets the provider identifier of the Provider.
    *
    * @param providerId The provider identifier
    */
@@ -77,7 +77,7 @@ public abstract class Provider {
   }
 
   /**
-   * Gets the provider identifier of the <em>Provider</em> object.
+   * Gets the provider identifier of the Provider.
    *
    * @return The provider identifier
    */
@@ -86,7 +86,7 @@ public abstract class Provider {
   }
 
   /**
-   * Sets the provider name of the <em>Provider</em> object.
+   * Sets the provider name of the Provider.
    *
    * @param providerName The provider name
    */
@@ -95,7 +95,7 @@ public abstract class Provider {
   }
 
   /**
-   * Gets the provider name of the <em>Provider</em> object.
+   * Gets the provider name of the Provider.
    *
    * @return The provider name
    */
@@ -105,7 +105,7 @@ public abstract class Provider {
 
   /**
    * Sets the network-based provider connection information for the
-   * <em>Provider</em> object.
+   * Provider.
    *
    * @param providerConnection The provider connection information
    */
@@ -115,7 +115,7 @@ public abstract class Provider {
 
   /**
    * Gets the network-based provider connection information for the
-   * <em>Provider</em> object.
+   * Provider.
    *
    * @return The provider connection information
    */
@@ -124,7 +124,7 @@ public abstract class Provider {
   }
 
   /**
-   * Sets the contact name of the provider for the <em>Provider</em> object.
+   * Sets the contact name of the provider for the Provider.
    *
    * @param contactName The provider's contact name
    */
@@ -133,7 +133,7 @@ public abstract class Provider {
   }
 
   /**
-   * Gets the contact name of the provider for the <em>Provider</em> object.
+   * Gets the contact name of the provider for the Provider.
    *
    * @return The provider's contact name
    */
@@ -142,8 +142,7 @@ public abstract class Provider {
   }
 
   /**
-   * Sets the contact's phone number of the provider for the <em>Provider</em>
-   * object.
+   * Sets the contact's phone number of the provider for the Provider.
    *
    * @param contactPhone The contact's phone number
    */
@@ -152,8 +151,7 @@ public abstract class Provider {
   }
 
   /**
-   * Gets the contact's phone number of the provider for the <em>Provider</em>
-   * object.
+   * Gets the contact's phone number of the provider for the Provider.
    *
    * @return The contact's phone number
    */
@@ -162,8 +160,7 @@ public abstract class Provider {
   }
 
   /**
-   * Sets the contact's email address of the provider for the <em>Provider</em>
-   * object.
+   * Sets the contact's email address of the provider for the Provider.
    *
    * @param contactEmail The contact's email address
    */
@@ -172,8 +169,7 @@ public abstract class Provider {
   }
 
   /**
-   * Gets the contact's email address of the provider for the <em>Provider</em>
-   * object.
+   * Gets the contact's email address of the provider for the Provider.
    *
    * @return The contact's email address
    */
@@ -182,15 +178,17 @@ public abstract class Provider {
   }
 
   /**
-   * Gets the list of identities associated with this <em>Provider</em> object.
+   * Gets the list of Identities associated with this Provider.
    *
-   * @return List of identities
+   * @return List of Identities
    */
   public ArrayList<Identity> getIdentities() throws ClassNotFoundException,
       SQLException {
 
     ArrayList<Identity> identities = null;
 
+    // Find all Identities in the Identity table that use this provider for
+    // identity validation
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("SELECT identity.identity.user_id FROM ");
     strBuilder.append("identity.identity WHERE ");
@@ -206,7 +204,7 @@ public abstract class Provider {
       dbConn = getConnection();
     }
     catch (ClassNotFoundException e) {
-      logger.error("initIdentity: " + e);
+      logger.error("getIdentities: " + e);
       e.printStackTrace();
       throw e;
     }
@@ -316,7 +314,9 @@ public abstract class Provider {
       }
     }
     catch (SQLException e) {
-      logger.error("Database access failed: " + e);
+      logger.error(String.format("getConnection (Database access failed): %s",
+                                    e.getMessage()));
+      e.printStackTrace();
     }
 
     return conn;
