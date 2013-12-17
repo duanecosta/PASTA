@@ -44,12 +44,12 @@ public class ProfileTest {
 
   /* Instance variables */
 
-  Profile profile;
+  private Profile profile;
 
   /* Class variables */
 
   private static final Logger logger =
-      Logger.getLogger(LterLdapProviderTest.class);
+      Logger.getLogger(Profile.class);
 
   private static String dbDriver;   // database driver
   private static String dbURL;      // database URL
@@ -75,9 +75,9 @@ public class ProfileTest {
   @After
   public void tearDown() throws Exception {
 
+    profile = null;
 
   }
-
 
 
   /*
@@ -157,6 +157,7 @@ public class ProfileTest {
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
 
+    loadConfiguration();
 
   }
 
