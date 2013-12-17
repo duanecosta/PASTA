@@ -27,6 +27,8 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLContext;
 import java.security.GeneralSecurityException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * User: servilla
@@ -44,19 +46,36 @@ public class LterLdapProvider extends Provider {
  
   /* Class variables */
 
+  private static final int HOST = 0;
+  private static final int PORT = 1;
+  private static final int KEYSTORE = 2;
+
   private static final Logger logger =
       Logger.getLogger(LterLdapProvider.class);
 
   private static String host;
   private static Integer port;
   private static String keystore;
-  private static String cwd;
 
   /* Constructors */
 
   public LterLdapProvider() throws PastaConfigurationException {
 
-    loadConfiguration();
+    super();
+
+  }
+
+  public LterLdapProvider(Integer providerId)
+      throws PastaConfigurationException, ProviderDoesNotExistException,
+                 SQLException, ClassNotFoundException {
+
+    super(providerId);
+
+    // Parse provider connection information for LTER LDAP connection
+    String connParts[] = this.providerConnection.split(":");
+    host = connParts[HOST];
+    port = Integer.valueOf(connParts[PORT]);
+    keystore = connParts[KEYSTORE];
 
   }
 
@@ -122,9 +141,19 @@ public class LterLdapProvider extends Provider {
 
   }
 
-  /*
-   * Returns an LDAP TLS connection to the specified host and port.
+  /**
+   * Returns the list of LTER Groups that the user is affiliated with.
+   *
+   * @return List of Groups
    */
+  public ArrayList<Group> getGroups() {
+    //TODO: Connection to LTER personnel DB webservice here to retrieve groups
+    return null;
+  }
+
+  /*
+     * Returns an LDAP TLS connection to the specified host and port.
+     */
   private LDAPConnection makeTlsConnection() {
 
     LDAPConnection connection = null;
@@ -171,34 +200,6 @@ public class LterLdapProvider extends Provider {
     }
 
     return connection;
-
-  }
-
-
-  /*
-   * Load local properties from identity.properties
-   */
-  private void loadConfiguration() throws PastaConfigurationException {
-
-    ConfigurationListener.configure();
-    Configuration options = ConfigurationListener.getOptions();
-
-    if (options == null) {
-      String gripe = "Failed to load the IdentityManager properties file: 'identity.properties'";
-      throw new PastaConfigurationException(gripe);
-    } else {
-      try {
-        host = options.getString("ldap.Host");
-        port = options.getInt("ldap.Port");
-        keystore = options.getString("ldap.Keystore");
-        cwd = options.getString("system.cwd");
-      }
-      catch (Exception e) {
-        logger.error(e.getMessage());
-        e.printStackTrace();
-        throw new PastaConfigurationException(e.getMessage());
-      }
-    }
 
   }
 
