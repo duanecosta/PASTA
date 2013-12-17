@@ -47,10 +47,10 @@ public class Identity {
 
   /* Instance variables */
 
-  String userId = null;
-  Integer providerId = null;
-  Integer profileId = null;
-  Timestamp verifyTimestamp = null;
+  private String userId = null;
+  private Integer providerId = null;
+  private Integer profileId = null;
+  private Timestamp verifyTimestamp = null;
 
   /* Class variables */
 
@@ -65,7 +65,7 @@ public class Identity {
   /* Constructors */
 
   /**
-   * Creates a new "empty" <em>Identity</em> object.
+   * Creates a new Identity.
    *
    * @throws PastaConfigurationException
    */
@@ -75,9 +75,23 @@ public class Identity {
 
   }
 
+  /**
+   * Creates a new Identity from the Identity record in the Identity database
+   * based on the user identifier and provider identifier.
+   *
+   * @param userId User identifier
+   * @param providerId Provider identifier
+   * @throws PastaConfigurationException
+   * @throws ClassNotFoundException
+   * @throws SQLException
+   * @throws IdentityDoesNotExistException
+   */
   public Identity(String userId, Integer providerId)
       throws PastaConfigurationException, ClassNotFoundException, SQLException,
-      IdentityDoesNotExistException {
+                 IdentityDoesNotExistException {
+
+    this.userId = userId;
+    this.providerId = providerId;
 
     loadConfiguration();
 
@@ -99,7 +113,7 @@ public class Identity {
       dbConn = getConnection();
     }
     catch (ClassNotFoundException e) {
-      logger.error("initIdentity: " + e);
+      logger.error("Identity: " + e);
       e.printStackTrace();
       throw e;
     }
@@ -109,9 +123,7 @@ public class Identity {
       ResultSet rs = stmt.executeQuery(sql);
 
       if (rs.next()) {
-        this.userId = userId;
-        this.providerId = providerId;
-        this.profileId = rs.getInt("profile_id");
+         this.profileId = rs.getInt("profile_id");
         this.verifyTimestamp = rs.getTimestamp("verify_timestamp");
       } else {
         String gripe = "Identity does not exist for userId '" + userId +
@@ -120,7 +132,7 @@ public class Identity {
       }
     }
     catch (SQLException e) {
-      logger.error("getIdentities: " + e);
+      logger.error("Identity: " + e);
       logger.error(sql);
       e.printStackTrace();
       throw e;
@@ -225,7 +237,7 @@ public class Identity {
    * @throws SQLException
    * @throws ClassNotFoundException
    */
-  public void initIdentity(String userId, int providerId)
+  public void getIdentity(String userId, int providerId)
       throws SQLException, ClassNotFoundException {
 
     this.userId = userId;
@@ -250,7 +262,7 @@ public class Identity {
       dbConn = getConnection();
     }
     catch (ClassNotFoundException e) {
-      logger.error("initIdentity: " + e);
+      logger.error("getIdentity: " + e);
       e.printStackTrace();
       throw e;
     }
@@ -265,7 +277,7 @@ public class Identity {
       }
     }
     catch (SQLException e) {
-      logger.error("initIdentity: " + e);
+      logger.error("getIdentity: " + e);
       logger.error(sql);
       e.printStackTrace();
       throw e;
