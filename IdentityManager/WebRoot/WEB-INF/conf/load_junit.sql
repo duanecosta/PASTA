@@ -7,7 +7,7 @@ VALUES
 INSERT INTO identity.provider
   (provider_name,provider_conn,contact_name,contact_phone,contact_email)
 VALUES
-  ('LTER','ldaps://ldap.lternet.edu:636','System Administrator','505-277-2551','tech-support@lternet.edu'),
+  ('LTER','ldap.lternet.edu:389:/WebRoot/WEB-INF/conf/lternet.jks','System Administrator','505-277-2551','tech-support@lternet.edu'),
   ('LTERX','jdbc:postgresql://db.lternet.edu/user','System Administrator','505-277-2551','tech-support@lternet.edu');
 
 INSERT INTO identity.identity
