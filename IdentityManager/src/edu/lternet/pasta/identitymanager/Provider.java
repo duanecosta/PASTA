@@ -40,28 +40,102 @@ public abstract class Provider {
 
   /* Instance variables */
 
-  Integer providerId;
-  String providerName;
-  String providerConnection;
-  String contactName;
-  String contactPhone;
-  String contactEmail;
+  protected Integer providerId;
+  protected String providerName;
+  protected String providerConnection;
+  protected String contactName;
+  protected String contactPhone;
+  protected String contactEmail;
 
   /* Class variables */
 
   private static final Logger logger =
       Logger.getLogger(Provider.class);
 
-  private static String dbDriver;   // database driver
-  private static String dbURL;      // database URL
-  private static String dbUser;     // database user name
-  private static String dbPassword; // database user password
+  protected static String dbDriver;   // database driver
+  protected static String dbURL;      // database URL
+  protected static String dbUser;     // database user name
+  protected static String dbPassword; // database user password
+
+  protected static String cwd;
 
   /* Constructors */
 
+  /**
+   * Creates a new Provider.
+   *
+   * @throws PastaConfigurationException
+   */
   public Provider() throws PastaConfigurationException {
+    loadConfiguration();
+  }
+
+  /**
+   * Creates a new Provider from the Provider record in the Provider database
+   * based on the provided identifier.
+   *
+   * @param providerId The Provider identifier
+   * @throws PastaConfigurationException
+   * @throws ClassNotFoundException
+   * @throws SQLException
+   * @throws ProviderDoesNotExistException
+   */
+  public Provider(Integer providerId) throws PastaConfigurationException,
+                                                 ClassNotFoundException,
+                                                 SQLException,
+                                                 ProviderDoesNotExistException {
+    this.providerId = providerId;
 
     loadConfiguration();
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("SELECT identity.provider.provider_name,");
+    strBuilder.append("identity.provider.provider_conn,");
+    strBuilder.append("identity.provider.contact_name,");
+    strBuilder.append("identity.provider.contact_phone,");
+    strBuilder.append("identity.provider.contact_email FROM ");
+    strBuilder.append("identity.provider WHERE provider_id=");
+    strBuilder.append(providerId.toString());
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("Provider: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+      ResultSet rs = stmt.executeQuery(sql);
+
+      if (rs.next()) {
+        this.providerName = rs.getString("provider_name");
+        this.providerConnection = rs.getString("provider_conn");
+        this.contactName = rs.getString("contact_name");
+        this.contactPhone = rs.getString("contact_phone");
+        this.contactEmail = rs.getString("contact_email");
+      }
+      else {
+        String gripe = String.format("Provider with identifier '%d' does not exist!\n", providerId);
+        throw new ProviderDoesNotExistException(gripe);
+      }
+    }
+    catch (SQLException e) {
+      logger.error("Provider: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
 
   }
 
@@ -178,7 +252,7 @@ public abstract class Provider {
   }
 
   /**
-   * Gets the list of Identities associated with this Provider.
+   * Gets the list of Identities associated with the Provider.
    *
    * @return List of Identities
    */
@@ -244,6 +318,9 @@ public abstract class Provider {
 
   }
 
+  // TODO: Add save Provider to DB method
+  // TODO: Add update Provider to DB method
+
   /**
    * Validates the user's identity based on the provided credentials.
    *
@@ -252,10 +329,17 @@ public abstract class Provider {
    */
   public abstract boolean validateUser(Credential credential);
 
+  /**
+   * Returns a list of Groups that the user is affiliated with.
+   *
+   * @return List of Groups
+   */
+  public abstract ArrayList<Group> getGroups();
+
   /*
    * Load local properties from identity.properties
    */
-  private void loadConfiguration() throws PastaConfigurationException {
+  protected void loadConfiguration() throws PastaConfigurationException {
 
     ConfigurationListener.configure();
     Configuration options = ConfigurationListener.getOptions();
@@ -269,6 +353,7 @@ public abstract class Provider {
         dbURL = options.getString("db.URL");
         dbUser = options.getString("db.User");
         dbPassword = options.getString("db.Password");
+        cwd = options.getString("system.cwd");
       }
       catch (Exception e) {
         logger.error(e.getMessage());
@@ -282,7 +367,7 @@ public abstract class Provider {
   /*
    * Returns a connection to the database.
    */
-  private Connection getConnection() throws ClassNotFoundException {
+  protected Connection getConnection() throws ClassNotFoundException {
 
     Connection conn = null;
     SQLWarning warn;
