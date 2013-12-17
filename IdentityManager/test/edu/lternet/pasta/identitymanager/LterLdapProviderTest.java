@@ -77,7 +77,7 @@ public class LterLdapProviderTest {
   @Before
   public void setUp() throws Exception {
 
-    provider = new LterLdapProvider();
+    provider = new LterLdapProvider(1);
 
   }
 
@@ -284,7 +284,7 @@ public class LterLdapProviderTest {
       dbConn = getConnection();
     }
     catch (ClassNotFoundException e) {
-      logger.error("initIdentity: " + e);
+      logger.error("purgeIdentity: " + e);
       e.printStackTrace();
       throw e;
     }
@@ -316,7 +316,7 @@ public class LterLdapProviderTest {
       }
     }
     catch (SQLException e) {
-      logger.error("initIdentity: " + e);
+      logger.error("purgeIdentity: " + e);
       logger.error(sql);
       e.printStackTrace();
       throw e;
