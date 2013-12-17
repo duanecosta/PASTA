@@ -155,15 +155,15 @@ public class IdentityTest {
   }
 
   /**
-   * Test to see if a the <em>Identity</em> object is correctly initialized
-   * with a known user identifier and provider identifier.
+   * Test to see if the Identity is correctly initialized from the Identity
+   * database based on the user identifier and provider identifier.
    *
    * @throws Exception
    */
   @Test
-  public void testInitIdentityKnown() throws Exception {
+  public void testGetIdentity() throws Exception {
 
-    String header = "************** testInitIdentityKnown **************";
+    String header = "************** testGetIdentity **************";
     System.out.printf("\n%s\n", header);
 
     identity.getIdentity(userIdCarroll, providerIdLTER);
@@ -191,121 +191,49 @@ public class IdentityTest {
   }
 
   /**
-   * Test to see if a the <em>Identity</em> object is correctly initialized
-   * with an unknown user identifier and unknown provider identifier.
-   *
-   * @throws Exception
-   */
-  @Test
-  public void testInitIdentityUnknown() throws Exception {
-
-    String header = "************** testInitIdentityUnknown **************";
-    System.out.printf("\n%s\n", header);
-
-    identity.getIdentity(userIdUnknown, providerIdUnknown);
-
-    Integer profileId = identity.getProfileId();
-    Date verifyTimestamp = identity.getVerifyTimestamp();
-    System.out.printf("%s\n", identity.toString());
-
-
-    String message = "Identity object initialization failed for user '" +
-                     userIdUnknown + "' with provider identifier '" +
-                     providerIdUnknown + "'!\n";
-    assertNull(message, profileId);
-    assertNull(message, verifyTimestamp);
-
-  }
-
-  /**
-   * Test to see if a the <em>Identity</em> object is correctly initialized
-   * with an unknown user identifier and known provider identifier.
-   *
-   * @throws Exception
-   */
-  @Test
-  public void testInitIdentityUnknownUserId() throws Exception {
-
-    String header = "************** testInitIdentityUnknownUserId **************";
-    System.out.printf("\n%s\n", header);
-
-    identity.getIdentity(userIdUnknown, providerIdLTER);
-
-    Integer profileId = identity.getProfileId();
-    Date verifyTimestamp = identity.getVerifyTimestamp();
-    System.out.printf("%s\n", identity.toString());
-
-
-    String message = "Identity object initialization failed for user '" +
-                     userIdJack + "' with provider identifier '" +
-                     providerIdUnknown + "'!\n";
-    assertNull(message, profileId);
-    assertNull(message, verifyTimestamp);
-
-  }
-
-  /**
-   * Test to see if a the <em>Identity</em> object is correctly initialized
-   * with a known user identifier and an unknown provider identifier.
-   *
-   * @throws Exception
-   */
-  @Test
-  public void testInitIdentityUnknownProviderId() throws Exception {
-
-    String header = "************** testInitIdentityUnknownProviderId **************";
-    System.out.printf("\n%s\n", header);
-
-    identity.getIdentity(userIdCarroll, providerIdUnknown);
-
-    Integer profileId = identity.getProfileId();
-    Date verifyTimestamp = identity.getVerifyTimestamp();
-    System.out.printf("%s\n", identity.toString());
-
-    String message = "Identity object initialization failed for user '" +
-                     userIdCarroll + "' with provider identifier '" +
-                     providerIdUnknown + "'!\n";
-    assertNull(message, profileId);
-    assertNull(message, verifyTimestamp);
-
-  }
-
-  /**
    * Test to see if the <em>Identity</em> object is correctly inserted into the
    * Identity database
    *
    * @throws Exception
    */
   @Test
-  public void testInsertIdentity() throws Exception {
+  public void testSaveIdentity() throws Exception {
 
-    String header = "************** testInsertIdentity **************";
+    String header = "************** testSaveIdentity **************";
     System.out.printf("\n%s\n", header);
 
-    identity.getIdentity(userIdJack, providerIdLTERX);
+    identity.setUserId(userIdJack);
+    identity.setProviderId(providerIdLTERX);
     identity.setProfileId(profileIdJack);
     identity.setVerifyTimestamp(verifyTimestampJack);
-    identity.insertIdentity();
-    identity.getIdentity(userIdJack, providerIdLTERX);
+
+    identity.saveIdentity();
+
     System.out.printf("%s\n", identity.toString());
 
-    Integer profileId = identity.getProfileId();
-    if (profileId != null) {
-      String message = "Expected profile identifier '" + profileIdJack +
-                "', but received '" + profileId + "'!\n";
-      assertTrue(message, profileIdJack.equals(profileId));
-    } else {
-      fail("Profile identifier returned is 'NULL'\n");
-    }
+    // Test for Identity database record existence
+    String message = String.format("Expected the Identity with user " +
+                                       "identifier '%s' and provider " +
+                                       "identifier '%s' to exist, " +
+                                       "but it does not exist!", userIdJack,
+                                      providerIdLTERX);
+    assertTrue(message, IdentityTest.identityExists(userIdJack,
+                                                       providerIdLTERX));
 
+    // Test Identity database record field profileId
+    Integer profileId = identity.getProfileId();
+    message = String.format("Expected Identity profileId '%d', " +
+                                "but received '%d'!", profileIdJack, profileId);
+    assertEquals(message, profileIdJack, profileId);
+
+    // Test Identity database record field verifyTimestamp
     Date verifyTimestamp = identity.getVerifyTimestamp();
-    if (verifyTimestamp != null) {
-      String message = "Expected verify timestamp '" + verifyTimestampJack +
-                    "', but received '" + verifyTimestamp + "'!\n";
-      assertTrue(message, verifyTimestampJack.equals(verifyTimestamp));
-    } else {
-      fail("Verify timestamp returned is 'NULL'\n");
-    }
+    message = String.format("Expected Identity verifyTimestamp '%s', " +
+                                "but received '%s'!",
+                               verifyTimestampJack.toString(),
+                               verifyTimestamp.toString());
+    assertTrue(message, verifyTimestampJack.toString().equals(verifyTimestamp
+                                                                  .toString()));
 
   }
 
@@ -321,219 +249,40 @@ public class IdentityTest {
     String header = "************** testUpdateIdentity **************";
     System.out.printf("\n%s\n", header);
 
-    /*
-     * Load new Identity record for Cactus Jack with profile for Utah Carroll
-     * and verify timestamp about the same time as the release date for the
-     * Rollings Stones - Let it Bleed album
-     */
+    // Insert wrong profileId and verifyTimestamp
     Date verifyTimestamp = new Date(0l);
     IdentityTest.insertIdentity(userIdJack, providerIdLTERX, profileIdCarroll,
                                    verifyTimestamp);
-      System.out.printf("%s\n", identity.toString());
 
-    // Initialize incorrect Identity object
-    identity.getIdentity(userIdJack, providerIdLTERX);
-      System.out.printf("%s\n", identity.toString());
+    System.out.printf("%s\n", identity.toString());
+
+    identity.setUserId(userIdJack);
+    identity.setProviderId(providerIdLTERX);
     identity.setProfileId(profileIdJack);
-    Date now = new Date();
-    identity.setVerifyTimestamp(now);
+    identity.setVerifyTimestamp(verifyTimestampJack);
+
     identity.updateIdentity();
-    identity.getIdentity(userIdJack, providerIdLTERX);
-      System.out.printf("%s\n", identity.toString());
-    verifyTimestamp = identity.getVerifyTimestamp();
+
+    System.out.printf("%s\n", identity.toString());
+
+    // Test Identity database record field profileId
     Integer profileId = identity.getProfileId();
+    String message = String.format("Expected Identity profileId '%d', " +
+                                "but received '%d'!", profileIdJack, profileId);
+    assertEquals(message, profileIdJack, profileId);
 
-    String message = "Expected profile identifier '" + profileIdJack +
-                         "', but received '" + profileId + "'!\n";
-    assertTrue(message, profileIdJack.equals(profileId));
-
-    message = "Expected verify timestamp '" + now.toString() +
-                     "', but received '" + verifyTimestamp + "'!\n";
-    assertTrue(message, now.equals(verifyTimestamp));
-
-  }
-
-  /**
-   * Test to see if the <em>Identity</em> object database record is correctly
-   * updated with a new profile identifier and verify timestamp.
-   *
-   * @throws Exception
-   */
-  @Test
-  public void testUpdateIdentityParam() throws Exception {
-
-    String header = "************** testUpdateIdentityParam **************";
-    System.out.printf("\n%s\n", header);
-
-    /*
-     * Load new Identity record for Cactus Jack with profile for Utah Carroll
-     * and verify timestamp about the same time as the release date for the
-     * Rollings Stones - Let it Bleed album
-     */
-    Date verifyTimestamp = new Date(0l);
-    IdentityTest.insertIdentity(userIdJack, providerIdLTERX, profileIdCarroll, verifyTimestamp);
-    System.out.printf("%s\n", identity.toString());
-
-    // Initialize incorrect Identity object
-    identity.getIdentity(userIdJack, providerIdLTERX);
-    System.out.printf("%s\n", identity.toString());
-    Date now = new Date();
-    identity.updateIdentity(profileIdJack, now);
-    identity.getIdentity(userIdJack, providerIdLTERX);
-    System.out.printf("%s\n", identity.toString());
+    // Test Identity database record field verifyTimestamp
     verifyTimestamp = identity.getVerifyTimestamp();
-    Integer profileId = identity.getProfileId();
+    message = String.format("Expected Identity verifyTimestamp '%s', " +
+                                "but received '%s'!",
+                               verifyTimestampJack.toString(),
+                               verifyTimestamp.toString());
+    assertTrue(message, verifyTimestampJack.toString().equals(verifyTimestamp
+                                                                  .toString()));
 
-    String message = "Expected profile identifier '" + profileIdJack +
-                         "', but received '" + profileId + "'!\n";
-    assertTrue(message, profileIdJack.equals(profileId));
-
-    message = "Expected verify timestamp '" + now.toString() +
-                         "', but received '" + verifyTimestamp + "'!\n";
-    assertTrue(message, now.equals(verifyTimestamp));
 
   }
 
-  /**
-   * Test to see if the <em>Identity</em> object database record is correctly
-   * updated with a new profile identifier.
-   *
-   * @throws Exception
-   */
-  @Test
-  public void testUpdateProfileId() throws Exception {
-
-    String header = "************** testUpdateProfileId **************";
-    System.out.printf("\n%s\n", header);
-
-    /*
-     * Load new Identity record for Cactus Jack with profile for Utah Carroll
-     */
-    Date now = new Date();
-    IdentityTest.insertIdentity(userIdJack, providerIdLTERX, profileIdCarroll, now);
-    System.out.printf("%s\n", identity.toString());
-
-    // Initialize incorrect Identity object
-    identity.getIdentity(userIdJack, providerIdLTERX);
-    System.out.printf("%s\n", identity.toString());
-    identity.setProfileId(profileIdJack);
-    identity.updateProfileId();
-    identity.getIdentity(userIdJack, providerIdLTERX);
-    System.out.printf("%s\n", identity.toString());
-    Integer profileId = identity.getProfileId();
-
-    String message = "Expected profile identifier '" + profileIdJack +
-                         "', but received '" + profileId + "'!\n";
-    assertTrue(message, profileIdJack.equals(profileId));
-
-  }
-
-  /**
-   * Test to see if the <em>Identity</em> object database record is correctly
-   * updated with a new profile identifier.
-   *
-   * @throws Exception
-   */
-  @Test
-  public void testUpdateProfileIdParam() throws Exception {
-
-    String header = "************** testUpdateProfileIdParam **************";
-    System.out.printf("\n%s\n", header);
-
-    /*
-     * Load new Identity record for Cactus Jack with profile for Utah Carroll
-     */
-    Date now = new Date();
-    IdentityTest.insertIdentity(userIdJack, providerIdLTERX, profileIdCarroll, now);
-    System.out.printf("%s\n", identity.toString());
-
-    // Initialize incorrect Identity object
-    identity.getIdentity(userIdJack, providerIdLTERX);
-    System.out.printf("%s\n", identity.toString());
-    identity.updateProfileId(profileIdJack);
-    identity.getIdentity(userIdJack, providerIdLTERX);
-    System.out.printf("%s\n", identity.toString());
-    Integer profileId = identity.getProfileId();
-
-    String message = "Expected profile identifier '" + profileIdJack +
-                         "', but received '" + profileId + "'!\n";
-    assertTrue(message, profileIdJack.equals(profileId));
-
-  }
-
-  /**
-   * Test to see if the <em>Identity</em> object database record is correctly
-   * updated with a new verify timestamp.
-   *
-   * @throws Exception
-   */
-  @Test
-  public void testUpdateVerifyTimestamp() throws Exception {
-
-    String header = "************** testUpdateVerifyTimestamp **************";
-    System.out.printf("\n%s\n", header);
-
-    /*
-     * Load new Identity record for Cactus Jack with verify timestamp about the
-     * same time as the release date for the Rollings Stones - Let it Bleed
-     * album
-     */
-    Date verifyTimestamp = new Date(0l);
-    IdentityTest.insertIdentity(userIdJack, providerIdLTERX, profileIdJack,
-                                   verifyTimestamp);
-    System.out.printf("%s\n", identity.toString());
-
-    // Initialize incorrect Identity object
-    identity.getIdentity(userIdJack, providerIdLTERX);
-    System.out.printf("%s\n", identity.toString());
-    Date now = new Date();
-    identity.setVerifyTimestamp(now);
-    identity.updateIdentity();
-    identity.getIdentity(userIdJack, providerIdLTERX);
-    System.out.printf("%s\n", identity.toString());
-    verifyTimestamp = identity.getVerifyTimestamp();
-
-    String message = "Expected verify timestamp '" + now.toString() +
-                         "', but received '" + verifyTimestamp + "'!\n";
-    assertTrue(message, now.equals(verifyTimestamp));
-
-  }
-
-  /**
-   * Test to see if the <em>Identity</em> object database record is correctly
-   * updated with a new verify timestamp.
-   *
-   * @throws Exception
-   */
-  @Test
-  public void testUpdateVerifyTimestampParam() throws Exception {
-
-    String header = "************** testUpdateVerifyTimestampParam **************";
-    System.out.printf("\n%s\n", header);
-
-    /*
-     * Load new Identity record for Cactus Jack with verify timestamp about the
-     * same time as the release date for the Rollings Stones - Let it Bleed
-     * album
-     */
-    Date verifyTimestamp = new Date(0l);
-    IdentityTest.insertIdentity(userIdJack, providerIdLTERX, profileIdJack, verifyTimestamp);
-    System.out.printf("%s\n", identity.toString());
-
-    // Initialize incorrect Identity object
-    identity.getIdentity(userIdJack, providerIdLTERX);
-    System.out.printf("%s\n", identity.toString());
-    Date now = new Date();
-    identity.updateVerifyTimestamp(now);
-    identity.getIdentity(userIdJack, providerIdLTERX);
-    System.out.printf("%s\n", identity.toString());
-    verifyTimestamp = identity.getVerifyTimestamp();
-
-    String message = "Expected verify timestamp '" + now.toString() +
-                  "', but received '" + verifyTimestamp + "'!\n";
-    assertTrue(message, now.equals(verifyTimestamp));
-
-  }
 
   /**
    * Test to see if the <em>Identity</em> object database record is correctly
@@ -556,19 +305,17 @@ public class IdentityTest {
     identity.getIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
     identity.deleteIdentity();
-    identity.getIdentity(userIdJack, providerIdLTERX);
-    System.out.printf("%s\n", identity.toString());
 
-    Integer profileId = identity.getProfileId();
-    Date verifyTimestamp = identity.getVerifyTimestamp();
-
-    String message = "Expected NULL values for both the profile identifier " +
-                     "and verify timestamp, but received '" + profileId +
-                     "' and '" + verifyTimestamp + "'!\n";
-    assertNull(message, profileId);
-    assertNull(message, verifyTimestamp);
+    String message = String.format("Expected that the Identity for the user " +
+                                       "identifier '%s' and provider " +
+                                       "identifier '%s' did not exist, " +
+                                       "but it does exist!", userIdJack,
+                                      providerIdLTERX);
+    assertFalse(message, IdentityTest.identityExists(userIdJack, providerIdLTERX));
 
   }
+
+  /* Class methods */
 
   /*
    * Inserts a test Identity object record into the Identity database for the
@@ -601,7 +348,7 @@ public class IdentityTest {
       dbConn = getConnection();
     }
     catch (ClassNotFoundException e) {
-      logger.error("insertIdentity: " + e);
+      logger.error("saveIdentity: " + e);
       e.printStackTrace();
       throw e;
     }
@@ -610,13 +357,13 @@ public class IdentityTest {
       Statement stmt = dbConn.createStatement();
 
       if (stmt.executeUpdate(sql) == 0) {
-        String gripe = "insertIdentity: '" + sql + "' failed";
+        String gripe = "saveIdentity: '" + sql + "' failed";
         throw new SQLException(gripe);
       }
 
     }
     catch (SQLException e) {
-      logger.error("insertIdentity: " + e);
+      logger.error("saveIdentity: " + e);
       logger.error(sql);
       e.printStackTrace();
       throw e;
@@ -695,6 +442,58 @@ public class IdentityTest {
   }
 
   /*
+   * Tests whether an Identity based on the user identifier and provider
+   * identifier exists in the Identity database.
+   */
+  private static boolean identityExists(String userId, Integer providerId)
+      throws Exception {
+
+    boolean identityExists = false;
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("SELECT * FROM ");
+    strBuilder.append("identity.identity WHERE identity.identity.user_id='");
+    strBuilder.append(userId);
+    strBuilder.append("' AND identity.identity.provider_id=");
+    strBuilder.append(Integer.toString(providerId));
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("getIdentity: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+      ResultSet rs = stmt.executeQuery(sql);
+
+      if (rs.next()) {
+        identityExists = true;
+      }
+    }
+    catch (SQLException e) {
+      logger.error("getIdentity: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+    return identityExists;
+
+  }
+
+  /*
    * Returns a connection to the database.
    */
   private static Connection getConnection() throws ClassNotFoundException {
@@ -762,8 +561,6 @@ public class IdentityTest {
     }
 
   }
-
- /* Class methods */
 
   /**
    * @throws Exception
