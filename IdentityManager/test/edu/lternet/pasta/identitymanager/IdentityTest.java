@@ -166,7 +166,7 @@ public class IdentityTest {
     String header = "************** testInitIdentityKnown **************";
     System.out.printf("\n%s\n", header);
 
-    identity.initIdentity(userIdCarroll, providerIdLTER);
+    identity.getIdentity(userIdCarroll, providerIdLTER);
 
     Integer profileId = identity.getProfileId();
     Date verifyTimestamp = identity.getVerifyTimestamp();
@@ -202,7 +202,7 @@ public class IdentityTest {
     String header = "************** testInitIdentityUnknown **************";
     System.out.printf("\n%s\n", header);
 
-    identity.initIdentity(userIdUnknown, providerIdUnknown);
+    identity.getIdentity(userIdUnknown, providerIdUnknown);
 
     Integer profileId = identity.getProfileId();
     Date verifyTimestamp = identity.getVerifyTimestamp();
@@ -229,7 +229,7 @@ public class IdentityTest {
     String header = "************** testInitIdentityUnknownUserId **************";
     System.out.printf("\n%s\n", header);
 
-    identity.initIdentity(userIdUnknown, providerIdLTER);
+    identity.getIdentity(userIdUnknown, providerIdLTER);
 
     Integer profileId = identity.getProfileId();
     Date verifyTimestamp = identity.getVerifyTimestamp();
@@ -256,7 +256,7 @@ public class IdentityTest {
     String header = "************** testInitIdentityUnknownProviderId **************";
     System.out.printf("\n%s\n", header);
 
-    identity.initIdentity(userIdCarroll, providerIdUnknown);
+    identity.getIdentity(userIdCarroll, providerIdUnknown);
 
     Integer profileId = identity.getProfileId();
     Date verifyTimestamp = identity.getVerifyTimestamp();
@@ -282,11 +282,11 @@ public class IdentityTest {
     String header = "************** testInsertIdentity **************";
     System.out.printf("\n%s\n", header);
 
-    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.getIdentity(userIdJack, providerIdLTERX);
     identity.setProfileId(profileIdJack);
     identity.setVerifyTimestamp(verifyTimestampJack);
     identity.insertIdentity();
-    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.getIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
 
     Integer profileId = identity.getProfileId();
@@ -332,13 +332,13 @@ public class IdentityTest {
       System.out.printf("%s\n", identity.toString());
 
     // Initialize incorrect Identity object
-    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.getIdentity(userIdJack, providerIdLTERX);
       System.out.printf("%s\n", identity.toString());
     identity.setProfileId(profileIdJack);
     Date now = new Date();
     identity.setVerifyTimestamp(now);
     identity.updateIdentity();
-    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.getIdentity(userIdJack, providerIdLTERX);
       System.out.printf("%s\n", identity.toString());
     verifyTimestamp = identity.getVerifyTimestamp();
     Integer profileId = identity.getProfileId();
@@ -375,11 +375,11 @@ public class IdentityTest {
     System.out.printf("%s\n", identity.toString());
 
     // Initialize incorrect Identity object
-    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.getIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
     Date now = new Date();
     identity.updateIdentity(profileIdJack, now);
-    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.getIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
     verifyTimestamp = identity.getVerifyTimestamp();
     Integer profileId = identity.getProfileId();
@@ -414,11 +414,11 @@ public class IdentityTest {
     System.out.printf("%s\n", identity.toString());
 
     // Initialize incorrect Identity object
-    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.getIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
     identity.setProfileId(profileIdJack);
     identity.updateProfileId();
-    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.getIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
     Integer profileId = identity.getProfileId();
 
@@ -448,10 +448,10 @@ public class IdentityTest {
     System.out.printf("%s\n", identity.toString());
 
     // Initialize incorrect Identity object
-    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.getIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
     identity.updateProfileId(profileIdJack);
-    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.getIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
     Integer profileId = identity.getProfileId();
 
@@ -484,12 +484,12 @@ public class IdentityTest {
     System.out.printf("%s\n", identity.toString());
 
     // Initialize incorrect Identity object
-    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.getIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
     Date now = new Date();
     identity.setVerifyTimestamp(now);
     identity.updateIdentity();
-    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.getIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
     verifyTimestamp = identity.getVerifyTimestamp();
 
@@ -521,11 +521,11 @@ public class IdentityTest {
     System.out.printf("%s\n", identity.toString());
 
     // Initialize incorrect Identity object
-    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.getIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
     Date now = new Date();
     identity.updateVerifyTimestamp(now);
-    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.getIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
     verifyTimestamp = identity.getVerifyTimestamp();
 
@@ -553,10 +553,10 @@ public class IdentityTest {
     Date now = new Date();
     IdentityTest.insertIdentity(userIdJack, providerIdLTERX, profileIdJack, now);
 
-    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.getIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
     identity.deleteIdentity();
-    identity.initIdentity(userIdJack, providerIdLTERX);
+    identity.getIdentity(userIdJack, providerIdLTERX);
     System.out.printf("%s\n", identity.toString());
 
     Integer profileId = identity.getProfileId();
@@ -651,7 +651,7 @@ public class IdentityTest {
       dbConn = getConnection();
     }
     catch (ClassNotFoundException e) {
-      logger.error("initIdentity: " + e);
+      logger.error("purgeIdentity: " + e);
       e.printStackTrace();
       throw e;
     }
@@ -683,7 +683,7 @@ public class IdentityTest {
       }
     }
     catch (SQLException e) {
-      logger.error("initIdentity: " + e);
+      logger.error("purgeIdentity: " + e);
       logger.error(sql);
       e.printStackTrace();
       throw e;
