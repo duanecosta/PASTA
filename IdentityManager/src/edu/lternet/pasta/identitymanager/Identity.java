@@ -101,9 +101,9 @@ public class Identity {
     strBuilder.append("identity.identity.verify_timestamp FROM ");
     strBuilder.append("identity.identity WHERE ");
     strBuilder.append("identity.identity.user_id='");
-    strBuilder.append(userId);
+    strBuilder.append(this.userId);
     strBuilder.append("' AND identity.identity.provider_id=");
-    strBuilder.append(providerId);
+    strBuilder.append(this.providerId.toString());
     strBuilder.append(";");
 
     String sql = strBuilder.toString();
@@ -251,7 +251,7 @@ public class Identity {
     strBuilder.append("identity.identity WHERE identity.identity.user_id='");
     strBuilder.append(this.userId);
     strBuilder.append("' AND identity.identity.provider_id=");
-    strBuilder.append(Integer.toString(this.providerId));
+    strBuilder.append(this.providerId.toString());
     strBuilder.append(";");
 
     String sql = strBuilder.toString();
@@ -350,7 +350,7 @@ public class Identity {
   }
 
   /**
-   * Updates only the profile identifier and verify timestam of the Identity
+   * Updates only the profile identifier and verify timestamp of the Identity
    * to Identity database.
    *
    * Note that the user identifier and provider identifier should be considered
@@ -370,7 +370,7 @@ public class Identity {
     strBuilder.append(" WHERE identity.identity.user_id='");
     strBuilder.append(this.userId);
     strBuilder.append("' AND identity.identity.provider_id=");
-    strBuilder.append(Integer.toString(this.providerId));
+    strBuilder.append(this.providerId.toString());
     strBuilder.append(";");
 
     String sql = strBuilder.toString();
@@ -420,7 +420,7 @@ public class Identity {
     strBuilder.append("WHERE identity.identity.user_id='");
     strBuilder.append(this.userId);
     strBuilder.append("' AND identity.identity.provider_id=");
-    strBuilder.append(Integer.toString(this.providerId));
+    strBuilder.append(this.providerId.toString());
     strBuilder.append(";");
 
     String sql = strBuilder.toString();
