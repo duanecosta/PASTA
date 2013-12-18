@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -55,8 +56,9 @@ public class LterLdapProviderTest {
   private static String dbUser;     // database user name
   private static String dbPassword; // database user password
 
+  private static Integer providerIdLTER = 1;
   private static String providerNameLTER = "LTER";
-  private static String providerConnectionLTER = "ldap://ldap.lternet.edu:389";
+  private static String providerConnectionLTER = "ldap.lternet.edu:389:/WebRoot/WEB-INF/conf/lternet.jks";
   private static String contactNameLTER = "System Administrator";
   private static String contactPhoneLTER = "505-277-2551";
   private static String contactEmailLTER = "tech-support@lternet.edu";
@@ -65,7 +67,6 @@ public class LterLdapProviderTest {
   private static String passwordJack;
   private static Integer profileIdJack = 2;
   private static Date verifyTimestampJack = new Date(1384917912619L);
-  private static Integer providerIdLTER = 1;
 
   /* Constructors */
 
@@ -77,7 +78,7 @@ public class LterLdapProviderTest {
   @Before
   public void setUp() throws Exception {
 
-    provider = new LterLdapProvider(1);
+    provider = new LterLdapProvider();
 
   }
 
@@ -163,6 +164,81 @@ public class LterLdapProviderTest {
   }
 
   /**
+   * Test to ensure a new Provider is saved to the Provider database.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testSaveProvider() throws Exception {
+
+    String providerName = "A";
+    String providerConnection = "B";
+    String contactName = "C";
+    String contactPhone = "D";
+    String contactEmail = "E";
+
+    provider.setProviderName(providerName);
+    provider.setProviderConnection(providerConnection);
+    provider.setContactName(contactName);
+    provider.setContactPhone(contactPhone);
+    provider.setContactEmail(contactEmail);
+
+    provider.saveProvider();
+
+    Integer providerId = LterLdapProviderTest.getProviderId(providerName,
+      providerConnection, contactName, contactPhone, contactEmail);
+
+    String message = "Expected a provider identifier value, but received null!";
+    assertNotNull(message, providerId);
+
+    if (providerId != null) LterLdapProviderTest.purgeProvider(providerId);
+
+  }
+
+  @Test
+  public void testUpdateProvider() throws Exception {
+
+    String providerName = "A";
+    String providerConnection = "B";
+    String contactName = "C";
+    String contactPhone = "D";
+    String contactEmail = "E";
+
+    LterLdapProviderTest.insertProvider(providerName, providerConnection,
+      contactName, contactPhone, contactEmail);
+
+    Integer providerId = LterLdapProviderTest.getProviderId(providerName,
+      providerConnection, contactName, contactPhone, contactEmail);
+
+    LterLdapProvider provider = new LterLdapProvider(providerId);
+
+    providerName = "1";
+    providerConnection = "2";
+    contactName = "3";
+    contactPhone = "4";
+    contactEmail = "5";
+
+    provider.setProviderName(providerName);
+    provider.setProviderConnection(providerConnection);
+    provider.setContactName(contactName);
+    provider.setContactPhone(contactPhone);
+    provider.setContactEmail(contactEmail);
+
+    provider.updateProvider();
+
+    String testProviderName = LterLdapProviderTest.getProviderValue(providerId, "providerName");
+    String message = String.format("Expected provider name '%s', but received '%s'!", providerName, testProviderName);
+    assertTrue(message, providerName.equals(testProviderName));
+
+  }
+
+  @Test
+  public void testDeleteProvider() {
+
+    assertTrue(true);
+
+  }
+  /**
    * Test to ensure that user 'Cactus Jack' is in identity list for the
    * provider LTER.
    * 
@@ -190,8 +266,14 @@ public class LterLdapProviderTest {
 
   }
 
+  /**
+   * Test to ensure that the identity for 'Cactus Jack' can validate
+   * successfully.
+   */
   @Test
-  public void testValidateUser() {
+  public void testValidateUser() throws Exception {
+
+    LterLdapProvider provider = new LterLdapProvider(providerIdLTER);
 
     Credential credential = new Credential();
     credential.setUser(userIdJack);
@@ -203,13 +285,276 @@ public class LterLdapProviderTest {
 
   /* Class methods */
 
+  /**
+   * @throws Exception
+   */
+  @BeforeClass
+  public static void setUpBeforeClass() throws Exception {
+
+    LterLdapProviderTest.loadConfiguration();
+
+  }
+
+  /**
+   * @throws Exception
+   */
+  @AfterClass
+  public static void tearDownAfterClass() throws Exception {
+
+  }
+
+  /*
+   * Inserts a test Provider into the Provider database.
+   */
+  private static void insertProvider(String providerName,
+    String providerConnection, String contactName, String contactPhone,
+    String contactEmail) throws Exception {
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("INSERT INTO identity.provider ");
+    strBuilder.append("(provider_name,provider_conn,contact_name,");
+    strBuilder.append("contact_phone,contact_email) VALUES (");
+    strBuilder.append("'");
+    strBuilder.append(providerName);
+    strBuilder.append("','");
+    strBuilder.append(providerConnection);
+    strBuilder.append("','");
+    strBuilder.append(contactName);
+    strBuilder.append("','");
+    strBuilder.append(contactPhone);
+    strBuilder.append("','");
+    strBuilder.append(contactEmail);
+    strBuilder.append("');");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("insertProvider: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "insertProvider: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("insertProvider: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
+  /*
+   * Returns the provider identifier of the Provider database record that
+   * matches the provider name, provider connection, contact name, contact
+   * phone, and contact email.
+   */
+  private static Integer getProviderId(String providerName,
+    String providerConnection, String contactName, String contactPhone,
+    String contactEmail) throws Exception {
+
+    Integer providerId = null;
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("SELECT identity.provider.provider_id FROM ");
+    strBuilder.append("identity.provider WHERE provider_name='");
+    strBuilder.append(providerName);
+    strBuilder.append("' AND provider_conn='");
+    strBuilder.append(providerConnection);
+    strBuilder.append("' AND contact_name='");
+    strBuilder.append(contactName);
+    strBuilder.append("' AND contact_phone='");
+    strBuilder.append(contactPhone);
+    strBuilder.append("' AND contact_email='");
+    strBuilder.append(contactEmail);
+    strBuilder.append("';");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("getProviderId: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+      ResultSet rs = stmt.executeQuery(sql);
+
+      if (rs.next()) {
+        providerId = rs.getInt("provider_id");
+       }
+      else {
+        String gripe = String.format("Provider with name '%s' does not exist!\n", providerName);
+        throw new ProviderDoesNotExistException(gripe);
+      }
+    }
+    catch (SQLException e) {
+      logger.error("Provider: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+    return providerId;
+
+  }
+
+  /*
+   * Return the Provider field value for the Provider identified by the
+   * provider identifier in the Provider database.
+   */
+  private static String getProviderValue(Integer providerId, String field)
+      throws Exception {
+
+    String providerName;
+    String providerConnection;
+    String contactName;
+    String contactPhone;
+    String contactEmail;
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("SELECT identity.provider.provider_name,");
+    strBuilder.append("identity.provider.provider_conn,");
+    strBuilder.append("identity,provider,contact_name,");
+    strBuilder.append("identity.provider.contact_phone,");
+    strBuilder.append("identity.provider.contact_email FROM ");
+    strBuilder.append("identity.provider WHERE provider_id=");
+    strBuilder.append(providerId);
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("getProviderId: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+      ResultSet rs = stmt.executeQuery(sql);
+
+      if (rs.next()) {
+        providerName = rs.getString("provider_name");
+        providerConnection = rs.getString("provider_conn");
+        contactName = rs.getString("contact_name");
+        contactPhone = rs.getString("contact_phone");
+        contactEmail = rs.getString("contact_email");
+      }
+      else {
+        String gripe = String.format("Provider with provider identifier '%d' " +
+                                         "does not exist!\n", providerId);
+        throw new ProviderDoesNotExistException(gripe);
+      }
+    }
+    catch (SQLException e) {
+      logger.error("Provider: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+    if (field.equals("providerName")) {
+      return providerName;
+    } else if (field.equals("providerConnection")) {
+      return providerConnection;
+    } else if (field.equals("contactName")) {
+      return contactName;
+    } else if (field.equals("contactPhone")) {
+      return contactPhone;
+    } else if (field.equals("contactEmail")) {
+      return contactEmail;
+    } else {
+      return null;
+    }
+
+  }
+
+  /*
+   * Purges the Provider identified by the provider identifier from the Provider
+   * database.
+   */
+  private static void purgeProvider(Integer providerId) throws Exception {
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("DELETE FROM identity.provider WHERE provider_id=");
+    strBuilder.append(providerId.toString());
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("purgeProvider: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "purgeProvider: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("purgeProvider: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
   /*
    * Inserts a test Identity object record into the Identity database for the
    * given user identifier, provider identifier, profile identifier, and verify
    * timestamp.
    */
   private static void insertIdentity(String userId, Integer providerId,
-                                     Integer profileId, Date verifyTimestamp) throws Exception {
+    Integer profileId, Date verifyTimestamp) throws Exception {
 
     Timestamp timestamp = new Timestamp(verifyTimestamp.getTime());
 
@@ -395,25 +740,6 @@ public class LterLdapProviderTest {
         throw new PastaConfigurationException(e.getMessage());
       }
     }
-
-  }
-
-  /**
-   * @throws Exception
-   */
-  @BeforeClass
-  public static void setUpBeforeClass() throws Exception {
-
-    LterLdapProviderTest.loadConfiguration();
-
-  }
-
-  /**
-   * @throws Exception
-   */
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-
 
   }
 
