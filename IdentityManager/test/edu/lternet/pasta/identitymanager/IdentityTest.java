@@ -95,6 +95,40 @@ public class IdentityTest {
   }
 
   /**
+   * Test to ensure that Identity loading from Identity database is successful.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testIdentityLoad() throws Exception {
+
+    Identity identity = new Identity(userIdCarroll, providerIdLTER);
+
+    String userId = identity.getUserId();
+    String message = String.format("Expected userId '%s', but received " +
+                                       "'%s'!", userIdCarroll, userId);
+    assertTrue(message, userIdCarroll.equals(userId));
+
+    Integer proivderId = identity.getProviderId();
+    message = String.format("Expected providerId '%d', but received '%d'!",
+                               providerIdLTER, proivderId);
+    assertEquals(message, providerIdLTER, proivderId);
+
+    Integer profileId = identity.getProfileId();
+    message = String.format("Expected profileId '%d', but received '%d'!",
+                               profileIdCarroll, profileId);
+    assertEquals(message, profileIdCarroll, profileId);
+
+    Date verifyTimestamp = identity.getVerifyTimestamp();
+    message = String.format("Expected verfityTimestamp '%s', " +
+      "but received '%s'!", verifyTimestampCarroll.toString(),
+      verifyTimestamp.toString());
+    assertTrue(message,
+      verifyTimestampCarroll.toString().equals(verifyTimestamp.toString()));
+
+  }
+
+  /**
    * Test to ensure that a new user identifier is correctly set.
    */
   @Test
