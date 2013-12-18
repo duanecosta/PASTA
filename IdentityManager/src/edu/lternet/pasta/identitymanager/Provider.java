@@ -318,8 +318,186 @@ public abstract class Provider {
 
   }
 
-  // TODO: Add save Provider to DB method
-  // TODO: Add update Provider to DB method
+  /**
+   * Save the Provider to the Provider database.
+   *
+   * @throws ClassNotFoundException
+   * @throws SQLException
+   */
+  public void saveProvider() throws ClassNotFoundException, SQLException {
+
+    String contactName = "NULL";
+    String contactPhone = "NULL";
+    String contactEmail = "NULL";
+
+    if (this.contactName != null) contactName = this.contactName;
+    if (this.contactPhone != null) contactPhone = this.contactPhone;
+    if (this.contactEmail != null) contactEmail = this.contactEmail;
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("INSERT INTO identity.provider (provider_name,");
+    strBuilder.append("provider_conn,contact_name,contact_phone,");
+    strBuilder.append("contact_email) VALUES ('");
+    strBuilder.append(this.providerName);
+    strBuilder.append("','");
+    strBuilder.append(this.providerConnection);
+    strBuilder.append("','");
+    strBuilder.append(contactName);
+    strBuilder.append("','");
+    strBuilder.append(contactPhone);
+    strBuilder.append("','");
+    strBuilder.append(contactEmail);
+    strBuilder.append("');");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("saveProvider: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "saveProvider: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("saveProvider: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+
+  }
+
+  /**
+   * Update the Provider in the Provider database based on the provider
+   * identifier.
+   *
+   * @throws ClassNotFoundException
+   * @throws SQLException
+   */
+  public void updateProvider() throws ClassNotFoundException, SQLException {
+
+    String contactName = "NULL";
+    String contactPhone = "NULL";
+    String contactEmail = "NULL";
+
+    if (this.contactName != null) contactName = this.contactName;
+    if (this.contactPhone != null) contactPhone = this.contactPhone;
+    if (this.contactEmail != null) contactEmail = this.contactEmail;
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("UPDATE identity.provider SET ");
+    strBuilder.append("provider_name='");
+    strBuilder.append(this.providerName);
+    strBuilder.append("', provider_conn=");
+    strBuilder.append(this.providerConnection);
+    strBuilder.append("', contact_name=");
+    strBuilder.append(contactName);
+    strBuilder.append("', contact_phone=");
+    strBuilder.append(contactPhone);
+    strBuilder.append("', contact_email=");
+    strBuilder.append(contactEmail);
+    strBuilder.append(" WHERE identity.provider.provider_id='");
+    strBuilder.append(this.providerId.toString());
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("updateProvider: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "updateProvider: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("updateProvider: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
+  public void deleteProvider() throws ClassNotFoundException, SQLException {
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("DELETE FROM identity.provider ");
+    strBuilder.append("WHERE identity.identity.provider_id='");
+    strBuilder.append(this.providerId.toString());
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("deleteProvider: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "deleteProvider: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("deleteProvider: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+    this.providerId = null;
+    this.providerConnection = null;
+    this.contactName = null;
+    this.contactPhone = null;
+    this.contactEmail = null;
+
+  }
 
   /**
    * Validates the user's identity based on the provided credentials.
