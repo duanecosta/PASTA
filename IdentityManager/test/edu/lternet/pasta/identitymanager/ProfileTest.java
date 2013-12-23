@@ -66,6 +66,7 @@ public class ProfileTest {
   @Before
   public void setUp() throws Exception {
 
+    profile = new Profile();
 
   }
 
