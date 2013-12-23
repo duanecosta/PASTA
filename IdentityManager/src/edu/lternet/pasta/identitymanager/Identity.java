@@ -65,7 +65,7 @@ public class Identity {
   /* Constructors */
 
   /**
-   * Creates a new Identity.
+   * Create a new Identity.
    *
    * @throws PastaConfigurationException
    */
@@ -76,7 +76,7 @@ public class Identity {
   }
 
   /**
-   * Creates a new Identity from the Identity record in the Identity database
+   * Create a new Identity from the Identity record in the Identity database
    * based on the user identifier and provider identifier, which together are
    * the primary keys.
    *
@@ -229,7 +229,9 @@ public class Identity {
   }
 
   /**
-   * Initialize an empty Identity from the Identity database.
+   * Loads the Identity from the Identity record in the Identity database
+   * based on the user identifier and provider identifier, which together are
+   * the primary keys.
    *
    * @param userId The user identifier
    * @param providerId The provider identifier
@@ -306,13 +308,13 @@ public class Identity {
     strBuilder.append("INSERT INTO identity.identity ");
     strBuilder.append("(user_id,provider_id,profile_id,verify_timestamp) ");
     strBuilder.append("VALUES ('");
-    strBuilder.append(this.userId);
+    strBuilder.append(userId);
     strBuilder.append("',");
-    strBuilder.append(this.providerId);
+    strBuilder.append(providerId);
     strBuilder.append(",");
-    strBuilder.append(this.profileId);
+    strBuilder.append(profileId);
     strBuilder.append(",'");
-    strBuilder.append(this.verifyTimestamp);
+    strBuilder.append(verifyTimestamp);
     strBuilder.append("');");
 
     String sql = strBuilder.toString();
