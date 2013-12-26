@@ -25,10 +25,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
+import java.sql.*;
+import java.util.Date;
 
 /**
  * User: servilla
@@ -55,6 +53,19 @@ public class ProfileTest {
   private static String dbURL;      // database URL
   private static String dbUser;     // database user name
   private static String dbPassword; // database user password
+
+  private static Date now = new Date();
+
+  private static Boolean activeTest = true;
+  private static Timestamp createTimestampTest = new Timestamp(now.getTime());
+  private static Timestamp updateTimestampTest = new Timestamp(now.getTime());
+  private static String surNameTest = "Odocoileus";
+  private static String givenNameTest = "hemionus";
+  private static String nickNameTest = "Muley";
+  private static String institutionTest = "Ungulate Research Station";
+  private static String emailTest = "h.odocoileu@gmail.com";
+  private static String intentTest = "Ungulate research";
+
 
   /* Constructors */
 
@@ -120,6 +131,113 @@ public class ProfileTest {
     }
 
     return conn;
+
+  }
+
+  private static void insertProfile() throws Exception {
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("INSERT INTO identity.profile ");
+    strBuilder.append("(active,create_timestamp,update_timestamp,sur_name,");
+    strBuilder.append("given_name,nick_name,institution,email,intent) ");
+    strBuilder.append("VALUES (");
+
+    if (activeTest) {
+      strBuilder.append("TRUE,'");
+    }
+    else {
+      strBuilder.append("FALSE,'");
+    }
+
+    strBuilder.append(createTimestampTest);
+    strBuilder.append("','");
+    strBuilder.append(updateTimestampTest);
+    strBuilder.append("','");
+    strBuilder.append(surNameTest);
+    strBuilder.append("','");
+    strBuilder.append(givenNameTest);
+    strBuilder.append("','");
+    strBuilder.append(nickNameTest);
+    strBuilder.append("','");
+    strBuilder.append(institutionTest);
+    strBuilder.append("','");
+    strBuilder.append(emailTest);
+    strBuilder.append("','");
+    strBuilder.append(intentTest);
+    strBuilder.append("');");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("saveProfile: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "saveProfile: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("saveProfile: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
+
+  }
+
+  private static void purgeProfile(Integer profileId) throws Exception {
+
+    StringBuilder strBuilder = new StringBuilder();
+    strBuilder.append("DELETE FROM identity.profile WHERE profile_id=");
+    strBuilder.append(profileId);
+    strBuilder.append(";");
+
+    String sql = strBuilder.toString();
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("deleteProfile: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+
+      if (stmt.executeUpdate(sql) == 0) {
+        String gripe = "deleteProfile: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("deleteProfile: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
 
   }
 
