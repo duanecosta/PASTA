@@ -573,8 +573,18 @@ public class Profile {
     try {
       Statement stmt = dbConn.createStatement();
 
-      if (stmt.executeUpdate(sql) == 0) {
+      if (stmt.executeUpdate(sql, stmt.RETURN_GENERATED_KEYS) == 0) {
         String gripe = "saveProfile: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+      ResultSet rs = stmt.getGeneratedKeys();
+      if (rs.next()) {
+        profileId = rs.getInt("profile_id");
+      }
+      else {
+        String gripe = "saveProfile: setting profileId from getGeneratedKeys " +
+                           "failed!";
         throw new SQLException(gripe);
       }
 
