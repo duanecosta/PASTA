@@ -185,8 +185,12 @@ public class LterLdapProviderTest {
 
     provider.saveProvider();
 
+    /*
     Integer providerId = LterLdapProviderTest.getProviderId(providerName,
       providerConnection, contactName, contactPhone, contactEmail);
+    */
+
+    Integer providerId = provider.getProviderId();
 
     String message = "Expected a provider identifier value, but received null!";
     assertNotNull(message, providerId);
@@ -199,7 +203,7 @@ public class LterLdapProviderTest {
   public void testUpdateProvider() throws Exception {
 
     String providerName = "A";
-    String providerConnection = "B";
+    String providerConnection = "ldap.lternet.edu:389:/WebRoot/WEB-INF/conf/lternet.jks";
     String contactName = "C";
     String contactPhone = "D";
     String contactEmail = "E";
@@ -213,7 +217,7 @@ public class LterLdapProviderTest {
     LterLdapProvider provider = new LterLdapProvider(providerId);
 
     providerName = "1";
-    providerConnection = "2";
+    providerConnection = "ldap.lternet.edu:389:/WebRoot/WEB-INF/conf/lternet.jks";
     contactName = "3";
     contactPhone = "4";
     contactEmail = "5";
@@ -440,7 +444,7 @@ public class LterLdapProviderTest {
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("SELECT identity.provider.provider_name,");
     strBuilder.append("identity.provider.provider_conn,");
-    strBuilder.append("identity,provider,contact_name,");
+    strBuilder.append("identity.provider.contact_name,");
     strBuilder.append("identity.provider.contact_phone,");
     strBuilder.append("identity.provider.contact_email FROM ");
     strBuilder.append("identity.provider WHERE provider_id=");
