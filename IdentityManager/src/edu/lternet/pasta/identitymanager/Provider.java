@@ -365,8 +365,18 @@ public abstract class Provider {
     try {
       Statement stmt = dbConn.createStatement();
 
-      if (stmt.executeUpdate(sql) == 0) {
+      if (stmt.executeUpdate(sql, stmt.RETURN_GENERATED_KEYS) == 0) {
         String gripe = "saveProvider: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+      ResultSet rs = stmt.getGeneratedKeys();
+      if (rs.next()) {
+        providerId = rs.getInt("provider_id");
+      }
+      else {
+        String gripe = "saveProvider: setting providerId from getGeneratedKeys " +
+                           "failed!";
         throw new SQLException(gripe);
       }
 
@@ -405,15 +415,15 @@ public abstract class Provider {
     strBuilder.append("UPDATE identity.provider SET ");
     strBuilder.append("provider_name='");
     strBuilder.append(this.providerName);
-    strBuilder.append("', provider_conn=");
+    strBuilder.append("', provider_conn='");
     strBuilder.append(this.providerConnection);
-    strBuilder.append("', contact_name=");
+    strBuilder.append("', contact_name='");
     strBuilder.append(contactName);
-    strBuilder.append("', contact_phone=");
+    strBuilder.append("', contact_phone='");
     strBuilder.append(contactPhone);
-    strBuilder.append("', contact_email=");
+    strBuilder.append("', contact_email='");
     strBuilder.append(contactEmail);
-    strBuilder.append(" WHERE identity.provider.provider_id='");
+    strBuilder.append("' WHERE identity.provider.provider_id=");
     strBuilder.append(this.providerId.toString());
     strBuilder.append(";");
 
@@ -451,6 +461,12 @@ public abstract class Provider {
 
   }
 
+  /**
+   * Remove the Provider from the Provider database.
+   *
+   * @throws ClassNotFoundException
+   * @throws SQLException
+   */
   public void deleteProvider() throws ClassNotFoundException, SQLException {
 
     StringBuilder strBuilder = new StringBuilder();
