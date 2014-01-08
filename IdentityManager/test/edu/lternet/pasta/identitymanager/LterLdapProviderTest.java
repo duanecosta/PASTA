@@ -26,9 +26,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * User: servilla
@@ -283,7 +281,12 @@ public class LterLdapProviderTest {
     credential.setUser(userIdJack);
     credential.setPassword(passwordJack);
 
-    assertTrue(provider.validateUser(credential));
+    try {
+      provider.validateUser(credential);
+    }
+    catch (UserValidationException e) {
+      fail(e.getMessage());
+    }
 
   }
 

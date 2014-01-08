@@ -85,9 +85,9 @@ public class LterLdapProvider extends Provider {
    * Validates the user's identity based on the provided credentials.
    *
    * @param credential
-   * @return The validation state of the user's identity
    */
-  public boolean validateUser(Credential credential) {
+  public void validateUser(Credential credential)
+      throws UserValidationException {
 
     String user = credential.getUser();
     String password = credential.getPassword();
@@ -137,7 +137,11 @@ public class LterLdapProvider extends Provider {
       }
     }
 
-    return isValid;
+    if (!isValid) {
+      String gripe = String.format("validateUser: the user '%s' was not " +
+                                       "validated!", user);
+      throw new UserValidationException(gripe);
+    }
 
   }
 

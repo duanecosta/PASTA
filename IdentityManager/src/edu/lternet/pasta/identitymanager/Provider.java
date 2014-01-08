@@ -519,9 +519,9 @@ public abstract class Provider {
    * Validates the user's identity based on the provided credentials.
    *
    * @param credential
-   * @return The validation state of the user's identity
    */
-  public abstract boolean validateUser(Credential credential);
+  public abstract void validateUser(Credential credential)
+      throws UserValidationException;
 
   /**
    * Returns a list of Groups that the user is affiliated with.
