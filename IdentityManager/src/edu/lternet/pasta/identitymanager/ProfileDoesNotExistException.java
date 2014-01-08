@@ -37,13 +37,14 @@ public class ProfileDoesNotExistException extends Exception {
   /* Constructors */
 
   /**
-   * Non-existent Identity exception.
+   * Profile does not exist exception.
    */
   public ProfileDoesNotExistException() {
   }
 
   /**
-   * Non-existent Identity exception.
+   * Profile does not exist exception.
+   *
    * @param gripe
    *          The cause of the exception in natural language text as a String
    *          object

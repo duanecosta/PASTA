@@ -35,14 +35,14 @@ public class PastaConfigurationException extends Exception {
    */
 
   /**
-   * Pasta Configuration Exception.
+   * Pasta configuration exception.
    */
   public PastaConfigurationException() {
 
   }
 
   /**
-   * Pasta Configuration Exception.
+   * Pasta configuration exception.
    *
    * @param gripe
    *          The cause of the exception in natural language text as a String

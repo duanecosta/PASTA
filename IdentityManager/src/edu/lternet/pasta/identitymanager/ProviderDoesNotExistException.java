@@ -37,13 +37,14 @@ public class ProviderDoesNotExistException extends Exception {
   /* Constructors */
 
   /**
-   * Non-existent Identity exception.
+   * Provider does not exist exception.
    */
   public ProviderDoesNotExistException() {
   }
 
   /**
-   * Non-existent Identity exception.
+   * Provider does not exist exception.
+   *
    * @param gripe
    *          The cause of the exception in natural language text as a String
    *          object

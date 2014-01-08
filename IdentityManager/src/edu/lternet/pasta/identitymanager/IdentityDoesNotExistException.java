@@ -37,13 +37,14 @@ public class IdentityDoesNotExistException extends Exception {
   /* Constructors */
 
   /**
-   * Non-existent Identity exception.
+   * Identity does not exist exception.
    */
   public IdentityDoesNotExistException() {
   }
 
   /**
-   * Non-existent Identity exception.
+   * Identity does not exist exception.
+   *
    * @param gripe
    *          The cause of the exception in natural language text as a String
    *          object
