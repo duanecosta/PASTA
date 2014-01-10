@@ -48,17 +48,6 @@ public class ProfileTest {
 
   private Profile profile;
 
-  private Integer profileId;
-  private Boolean active;
-  private Date createTimestamp;
-  private Date updateTimestamp;
-  private String surName;
-  private String givenName;
-  private String nickName;
-  private String institution;
-  private String email;
-  private String intent;
-
   /* Class variables */
 
   private static final Logger logger =
@@ -124,6 +113,11 @@ public class ProfileTest {
 
   }
 
+  /**
+   * Tests loading a new Profile object with database attributes.
+   *
+   * @throws Exception
+   */
   @Test
   public void testLoadProfile() throws Exception {
 
@@ -179,7 +173,11 @@ public class ProfileTest {
 
   }
 
-
+  /**
+   * Tests retrieving identities based on a Profile's identifier.
+   *
+   * @throws Exception
+   */
   @Test
   public void testGetIdentities() throws Exception {
 
@@ -201,6 +199,11 @@ public class ProfileTest {
 
   }
 
+  /**
+   * Tests loading an existing Profile object with database attributes.
+   *
+   * @throws Exception
+   */
   @Test
   public void testGetProfile() throws Exception {
 
@@ -257,6 +260,11 @@ public class ProfileTest {
 
   }
 
+  /**
+   * Tests saving a new Profile object to the Profile database.
+   *
+   * @throws Exception
+   */
   @Test
   public void testSaveProfile() throws Exception {
 
@@ -272,22 +280,131 @@ public class ProfileTest {
     profile.saveProfile();
 
     String message;
+    Long profileTime;
+    Long testTime;
+    String profileString;
+    String testString;
 
+    /*
+     * Create new profile by loading from database and test new profile's
+     * attributes for match of test attributes.
+     */
     Profile profileTest = new Profile(profile.getProfileId());
 
-    active = profileTest.isActive();
-    message = String.format("Expected active status '%s', but received '%s'!", activeTest, active);
-    assertEquals(message, activeTest, active);
+    boolean activeProfile = profileTest.isActive();
+    message = String.format("Expected active status '%s', but received '%s'!", activeTest, profileTest.isActive());
+    assertEquals(message, activeTest, activeProfile);
 
-    createTimestamp = profileTest.getCreateTimestamp();
-    message = String.format("Expected create timestamp '%d', but received '%d'!", createTimestampTest.getTime(), createTimestamp.getTime());
-    assertEquals(message, createTimestampTest.getTime(), createTimestamp.getTime());
+    profileTime = profileTest.getCreateTimestamp().getTime();
+    testTime = createTimestampTest.getTime();
+    message = String.format("Expected create timestamp '%d', but received '%d'!", testTime, profileTime);
+    assertEquals(message, testTime, profileTime);
 
-    updateTimestamp = profileTest.getUpdateTimestamp();
-    message = String.format("Expected update timestamp '%d', but received '%d'!", updateTimestampTest.getTime(), updateTimestamp.getTime());
-    assertEquals(message, updateTimestampTest.getTime(), updateTimestamp.getTime());
+    profileTime = profileTest.getUpdateTimestamp().getTime();
+    testTime = updateTimestampTest.getTime();
+    message = String.format("Expected create timestamp '%d', but received '%d'!", testTime, profileTime);
+    assertEquals(message, testTime, profileTime);
 
+    profileString = profileTest.getSurName();
+    testString = surNameTest;
+    message = String.format("Expected surname '%s', but received '%s'!", testString, profileString);
+    assertEquals(message, testString, profileString);
 
+    profileString = profileTest.getGivenName();
+    testString = givenNameTest;
+    message = String.format("Expected given name '%s', but received '%s'!", testString, profileString);
+    assertEquals(message, testString, profileString);
+
+    profileString = profileTest.getNickName();
+    testString = nickNameTest;
+    message = String.format("Expected nick name '%s', but received '%s'!", testString, profileString);
+    assertEquals(message, testString, profileString);
+
+    profileString = profileTest.getInstitution();
+    testString = institutionTest;
+    message = String.format("Expected institution '%s', but received '%s'!", testString, profileString);
+    assertEquals(message, testString, profileString);
+
+    profileString = profileTest.getEmail();
+    testString = emailTest;
+    message = String.format("Expected email '%s', but received '%s'!", testString, profileString);
+    assertEquals(message, testString, profileString);
+
+    profileString = profileTest.getIntent();
+    testString = intentTest;
+    message = String.format("Expected intent '%s', but received '%s'!", testString, profileString);
+    assertEquals(message, testString, profileString);
+
+  }
+
+  /**
+   * Tests updating the Profile database with an existing Profile object.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testUpdateProfile() throws Exception {
+
+    Integer profileId = insertProfile();
+    profile = new Profile(profileId);
+    String newSurName = "Cheetah";
+    profile.setSurName(newSurName);
+    profile.updateProfile();
+    profile = new Profile(profileId);
+
+    String message = String.format("Expected surName '%s', but received '%s'!", newSurName, profile.getSurName());
+    assertEquals(message, newSurName, profile.getSurName());
+
+  }
+
+  /**
+   * Tests the deletion of a Profile object and corresponding Profile database
+   * record from the Profile database.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testDeleteProfile() throws Exception {
+
+    Integer profileId = insertProfile();
+    profile = new Profile(profileId);
+    profile.deleteProfile();
+
+    String sql = String.format("SELECT profile_id FROM identity.profile WHERE profile_id=%d;", profileId);
+
+    Connection dbConn;
+
+    try {
+      dbConn = getConnection();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("deleteProfile: " + e);
+      e.printStackTrace();
+      throw e;
+    }
+
+    try {
+      Statement stmt = dbConn.createStatement();
+      ResultSet rs = stmt.executeQuery(sql);
+      Integer cnt = 0;
+
+      while (rs.next()) cnt++;
+
+      if (cnt != 0) {
+        String message = String.format("Expected '0' records, but received '%d'!", cnt);
+        fail(message);
+      }
+
+    }
+    catch (SQLException e) {
+      logger.error("deleteProfile: " + e);
+      logger.error(sql);
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
+      dbConn.close();
+    }
 
   }
 
@@ -333,7 +450,7 @@ public class ProfileTest {
 
   }
 
-  private static void insertProfile() throws Exception {
+  private static Integer insertProfile() throws Exception {
 
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("INSERT INTO identity.profile ");
@@ -378,11 +495,23 @@ public class ProfileTest {
       throw e;
     }
 
+    Integer profileId = null;
+
     try {
       Statement stmt = dbConn.createStatement();
 
-      if (stmt.executeUpdate(sql) == 0) {
+      if (stmt.executeUpdate(sql, stmt.RETURN_GENERATED_KEYS) == 0) {
         String gripe = "saveProfile: '" + sql + "' failed";
+        throw new SQLException(gripe);
+      }
+
+      ResultSet rs = stmt.getGeneratedKeys();
+      if (rs.next()) {
+        profileId = rs.getInt("profile_id");
+      }
+      else {
+        String gripe = "saveProfile: setting profileId from getGeneratedKeys " +
+                           "failed!";
         throw new SQLException(gripe);
       }
 
@@ -396,6 +525,8 @@ public class ProfileTest {
     finally {
       dbConn.close();
     }
+
+    return profileId;
 
   }
 
