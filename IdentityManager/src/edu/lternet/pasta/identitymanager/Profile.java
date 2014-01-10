@@ -54,7 +54,7 @@ public class Profile {
 
   /* Class variables */
 
-  private static final Logger logger = Logger.getLogger(Provider.class);
+  private static final Logger logger = Logger.getLogger(Profile.class);
 
   private static String dbDriver;   // database driver
   private static String dbURL;      // database URL
@@ -607,7 +607,13 @@ public class Profile {
    * @throws ClassNotFoundException
    * @throws SQLException
    */
-  public void updateProfile() throws ClassNotFoundException, SQLException {
+  public void updateProfile() throws ClassNotFoundException, SQLException,
+                                         ProfileDoesNotExistException {
+
+    if (profileId == null) {
+      String gripe = "updateProfile: profile identifier is 'null'!";
+      throw new ProfileDoesNotExistException(gripe);
+    }
 
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("UPDATE identity.profile SET ");
@@ -637,7 +643,7 @@ public class Profile {
     strBuilder.append(email);
     strBuilder.append("','");
     strBuilder.append(intent);
-    strBuilder.append("') WHERE identity.profile_id=");
+    strBuilder.append("') WHERE profile_id=");
     strBuilder.append(profileId);
     strBuilder.append(";");
 
@@ -681,7 +687,13 @@ public class Profile {
    * @throws ClassNotFoundException
    * @throws SQLException
    */
-  public void deleteProfile() throws ClassNotFoundException, SQLException {
+  public void deleteProfile() throws ClassNotFoundException, SQLException,
+                                         ProfileDoesNotExistException {
+
+    if (profileId == null) {
+      String gripe = "updateProfile: profile identifier is 'null'!";
+      throw new ProfileDoesNotExistException(gripe);
+    }
 
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("DELETE FROM identity.profile WHERE profile_id=");
