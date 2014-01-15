@@ -18,15 +18,13 @@
 
 package edu.lternet.pasta.common.security.authentication;
 
-import org.apache.log4j.Logger;
-
 /**
  * User: servilla
  * Date: 12/16/13
  * Time: 9:51 AM
  * <p/>
  * Project: NIS
- * Package: edu.lternet.pasta.identitymanager
+ * Package: edu.lternet.pasta.common.security.authentication
  * <p/>
  * A class that models a group or role.
  */
@@ -38,9 +36,6 @@ public class Group {
   private String providerName;
  
   /* Class variables */
-
-  private static final Logger logger =
-      Logger.getLogger(Group.class);
 
   /* Constructors */
 
