@@ -25,8 +25,6 @@ import java.sql.*;
 import java.util.*;
 import java.util.Date;
 
-import edu.lternet.pasta.common.security.authentication.Group;
-
 /**
  * User: servilla
  * Date: 11/24/13
@@ -52,7 +50,6 @@ public class Profile {
   private String email;
   private String intent;
   private ArrayList<Identity> identities;
-  private ArrayList<Group> groups;
 
   /* Class variables */
 
@@ -354,24 +351,6 @@ public class Profile {
    */
   public void setIntent(String intent) {
     this.intent = intent;
-  }
-
-  /**
-   * Gets the list of user groups associated with the Profile.
-   *
-   * @return List of user groups
-   */
-  public ArrayList<Group> getGroups() {
-    return groups;
-  }
-
-  /**
-   * Sets the list of user groups associated with the Profile.
-   *
-   * @param groups
-   */
-  public void setGroups(ArrayList<Group> groups) {
-    this.groups = groups;
   }
 
   /**
