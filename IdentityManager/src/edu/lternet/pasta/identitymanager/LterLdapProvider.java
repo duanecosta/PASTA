@@ -29,8 +29,6 @@ import java.security.GeneralSecurityException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import edu.lternet.pasta.common.security.authentication.Group;
-
 /**
  * User: servilla
  * Date: 12/10/13
