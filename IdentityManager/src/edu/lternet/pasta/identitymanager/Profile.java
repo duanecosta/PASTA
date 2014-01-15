@@ -25,6 +25,8 @@ import java.sql.*;
 import java.util.*;
 import java.util.Date;
 
+import edu.lternet.pasta.common.security.authentication.Group;
+
 /**
  * User: servilla
  * Date: 11/24/13

@@ -24,6 +24,8 @@ import org.apache.log4j.Logger;
 import java.sql.*;
 import java.util.ArrayList;
 
+import edu.lternet.pasta.common.security.authentication.Group;
+
 /**
  * User: servilla
  * Date: 11/24/13

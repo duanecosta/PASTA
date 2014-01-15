@@ -22,13 +22,14 @@ import com.unboundid.ldap.sdk.*;
 import com.unboundid.ldap.sdk.extensions.StartTLSExtendedRequest;
 import com.unboundid.util.ssl.SSLUtil;
 import com.unboundid.util.ssl.TrustStoreTrustManager;
-import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLContext;
 import java.security.GeneralSecurityException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import edu.lternet.pasta.common.security.authentication.Group;
 
 /**
  * User: servilla
