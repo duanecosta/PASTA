@@ -29,7 +29,7 @@ CREATE TABLE identity.profile (
 CREATE TABLE identity.identity ( 
   user_id TEXT NOT NULL,
   provider_id INTEGER NOT NULL,
-  profile_id INTEGER NOT NULL,
+  profile_id INTEGER,
   verify_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
   PRIMARY KEY (user_id, provider_id),
   FOREIGN KEY (profile_id) REFERENCES identity.profile(profile_id),
