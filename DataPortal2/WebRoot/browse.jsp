@@ -23,6 +23,8 @@
 <meta charset="UTF-8" />
 <meta content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport">
 
+<link rel="shortcut icon" href="./images/favicon.ico" type="image/x-icon" />
+
 <!-- Google Fonts CSS -->
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,300italic" rel="stylesheet" type="text/css">
 
@@ -86,11 +88,9 @@
 			<fieldset>
 				<p>Browse data packages by keyword or LTER site using the links below. The number of matching data packages is shown in parentheses.&#42;&nbsp;&#42;&#42;</p>
 
-        <!-- <p><strong>Alternative:</strong> <a href="http://vocab.lternet.edu" target="new">Multi-level Browse</a></p> -->
-        
 				<div class="section">
-          <div id='jqxTree'>         
-            <%= browseHTML %>           
+          <div id='jqxTree'>
+            <%= browseHTML %>
 				  </div>
 				</div>
 				<p>
@@ -98,7 +98,7 @@
 				   <small>&#42;&#42; <em>Search results are refreshed nightly.</em></small>
 				</p>
 			</fieldset>
-								<!-- end of section-table --></div>
+			        </div>
 							<!-- end of content --></div>
 					</div>
 				</div>
