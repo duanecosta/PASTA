@@ -32,16 +32,43 @@ import java.util.ArrayList;
  */
 public class Token {
 
+  private class Identity {
+    String identifier;
+    String provider;
+
+    private String getIdentifier() {
+      return identifier;
+    }
+
+    private void setIdentifier(String identifier) {
+      this.identifier = identifier;
+    }
+
+    private String getProvider() {
+      return provider;
+    }
+
+    private void setProvider(String provider) {
+      this.provider = provider;
+    }
+
+  }
+
   /* Instance variables */
 
   private Long expiry;
-  private Integer profileId;
   private String surName;
   private String givenName;
   private String nickName;
-  private ArrayList<Group> groups;
+  private ArrayList<Identity> identities = new ArrayList<Identity>();
 
   /* Class variables */
+
+  private static final String PUBLIC = "public";
+  private static final String AUTHENTICATED = "authenticated";
+  private static final String PROFILED = "profiled";
+
+  private static final String GLOBAL = "*";
  
   /* Constructors */
 
@@ -63,24 +90,6 @@ public class Token {
    */
   public void setExpiry(Long expiry) {
     this.expiry = expiry;
-  }
-
-  /**
-   * Gets profile identifier of the token owner.
-   *
-   * @return Profile identifier
-   */
-  public Integer getProfileId() {
-    return profileId;
-  }
-
-  /**
-   * Sets profile identifier of the token owner.
-   *
-   * @param profileId Profile identifier
-   */
-  public void setProfileId(Integer profileId) {
-    this.profileId = profileId;
   }
 
   /**
@@ -138,21 +147,92 @@ public class Token {
   }
 
   /**
-   * Gets groups of the token owner.
+   * Returns the number of Token identities.
    *
-   * @return Groups
+   * @return Number of Token identities
    */
-  public ArrayList<Group> getGroups() {
-    return groups;
+  public Integer size() {
+
+    return identities.size();
+
   }
 
   /**
-   * Sets groups of the token owner.
+   * Returns the identifier associated with the identity identified by index.
    *
-   * @param groups Groups
+   * @param id Identity index
+   * @return Identity identifier
+   * @throws IndexOutOfBoundsException
    */
-  public void setGroups(ArrayList<Group> groups) {
-    this.groups = groups;
+  public String getIdentifier(Integer id) throws IndexOutOfBoundsException {
+
+    if (id < 0 || id >= identities.size()) {
+      String gripe = String.format("getIdentifier: id value '%d' out of bounds!", id);
+      throw new IndexOutOfBoundsException(gripe);
+    }
+
+    return identities.get(id).getIdentifier();
+
+  }
+
+  /**
+   * Returns the provider associated with the identity identified by index.
+   *
+   * @param id Identity index
+   * @return Identity provider
+   * @throws IndexOutOfBoundsException
+   */
+  public String getProvider(Integer id) throws IndexOutOfBoundsException {
+
+    if (id < 0 || id >= identities.size()) {
+      String gripe = String.format("getIdentifier: id value '%d' out of bounds!", id);
+      throw new IndexOutOfBoundsException(gripe);
+    }
+
+    return identities.get(id).getProvider();
+
+  }
+
+  /**
+   * Adds new Identity to list of token owner identities.
+   *
+   * @param identifier Identity identifier (user or group or role)
+   * @param provider Identity provider
+   */
+  public void addIdentity(String identifier, String provider) {
+
+    Identity identity = new Identity();
+    identity.setIdentifier(identifier);
+    identity.setProvider(provider);
+    identities.add(identity);
+
+  }
+
+  /**
+   * Sets the "public" identity.
+   */
+  public void setPublic() {
+
+    addIdentity(PUBLIC, GLOBAL);
+
+  }
+
+  /**
+   * Sets the "authenticated" identity.
+   */
+  public void setAuthenticated() {
+
+    addIdentity(AUTHENTICATED, GLOBAL);
+
+  }
+
+  /**
+   * Sets the "profiled" identity.
+   */
+  public void setProfiled() {
+
+    addIdentity(PROFILED, GLOBAL);
+
   }
 
   /* Class methods */
