@@ -16,7 +16,7 @@
  * language governing permissions and limitations under the License.
  */
 
-package edu.lternet.pasta.identitymanager;
+package edu.lternet.pasta.common.security.authentication;
 
 import org.apache.log4j.Logger;
 
@@ -35,6 +35,7 @@ public class Group {
   /* Instance variables */
 
   private String groupName;
+  private String providerName;
  
   /* Class variables */
 
@@ -48,10 +49,10 @@ public class Group {
   /**
    * Sets the group name for the Group.
    *
-   * @param name
+   * @param name Group name
    */
   public void setGroupName(String name) {
-    this.groupName = name;
+    groupName = name;
   }
 
   /**
@@ -63,6 +64,27 @@ public class Group {
     return groupName;
   }
 
+  /**
+   * Sets the provider name for the Group.
+   *
+   * @param name Provider name
+   */
+  public void setProviderName(String name) {
+
+    providerName = name;
+
+  }
+
+  /**
+   * Gets the provider name of the Group.
+   *
+   * @return Provider name
+   */
+  public String getProviderName() {
+
+    return providerName;
+
+  }
   /* Class methods */
 
 }
