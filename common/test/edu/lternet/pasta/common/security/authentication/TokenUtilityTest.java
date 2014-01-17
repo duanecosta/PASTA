@@ -52,10 +52,10 @@ public class TokenUtilityTest {
   /* Constructors */
 
   /* Instance methods */
+
   /**
    * @throws Exception
    */
-
   @Before
   public void setUp() throws Exception {
 
