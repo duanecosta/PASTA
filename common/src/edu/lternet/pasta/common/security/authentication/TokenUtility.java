@@ -75,12 +75,12 @@ public class TokenUtility {
   }
 
   /**
-   * Marshalls the authentication token into XML.
+   * Marshals the authentication token into XML.
    *
    * @param token The authentication token
-   * @return Marshalled XML of authentication token
+   * @return Marshaled XML of authentication token
    */
-  public static String marshallToken(Token token) {
+  public static String marshalToken(Token token) {
 
     String xml = null;
 
@@ -93,11 +93,11 @@ public class TokenUtility {
       xml = new String(baos.toByteArray(), "UTF-8");
     }
     catch (JAXBException e) {
-      System.err.printf("marshallToken: %s", e.getMessage());
+      System.err.printf("marshalToken: %s", e.getMessage());
       e.printStackTrace();
     }
     catch (UnsupportedEncodingException e) {
-      System.err.printf("marshallToken: %s", e.getMessage());
+      System.err.printf("marshalToken: %s", e.getMessage());
       e.printStackTrace();
     }
 
@@ -106,9 +106,9 @@ public class TokenUtility {
   }
 
   /**
-   * Unmarshalls the XML into an authentication token.
+   * Unmarshals the XML into an authentication token.
    *
-   * @param xml The marshalled XML of the authentication token
+   * @param xml The marshaled XML of the authentication token
    * @return The authentication token
    */
   public static Token unmarshalToken(String xml) {
