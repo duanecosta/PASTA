@@ -58,12 +58,6 @@ public class LterLdapProvider extends Provider {
 
   /* Constructors */
 
-  public LterLdapProvider() throws PastaConfigurationException {
-
-    super();
-
-  }
-
   public LterLdapProvider(Integer providerId)
       throws PastaConfigurationException, ProviderDoesNotExistException,
                  SQLException, ClassNotFoundException {
@@ -150,13 +144,24 @@ public class LterLdapProvider extends Provider {
    * @return List of Groups
    */
   public ArrayList<Group> getGroups() {
+
     //TODO: Connection to LTER personnel DB webservice here to retrieve groups
-    return null;
+
+    ArrayList<Group> groups = new ArrayList<Group>();
+
+    // Add default LTER group
+    Group group = new Group();
+    group.setProviderName(providerName);
+    group.setGroupName("LTER");
+    groups.add(group);
+
+    return groups;
+
   }
 
   /*
-     * Returns an LDAP TLS connection to the specified host and port.
-     */
+   * Returns an LDAP TLS connection to the specified host and port.
+   */
   private LDAPConnection makeTlsConnection() {
 
     LDAPConnection connection = null;
