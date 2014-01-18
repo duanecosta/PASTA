@@ -20,6 +20,10 @@ package edu.lternet.pasta.identitymanager;
 
 import org.apache.log4j.Logger;
 
+import java.sql.SQLException;
+
+import static edu.lternet.pasta.identitymanager.ProviderFactory.IdP.*;
+
 /**
  * User: servilla
  * Date: 12/10/13
@@ -45,18 +49,36 @@ public final class ProviderFactory {
 
   /* Class methods */
 
-  public static Provider getProvider(IdP providerId) {
+  public static Provider getProvider(IdP idp) {
 
     Provider provider = null;
 
-    if (providerId == IdP.LTERLDAP) {
-      try {
-        provider = new LterLdapProvider();
-      }
-      catch (PastaConfigurationException e) {
-        logger.error("getProvider: " + e.getMessage());
-        e.printStackTrace();
-      }
+    switch(idp) {
+      case LTERLDAP:
+        try {
+          provider = new LterLdapProvider(idp.valueOf());
+        }
+        catch (PastaConfigurationException e) {
+          logger.error("getProvider: " + e.getMessage());
+          e.printStackTrace();
+        }
+        catch (ProviderDoesNotExistException e) {
+          logger.error("getProvider: " + e.getMessage());
+          e.printStackTrace();
+        }
+        catch (SQLException e) {
+          logger.error("getProvider: " + e.getMessage());
+          e.printStackTrace();
+        }
+        catch (ClassNotFoundException e) {
+          logger.error("getProvider: " + e.getMessage());
+          e.printStackTrace();
+        }
+        break;
+      case LTEREXTDB:
+      case GOOGLE:
+      case INCOMMON:
+      default:
     }
 
     return provider;
@@ -65,7 +87,12 @@ public final class ProviderFactory {
 
   enum IdP {
 
-    LTERLDAP, LTEREXTDB, GOOGLE, INCOMMON;
+    LTERLDAP(1), LTEREXTDB(2), GOOGLE(3), INCOMMON(4);
+
+    private int index;
+
+    private IdP(int index) {this.index = index;}
+    public int valueOf() {return index;}
 
   }
 
