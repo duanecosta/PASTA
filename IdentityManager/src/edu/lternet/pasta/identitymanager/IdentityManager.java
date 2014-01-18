@@ -24,6 +24,9 @@ import edu.lternet.pasta.common.security.authentication.jaxb.Token;
 import org.apache.log4j.Logger;
 
 import java.math.BigInteger;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,11 +43,6 @@ public class IdentityManager {
 
   /* Instance variables */
 
-  private Provider mProvider = null;
-  private Identity mIdentity = null;
-  private Profile mProfile = null;
-  private Integer mId = 0;
-
   /* Class variables */
 
   private static final Logger logger =
@@ -57,8 +55,19 @@ public class IdentityManager {
 
   /* Instance methods */
 
+  /**
+   *
+   * @param credential
+   * @param idp
+   * @return
+   * @throws UserValidationException
+   * @throws PastaConfigurationException
+   * @throws SQLException
+   * @throws ClassNotFoundException
+   */
   public String login(Credential credential, ProviderFactory.IdP idp)
-      throws UserValidationException {
+      throws UserValidationException, PastaConfigurationException, SQLException,
+                 ClassNotFoundException {
 
     // Credential and identity provider must be set together, or not at all
     if (credential != null && idp == null) {
@@ -77,27 +86,77 @@ public class IdentityManager {
 
     ObjectFactory objectFactory = new ObjectFactory();
     Token token = objectFactory.createToken();
-    List<Token.Identity> identities = token.getIdentity();
-    Token.Identity identity;
+    List<Token.Identity> tokenIdentities = token.getIdentity();
+    Token.Identity tokenIdentity;
 
     // Set "public" identity for all users
-    mId++;
-    identity = objectFactory.createTokenIdentity();
-    identity.setId(new BigInteger(mId.toString()));
-    identity.setIdentifier(PUBLIC);
-    identity.setProvider(GLOBAL);
-    identities.add(identity);
+    tokenIdentity = objectFactory.createTokenIdentity();
+    tokenIdentity.setId(new BigInteger("1"));
+    tokenIdentity.setIdentifier(PUBLIC);
+    tokenIdentity.setProvider(GLOBAL);
+    tokenIdentities.add(tokenIdentity);
 
     if (credential != null && idp != null) {
-      mId++;
-      mProvider = ProviderFactory.getProvider(idp);
+
+      /*
+       * Setup the appropriate provider and validate the user's identity
+       */
+      Provider provider;
+      provider = ProviderFactory.getProvider(idp);
+      provider.validateUser(credential);// can throw UserValidationException
+
+      /*
+       * Obtain user identity information
+       */
       String userId = credential.getUser();
-      String providerName = mProvider.getProviderName();
-      identity = objectFactory.createTokenIdentity();
-      identity.setId(new BigInteger(mId.toString()));
-      identity.setIdentifier(userId);
-      identity.setProvider(providerName);
-      identities.add(identity);
+      String providerName = provider.getProviderName();
+
+      /*
+       * Load user Identity if exists, otherwise create new Identity and save
+       * to Identity database
+       */
+
+      Date now = new Date();
+      Identity identity = null;
+      try {
+        identity = new Identity(userId, provider.providerId);
+        identity.setVerifyTimestamp(now);
+        identity.updateIdentity();
+      }
+      catch (IdentityDoesNotExistException e) { // create new identity and save
+        identity = new Identity();
+        identity.setUserId(userId);
+        identity.setProviderId(provider.getProviderId());
+        identity.setVerifyTimestamp(now);
+        identity.saveIdentity();
+      }
+
+      /*
+       * Build identity object for token
+       */
+      tokenIdentity = objectFactory.createTokenIdentity();
+      tokenIdentity.setId(new BigInteger("2"));
+      tokenIdentity.setIdentifier(userId);
+      tokenIdentity.setProvider(providerName);
+      tokenIdentities.add(tokenIdentity);
+
+      /*
+       * Add group identities to token identity block
+       */
+      Integer id = 3;
+      ArrayList<Group> groups = provider.getGroups();
+      for (Group group: groups) {
+        tokenIdentity = objectFactory.createTokenIdentity();
+        tokenIdentity.setId(new BigInteger((id++).toString()));
+        tokenIdentity.setIdentifier(group.getGroupName());
+        tokenIdentity.setProvider(providerName);
+        tokenIdentities.add(tokenIdentity);
+      }
+
+      /*
+       * If profile exists, add mapped identities to token identity block
+       */
+
     }
 
     tokenXml = TokenUtility.marshalToken(token);
