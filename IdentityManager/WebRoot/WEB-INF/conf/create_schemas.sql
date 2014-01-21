@@ -13,7 +13,6 @@ CREATE TABLE identity.provider (
 CREATE SEQUENCE identity.profile_id_seq;
 CREATE TABLE identity.profile (
   profile_id INTEGER DEFAULT NEXTVAL('identity.profile_id_seq'),
-  active BOOLEAN NOT NULL,
   create_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
   update_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
   sur_name TEXT,
@@ -31,7 +30,6 @@ CREATE TABLE identity.identity (
   profile_id INTEGER,
   verify_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
   PRIMARY KEY (user_id, provider_id),
-  FOREIGN KEY (profile_id) REFERENCES identity.profile(profile_id),
   FOREIGN KEY (provider_id) REFERENCES identity.provider(provider_id)
 );
 
