@@ -235,6 +235,8 @@ public class LterLdapProviderTest {
     String message = String.format("Expected provider name '%s', but received '%s'!", providerName, testProviderName);
     assertTrue(message, providerName.equals(testProviderName));
 
+    purgeProvider(providerId);
+
   }
 
   @Test
@@ -523,7 +525,7 @@ public class LterLdapProviderTest {
 
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("DELETE FROM identity.provider WHERE provider_id='");
-    strBuilder.append(providerId.toString());
+    strBuilder.append(providerId);
     strBuilder.append("';");
 
     String sql = strBuilder.toString();
