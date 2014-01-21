@@ -87,12 +87,12 @@ public final class ProviderFactory {
 
   enum IdP {
 
-    LTERLDAP(1), LTEREXTDB(2), GOOGLE(3), INCOMMON(4);
+    LTERLDAP("PASTA"), LTEREXTDB("LTERX"), GOOGLE("GOOGLE"), INCOMMON("INCOMMON");
 
-    private int index;
+    private String id;
 
-    private IdP(int index) {this.index = index;}
-    public int valueOf() {return index;}
+    private IdP(String id) {this.id = id;}
+    public String valueOf() {return id;}
 
   }
 

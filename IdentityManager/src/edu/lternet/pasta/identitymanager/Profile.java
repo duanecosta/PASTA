@@ -392,7 +392,7 @@ public class Profile {
 
       while (rs.next()) {
         String userId = rs.getString("user_id");
-        Integer providerId = rs.getInt("provider_id");
+        String providerId = rs.getString("provider_id");
         identities = new ArrayList<Identity>();
         try {
           Identity identity = new Identity(userId, providerId);

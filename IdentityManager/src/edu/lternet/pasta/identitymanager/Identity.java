@@ -48,7 +48,7 @@ public class Identity {
   /* Instance variables */
 
   private String userId = null;
-  private Integer providerId = null;
+  private String providerId = null;
   private Integer profileId = null;
   private Timestamp verifyTimestamp = null;
 
@@ -87,7 +87,7 @@ public class Identity {
    * @throws SQLException
    * @throws IdentityDoesNotExistException
    */
-  public Identity(String userId, Integer providerId)
+  public Identity(String userId, String providerId)
       throws PastaConfigurationException, ClassNotFoundException, SQLException,
                  IdentityDoesNotExistException {
 
@@ -102,9 +102,9 @@ public class Identity {
     strBuilder.append("identity.identity WHERE ");
     strBuilder.append("identity.identity.user_id='");
     strBuilder.append(this.userId);
-    strBuilder.append("' AND identity.identity.provider_id=");
-    strBuilder.append(this.providerId.toString());
-    strBuilder.append(";");
+    strBuilder.append("' AND identity.identity.provider_id='");
+    strBuilder.append(this.providerId);
+    strBuilder.append("';");
 
     String sql = strBuilder.toString();
 
@@ -169,7 +169,7 @@ public class Identity {
    *
    * @return The provider identifier
    */
-  public Integer getProviderId() {
+  public String getProviderId() {
     return providerId;
   }
 
@@ -178,7 +178,7 @@ public class Identity {
    *
    * @param providerId The provider identifier
    */
-  public void setProviderId(Integer providerId) {
+  public void setProviderId(String providerId) {
     this.providerId = providerId;
   }
 
@@ -238,7 +238,7 @@ public class Identity {
    * @throws SQLException
    * @throws ClassNotFoundException
    */
-  public void getIdentity(String userId, int providerId)
+  public void getIdentity(String userId, String providerId)
       throws SQLException, ClassNotFoundException,
                  IdentityDoesNotExistException {
 
@@ -252,9 +252,9 @@ public class Identity {
     strBuilder.append("identity.identity.verify_timestamp FROM ");
     strBuilder.append("identity.identity WHERE identity.identity.user_id='");
     strBuilder.append(this.userId);
-    strBuilder.append("' AND identity.identity.provider_id=");
-    strBuilder.append(this.providerId.toString());
-    strBuilder.append(";");
+    strBuilder.append("' AND identity.identity.provider_id='");
+    strBuilder.append(this.providerId);
+    strBuilder.append("';");
 
     String sql = strBuilder.toString();
 
@@ -309,9 +309,9 @@ public class Identity {
     strBuilder.append("(user_id,provider_id,profile_id,verify_timestamp) ");
     strBuilder.append("VALUES ('");
     strBuilder.append(userId);
-    strBuilder.append("',");
+    strBuilder.append("','");
     strBuilder.append(providerId);
-    strBuilder.append(",");
+    strBuilder.append("',");
     strBuilder.append(profileId);
     strBuilder.append(",'");
     strBuilder.append(verifyTimestamp);
@@ -366,14 +366,14 @@ public class Identity {
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("UPDATE identity.identity SET ");
     strBuilder.append("verify_timestamp='");
-    strBuilder.append(this.verifyTimestamp);
+    strBuilder.append(verifyTimestamp);
     strBuilder.append("', profile_id=");
-    strBuilder.append(this.profileId);
+    strBuilder.append(profileId);
     strBuilder.append(" WHERE identity.identity.user_id='");
-    strBuilder.append(this.userId);
-    strBuilder.append("' AND identity.identity.provider_id=");
-    strBuilder.append(this.providerId.toString());
-    strBuilder.append(";");
+    strBuilder.append(userId);
+    strBuilder.append("' AND identity.identity.provider_id='");
+    strBuilder.append(providerId);
+    strBuilder.append("';");
 
     String sql = strBuilder.toString();
 
@@ -420,10 +420,10 @@ public class Identity {
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("DELETE FROM identity.identity ");
     strBuilder.append("WHERE identity.identity.user_id='");
-    strBuilder.append(this.userId);
-    strBuilder.append("' AND identity.identity.provider_id=");
-    strBuilder.append(this.providerId.toString());
-    strBuilder.append(";");
+    strBuilder.append(userId);
+    strBuilder.append("' AND identity.identity.provider_id='");
+    strBuilder.append(providerId);
+    strBuilder.append("';");
 
     String sql = strBuilder.toString();
 
@@ -478,12 +478,12 @@ public class Identity {
     String verifyTimestamp = "NULL";
 
     if (this.userId != null) userId = this.userId;
-    if (this.providerId != null) providerId = this.providerId.toString();
+    if (this.providerId != null) providerId = this.providerId;
     if (this.profileId != null) profileId = this.profileId.toString();
     if (this.verifyTimestamp != null) verifyTimestamp =
                                           this.verifyTimestamp.toString();
 
-    return String.format("%s, %s, %s, %s", userId, profileId, profileId,
+    return String.format("%s, %s, %s, %s", userId, providerId, profileId,
                             verifyTimestamp);
 
   }

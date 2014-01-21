@@ -40,7 +40,7 @@ public abstract class Provider {
 
   /* Instance variables */
 
-  protected Integer providerId;
+  protected String providerId;
   protected String providerName;
   protected String providerConnection;
   protected String contactName;
@@ -80,7 +80,7 @@ public abstract class Provider {
    * @throws SQLException
    * @throws ProviderDoesNotExistException
    */
-  public Provider(Integer providerId) throws PastaConfigurationException,
+  public Provider(String providerId) throws PastaConfigurationException,
                                                  ClassNotFoundException,
                                                  SQLException,
                                                  ProviderDoesNotExistException {
@@ -94,9 +94,9 @@ public abstract class Provider {
     strBuilder.append("identity.provider.contact_name,");
     strBuilder.append("identity.provider.contact_phone,");
     strBuilder.append("identity.provider.contact_email FROM ");
-    strBuilder.append("identity.provider WHERE provider_id=");
-    strBuilder.append(providerId.toString());
-    strBuilder.append(";");
+    strBuilder.append("identity.provider WHERE provider_id='");
+    strBuilder.append(this.providerId);
+    strBuilder.append("';");
 
     String sql = strBuilder.toString();
 
@@ -123,7 +123,7 @@ public abstract class Provider {
         this.contactEmail = rs.getString("contact_email");
       }
       else {
-        String gripe = String.format("Provider with identifier '%d' does not exist!\n", providerId);
+        String gripe = String.format("Provider with identifier '%s' does not exist!\n", providerId);
         throw new ProviderDoesNotExistException(gripe);
       }
     }
@@ -146,7 +146,7 @@ public abstract class Provider {
    *
    * @param providerId The provider identifier
    */
-  public void setProviderId(Integer providerId) {
+  public void setProviderId(String providerId) {
     this.providerId = providerId;
   }
 
@@ -155,7 +155,7 @@ public abstract class Provider {
    *
    * @return The provider identifier
    */
-  public Integer getProviderId() {
+  public String getProviderId() {
     return providerId;
   }
 
@@ -267,7 +267,7 @@ public abstract class Provider {
     strBuilder.append("SELECT identity.identity.user_id FROM ");
     strBuilder.append("identity.identity WHERE ");
     strBuilder.append("identity.identity.provider_id=");
-    strBuilder.append(this.providerId);
+    strBuilder.append("'" + providerId + "'");
     strBuilder.append(";");
 
     String sql = strBuilder.toString();
@@ -291,7 +291,7 @@ public abstract class Provider {
         String userId = rs.getString("user_id");
         identities = new ArrayList<Identity>();
         try {
-          Identity identity = new Identity(userId, this.providerId);
+          Identity identity = new Identity(userId, providerId);
           identities.add(identity);
         }
         catch (PastaConfigurationException e) {
@@ -335,12 +335,14 @@ public abstract class Provider {
     if (this.contactEmail != null) contactEmail = this.contactEmail;
 
     StringBuilder strBuilder = new StringBuilder();
-    strBuilder.append("INSERT INTO identity.provider (provider_name,");
-    strBuilder.append("provider_conn,contact_name,contact_phone,");
-    strBuilder.append("contact_email) VALUES ('");
-    strBuilder.append(this.providerName);
+    strBuilder.append("INSERT INTO identity.provider (provider_id,");
+    strBuilder.append("provider_name,provider_conn,contact_name,");
+    strBuilder.append("contact_phone,contact_email) VALUES ('");
+    strBuilder.append(providerId);
     strBuilder.append("','");
-    strBuilder.append(this.providerConnection);
+    strBuilder.append(providerName);
+    strBuilder.append("','");
+    strBuilder.append(providerConnection);
     strBuilder.append("','");
     strBuilder.append(contactName);
     strBuilder.append("','");
@@ -363,20 +365,11 @@ public abstract class Provider {
     }
 
     try {
+
       Statement stmt = dbConn.createStatement();
 
-      if (stmt.executeUpdate(sql, stmt.RETURN_GENERATED_KEYS) == 0) {
+      if (stmt.executeUpdate(sql) == 0) {
         String gripe = "saveProvider: '" + sql + "' failed";
-        throw new SQLException(gripe);
-      }
-
-      ResultSet rs = stmt.getGeneratedKeys();
-      if (rs.next()) {
-        providerId = rs.getInt("provider_id");
-      }
-      else {
-        String gripe = "saveProvider: setting providerId from getGeneratedKeys " +
-                           "failed!";
         throw new SQLException(gripe);
       }
 
@@ -390,7 +383,6 @@ public abstract class Provider {
     finally {
       dbConn.close();
     }
-
 
   }
 
@@ -414,18 +406,18 @@ public abstract class Provider {
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("UPDATE identity.provider SET ");
     strBuilder.append("provider_name='");
-    strBuilder.append(this.providerName);
+    strBuilder.append(providerName);
     strBuilder.append("', provider_conn='");
-    strBuilder.append(this.providerConnection);
+    strBuilder.append(providerConnection);
     strBuilder.append("', contact_name='");
     strBuilder.append(contactName);
     strBuilder.append("', contact_phone='");
     strBuilder.append(contactPhone);
     strBuilder.append("', contact_email='");
     strBuilder.append(contactEmail);
-    strBuilder.append("' WHERE identity.provider.provider_id=");
-    strBuilder.append(this.providerId.toString());
-    strBuilder.append(";");
+    strBuilder.append("' WHERE identity.provider.provider_id='");
+    strBuilder.append(providerId);
+    strBuilder.append("';");
 
     String sql = strBuilder.toString();
 

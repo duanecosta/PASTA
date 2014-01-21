@@ -65,9 +65,8 @@ public class IdentityTest {
   private static Integer profileIdJack = 2;
   private static Date verifyTimestampJack = new Date(1384917912619L);
 
-  private static Integer providerIdUnknown = 0;
-  private static Integer providerIdLTER = 1;
-  private static Integer providerIdLTERX = 2;
+  private static String providerIdLTER = "PASTA";
+  private static String providerIdLTERX = "LTERX";
 
   /* Constructors */
 
@@ -109,8 +108,8 @@ public class IdentityTest {
                                        "'%s'!", userIdCarroll, userId);
     assertTrue(message, userIdCarroll.equals(userId));
 
-    Integer proivderId = identity.getProviderId();
-    message = String.format("Expected providerId '%d', but received '%d'!",
+    String proivderId = identity.getProviderId();
+    message = String.format("Expected providerId '%s', but received '%s'!",
                                providerIdLTER, proivderId);
     assertEquals(message, providerIdLTER, proivderId);
 
@@ -149,7 +148,7 @@ public class IdentityTest {
   public void testSetProviderIdentifier() {
 
     identity.setProviderId(providerIdLTERX);
-    Integer providerId = identity.getProviderId();
+    String providerId = identity.getProviderId();
     String message = "Expected provider identifier '" + providerIdLTERX +
                          "', but received '" + providerId + "'!\n";
     assertTrue(message, providerIdLTERX.equals(providerId));
@@ -356,7 +355,7 @@ public class IdentityTest {
    * given user identifier, provider identifier, profile identifier, and verify
    * timestamp.
    */
-  private static void insertIdentity(String userId, Integer providerId,
+  private static void insertIdentity(String userId, String providerId,
       Integer profileId, Date verifyTimestamp) throws Exception {
 
     Timestamp timestamp = new Timestamp(verifyTimestamp.getTime());
@@ -366,9 +365,9 @@ public class IdentityTest {
     strBuilder.append("(user_id,provider_id,profile_id,verify_timestamp) ");
     strBuilder.append("VALUES ('");
     strBuilder.append(userId);
-    strBuilder.append("',");
+    strBuilder.append("','");
     strBuilder.append(providerId);
-    strBuilder.append(",");
+    strBuilder.append("',");
     strBuilder.append(profileId);
     strBuilder.append(",'");
     strBuilder.append(timestamp);
@@ -412,7 +411,7 @@ public class IdentityTest {
    * Removes the Identity record from the Identity database if the record exists
    * for the given user identifier and provider identifier.
    */
-  private static void purgeIdentity(String userId, Integer providerId)
+  private static void purgeIdentity(String userId, String providerId)
       throws Exception {
 
     StringBuilder strBuilder = new StringBuilder();
@@ -420,9 +419,9 @@ public class IdentityTest {
     strBuilder.append("identity.identity.verify_timestamp FROM ");
     strBuilder.append("identity.identity WHERE identity.identity.user_id='");
     strBuilder.append(userId);
-    strBuilder.append("' AND identity.identity.provider_id=");
-    strBuilder.append(Integer.toString(providerId));
-    strBuilder.append(";");
+    strBuilder.append("' AND identity.identity.provider_id='");
+    strBuilder.append(providerId);
+    strBuilder.append("';");
 
     String sql = strBuilder.toString();
 
@@ -447,9 +446,9 @@ public class IdentityTest {
         strBuilder.append("DELETE FROM identity.identity ");
         strBuilder.append("WHERE identity.identity.user_id='");
         strBuilder.append(userId);
-        strBuilder.append("' AND identity.identity.provider_id=");
-        strBuilder.append(Integer.toString(providerId));
-        strBuilder.append(";");
+        strBuilder.append("' AND identity.identity.provider_id='");
+        strBuilder.append(providerId);
+        strBuilder.append("';");
 
 
         sql = strBuilder.toString();
@@ -479,7 +478,7 @@ public class IdentityTest {
    * Tests whether an Identity based on the user identifier and provider
    * identifier exists in the Identity database.
    */
-  private static boolean identityExists(String userId, Integer providerId)
+  private static boolean identityExists(String userId, String providerId)
       throws Exception {
 
     boolean identityExists = false;
@@ -488,9 +487,9 @@ public class IdentityTest {
     strBuilder.append("SELECT * FROM ");
     strBuilder.append("identity.identity WHERE identity.identity.user_id='");
     strBuilder.append(userId);
-    strBuilder.append("' AND identity.identity.provider_id=");
-    strBuilder.append(Integer.toString(providerId));
-    strBuilder.append(";");
+    strBuilder.append("' AND identity.identity.provider_id='");
+    strBuilder.append(providerId);
+    strBuilder.append("';");
 
     String sql = strBuilder.toString();
 

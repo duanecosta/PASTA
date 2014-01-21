@@ -54,8 +54,8 @@ public class LterLdapProviderTest {
   private static String dbUser;     // database user name
   private static String dbPassword; // database user password
 
-  private static Integer providerIdLTER = 1;
-  private static String providerNameLTER = "LTER";
+  private static String providerIdLTER = "PASTA";
+  private static String providerNameLTER = "https://pasta.lternet.edu/authentication";
   private static String providerConnectionLTER = "ldap.lternet.edu:389:/WebRoot/WEB-INF/conf/lternet.jks";
   private static String contactNameLTER = "System Administrator";
   private static String contactPhoneLTER = "505-277-2551";
@@ -76,7 +76,7 @@ public class LterLdapProviderTest {
   @Before
   public void setUp() throws Exception {
 
-    provider = new LterLdapProvider();
+    provider = new LterLdapProvider(providerIdLTER);
 
   }
 
@@ -169,12 +169,14 @@ public class LterLdapProviderTest {
   @Test
   public void testSaveProvider() throws Exception {
 
+    String providerId = "Z";
     String providerName = "A";
     String providerConnection = "B";
     String contactName = "C";
     String contactPhone = "D";
     String contactEmail = "E";
 
+    provider.setProviderId(providerId);
     provider.setProviderName(providerName);
     provider.setProviderConnection(providerConnection);
     provider.setContactName(contactName);
@@ -188,28 +190,29 @@ public class LterLdapProviderTest {
       providerConnection, contactName, contactPhone, contactEmail);
     */
 
-    Integer providerId = provider.getProviderId();
+    providerId = provider.getProviderId();
 
     String message = "Expected a provider identifier value, but received null!";
     assertNotNull(message, providerId);
 
-    if (providerId != null) LterLdapProviderTest.purgeProvider(providerId);
+    LterLdapProviderTest.purgeProvider(providerId);
 
   }
 
   @Test
   public void testUpdateProvider() throws Exception {
 
+    String providerId = "Z";
     String providerName = "A";
     String providerConnection = "ldap.lternet.edu:389:/WebRoot/WEB-INF/conf/lternet.jks";
     String contactName = "C";
     String contactPhone = "D";
     String contactEmail = "E";
 
-    LterLdapProviderTest.insertProvider(providerName, providerConnection,
+    LterLdapProviderTest.insertProvider(providerId, providerName, providerConnection,
       contactName, contactPhone, contactEmail);
 
-    Integer providerId = LterLdapProviderTest.getProviderId(providerName,
+    providerId = LterLdapProviderTest.getProviderId(providerName,
       providerConnection, contactName, contactPhone, contactEmail);
 
     LterLdapProvider provider = new LterLdapProvider(providerId);
@@ -313,15 +316,17 @@ public class LterLdapProviderTest {
   /*
    * Inserts a test Provider into the Provider database.
    */
-  private static void insertProvider(String providerName,
+  private static void insertProvider(String providerId, String providerName,
     String providerConnection, String contactName, String contactPhone,
     String contactEmail) throws Exception {
 
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("INSERT INTO identity.provider ");
-    strBuilder.append("(provider_name,provider_conn,contact_name,");
+    strBuilder.append("(provider_id,provider_name,provider_conn,contact_name,");
     strBuilder.append("contact_phone,contact_email) VALUES (");
     strBuilder.append("'");
+    strBuilder.append(providerId);
+    strBuilder.append("','");
     strBuilder.append(providerName);
     strBuilder.append("','");
     strBuilder.append(providerConnection);
@@ -372,11 +377,11 @@ public class LterLdapProviderTest {
    * matches the provider name, provider connection, contact name, contact
    * phone, and contact email.
    */
-  private static Integer getProviderId(String providerName,
+  private static String getProviderId(String providerName,
     String providerConnection, String contactName, String contactPhone,
     String contactEmail) throws Exception {
 
-    Integer providerId = null;
+    String providerId = null;
 
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("SELECT identity.provider.provider_id FROM ");
@@ -410,7 +415,7 @@ public class LterLdapProviderTest {
       ResultSet rs = stmt.executeQuery(sql);
 
       if (rs.next()) {
-        providerId = rs.getInt("provider_id");
+        providerId = rs.getString("provider_id");
        }
       else {
         String gripe = String.format("Provider with name '%s' does not exist!\n", providerName);
@@ -435,7 +440,7 @@ public class LterLdapProviderTest {
    * Return the Provider field value for the Provider identified by the
    * provider identifier in the Provider database.
    */
-  private static String getProviderValue(Integer providerId, String field)
+  private static String getProviderValue(String providerId, String field)
       throws Exception {
 
     String providerName;
@@ -450,9 +455,9 @@ public class LterLdapProviderTest {
     strBuilder.append("identity.provider.contact_name,");
     strBuilder.append("identity.provider.contact_phone,");
     strBuilder.append("identity.provider.contact_email FROM ");
-    strBuilder.append("identity.provider WHERE provider_id=");
+    strBuilder.append("identity.provider WHERE provider_id='");
     strBuilder.append(providerId);
-    strBuilder.append(";");
+    strBuilder.append("';");
 
     String sql = strBuilder.toString();
 
@@ -479,7 +484,7 @@ public class LterLdapProviderTest {
         contactEmail = rs.getString("contact_email");
       }
       else {
-        String gripe = String.format("Provider with provider identifier '%d' " +
+        String gripe = String.format("Provider with provider identifier '%s' " +
                                          "does not exist!\n", providerId);
         throw new ProviderDoesNotExistException(gripe);
       }
@@ -514,12 +519,12 @@ public class LterLdapProviderTest {
    * Purges the Provider identified by the provider identifier from the Provider
    * database.
    */
-  private static void purgeProvider(Integer providerId) throws Exception {
+  private static void purgeProvider(String providerId) throws Exception {
 
     StringBuilder strBuilder = new StringBuilder();
-    strBuilder.append("DELETE FROM identity.provider WHERE provider_id=");
+    strBuilder.append("DELETE FROM identity.provider WHERE provider_id='");
     strBuilder.append(providerId.toString());
-    strBuilder.append(";");
+    strBuilder.append("';");
 
     String sql = strBuilder.toString();
 
@@ -560,7 +565,7 @@ public class LterLdapProviderTest {
    * given user identifier, provider identifier, profile identifier, and verify
    * timestamp.
    */
-  private static void insertIdentity(String userId, Integer providerId,
+  private static void insertIdentity(String userId, String providerId,
     Integer profileId, Date verifyTimestamp) throws Exception {
 
     Timestamp timestamp = new Timestamp(verifyTimestamp.getTime());
@@ -570,9 +575,9 @@ public class LterLdapProviderTest {
     strBuilder.append("(user_id,provider_id,profile_id,verify_timestamp) ");
     strBuilder.append("VALUES ('");
     strBuilder.append(userId);
-    strBuilder.append("',");
+    strBuilder.append("','");
     strBuilder.append(providerId);
-    strBuilder.append(",");
+    strBuilder.append("',");
     strBuilder.append(profileId);
     strBuilder.append(",'");
     strBuilder.append(timestamp);
@@ -616,7 +621,7 @@ public class LterLdapProviderTest {
    * Removes the Identity record from the Identity database if the record exists
    * for the given user identifier and provider identifier.
    */
-  private static void purgeIdentity(String userId, Integer providerId)
+  private static void purgeIdentity(String userId, String providerId)
       throws Exception {
 
     StringBuilder strBuilder = new StringBuilder();
@@ -624,9 +629,9 @@ public class LterLdapProviderTest {
     strBuilder.append("identity.identity.verify_timestamp FROM ");
     strBuilder.append("identity.identity WHERE identity.identity.user_id='");
     strBuilder.append(userId);
-    strBuilder.append("' AND identity.identity.provider_id=");
-    strBuilder.append(Integer.toString(providerId));
-    strBuilder.append(";");
+    strBuilder.append("' AND identity.identity.provider_id='");
+    strBuilder.append(providerId);
+    strBuilder.append("';");
 
     String sql = strBuilder.toString();
 
@@ -651,9 +656,9 @@ public class LterLdapProviderTest {
         strBuilder.append("DELETE FROM identity.identity ");
         strBuilder.append("WHERE identity.identity.user_id='");
         strBuilder.append(userId);
-        strBuilder.append("' AND identity.identity.provider_id=");
-        strBuilder.append(Integer.toString(providerId));
-        strBuilder.append(";");
+        strBuilder.append("' AND identity.identity.provider_id='");
+        strBuilder.append(providerId);
+        strBuilder.append("';");
 
 
         sql = strBuilder.toString();

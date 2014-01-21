@@ -58,7 +58,7 @@ public class LterLdapProvider extends Provider {
 
   /* Constructors */
 
-  public LterLdapProvider(Integer providerId)
+  public LterLdapProvider(String providerId)
       throws PastaConfigurationException, ProviderDoesNotExistException,
                  SQLException, ClassNotFoundException {
 
@@ -164,7 +164,7 @@ public class LterLdapProvider extends Provider {
    */
   private LDAPConnection makeTlsConnection() {
 
-    LDAPConnection connection = null;
+    LDAPConnection connection;
 
     try {
       connection = new LDAPConnection(host, port);
@@ -197,7 +197,7 @@ public class LterLdapProvider extends Provider {
    */
   private LDAPConnection makeConnection() {
 
-    LDAPConnection connection = null;
+    LDAPConnection connection;
 
     try {
       connection = new LDAPConnection(host, port);

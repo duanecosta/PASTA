@@ -82,7 +82,7 @@ public class IdentityManager {
       throw new UserValidationException(gripe);
     }
 
-    String tokenXml = null;
+    String tokenXml;
 
     ObjectFactory objectFactory = new ObjectFactory();
     Token token = objectFactory.createToken();
@@ -96,7 +96,7 @@ public class IdentityManager {
     tokenIdentity.setProvider(GLOBAL);
     tokenIdentities.add(tokenIdentity);
 
-    if (credential != null && idp != null) {
+    if (credential != null) { // && idp != null is always true at this point
 
       /*
        * Setup the appropriate provider and validate the user's identity
@@ -117,7 +117,7 @@ public class IdentityManager {
        */
 
       Date now = new Date();
-      Identity identity = null;
+      Identity identity;
       try {
         identity = new Identity(userId, provider.providerId);
         identity.setVerifyTimestamp(now);

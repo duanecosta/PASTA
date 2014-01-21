@@ -1,8 +1,7 @@
 CREATE SCHEMA identity AUTHORIZATION pasta;
 
-CREATE SEQUENCE identity.provider_id_seq;
 CREATE TABLE identity.provider (
-  provider_id INTEGER DEFAULT NEXTVAL('identity.provider_id_seq'),
+  provider_id TEXT NOT NULL,
   provider_name TEXT NOT NULL,
   provider_conn TEXT NOT NULL,
   contact_name TEXT,
@@ -28,7 +27,7 @@ CREATE TABLE identity.profile (
 
 CREATE TABLE identity.identity ( 
   user_id TEXT NOT NULL,
-  provider_id INTEGER NOT NULL,
+  provider_id TEXT NOT NULL,
   profile_id INTEGER,
   verify_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
   PRIMARY KEY (user_id, provider_id),
