@@ -312,7 +312,13 @@ public class Identity {
     strBuilder.append("','");
     strBuilder.append(providerId);
     strBuilder.append("',");
-    strBuilder.append(profileId);
+
+    if (this.profileId == null) {
+      strBuilder.append("NULL");
+    } else {
+      strBuilder.append(this.profileId.toString());
+    }
+
     strBuilder.append(",'");
     strBuilder.append(verifyTimestamp);
     strBuilder.append("');");
@@ -368,7 +374,13 @@ public class Identity {
     strBuilder.append("verify_timestamp='");
     strBuilder.append(verifyTimestamp);
     strBuilder.append("', profile_id=");
-    strBuilder.append(profileId);
+
+    if (this.profileId == null) {
+      strBuilder.append("NULL");
+    } else {
+      strBuilder.append(this.profileId.toString());
+    }
+
     strBuilder.append(" WHERE identity.identity.user_id='");
     strBuilder.append(userId);
     strBuilder.append("' AND identity.identity.provider_id='");
