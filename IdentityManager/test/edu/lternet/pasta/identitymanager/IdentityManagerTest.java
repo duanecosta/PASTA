@@ -46,8 +46,8 @@ public class IdentityManagerTest {
   private static final Logger logger =
       Logger.getLogger(IdentityManagerTest.class);
 
-  private static String uCarrollDn;
-  private static String uCarrollPwd;
+  private static String cJackDn;
+  private static String cJackPwd;
 
   /* Constructors */
 
@@ -77,8 +77,8 @@ public class IdentityManagerTest {
   public void testLoginLter() throws Exception {
 
     Credential credential = new Credential();
-    credential.setUser(uCarrollDn);
-    credential.setPassword(uCarrollPwd);
+    credential.setUser(cJackDn);
+    credential.setPassword(cJackPwd);
 
     ProviderFactory.IdP idp = ProviderFactory.IdP.LTERLDAP;
 
@@ -103,8 +103,8 @@ public class IdentityManagerTest {
       throw new PastaConfigurationException(gripe);
     } else {
       try {
-        uCarrollDn = options.getString("junit.ucarroll.dn");
-        uCarrollPwd = options.getString("junit.ucarroll.password");
+        cJackDn = options.getString("junit.cjack.dn");
+        cJackPwd = options.getString("junit.cjack.password");
       }
       catch (Exception e) {
         logger.error(e.getMessage());
