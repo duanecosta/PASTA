@@ -266,9 +266,9 @@ public abstract class Provider {
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("SELECT identity.identity.user_id FROM ");
     strBuilder.append("identity.identity WHERE ");
-    strBuilder.append("identity.identity.provider_id=");
-    strBuilder.append("'" + providerId + "'");
-    strBuilder.append(";");
+    strBuilder.append("identity.identity.provider_id='");
+    strBuilder.append(providerId);
+    strBuilder.append("';");
 
     String sql = strBuilder.toString();
 
@@ -286,10 +286,10 @@ public abstract class Provider {
     try {
       Statement stmt = dbConn.createStatement();
       ResultSet rs = stmt.executeQuery(sql);
+      identities = new ArrayList<Identity>();
 
       while (rs.next()) {
         String userId = rs.getString("user_id");
-        identities = new ArrayList<Identity>();
         try {
           Identity identity = new Identity(userId, providerId);
           identities.add(identity);
