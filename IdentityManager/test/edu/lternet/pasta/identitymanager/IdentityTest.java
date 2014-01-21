@@ -57,11 +57,11 @@ public class IdentityTest {
   private static Integer profileIdUnknown = 0;
   private static Date verifyTimestampUnknown = new Date(0L);
 
-  private static String userIdCarroll = "uid=ucarroll,org=LTER,dc=ecoinformatics,dc=org";
+  private static String userIdCarroll = "uid=ucarroll,o=LTER,dc=ecoinformatics,dc=org";
   private static Integer profileIdCarroll = 1;
   private static Date verifyTimestampCarroll = new Date(1384893613000L);
 
-  private static String userIdJack = "uid=cjack,org=LTER,dc=ecoinformatics,dc=org";
+  private static String userIdJack = "uid=cjack,o=LTER,dc=ecoinformatics,dc=org";
   private static Integer profileIdJack = 2;
   private static Date verifyTimestampJack = new Date(1384917912619L);
 
@@ -284,7 +284,7 @@ public class IdentityTest {
 
     // Insert wrong profileId and verifyTimestamp
     Date verifyTimestamp = new Date(0l);
-    IdentityTest.insertIdentity(userIdJack, providerIdLTERX, profileIdCarroll,
+    IdentityTest.insertIdentity(userIdJack, providerIdLTERX, null,
                                    verifyTimestamp);
 
     System.out.printf("%s\n", identity.toString());
@@ -368,7 +368,13 @@ public class IdentityTest {
     strBuilder.append("','");
     strBuilder.append(providerId);
     strBuilder.append("',");
-    strBuilder.append(profileId);
+
+    if (profileId == null) {
+      strBuilder.append("NULL");
+    } else {
+      strBuilder.append(profileId.toString());
+    }
+
     strBuilder.append(",'");
     strBuilder.append(timestamp);
     strBuilder.append("');");
