@@ -40,7 +40,6 @@ public class Profile {
   /* Instance variables */
 
   private Integer profileId;
-  private Boolean active;
   private Timestamp createTimestamp;
   private Timestamp updateTimestamp;
   private String surName;
@@ -93,7 +92,7 @@ public class Profile {
     loadConfiguration();
 
     StringBuilder strBuilder = new StringBuilder();
-    strBuilder.append("SELECT identity.profile.active,");
+    strBuilder.append("SELECT ");
     strBuilder.append("identity.profile.create_timestamp,");
     strBuilder.append("identity.profile.update_timestamp,");
     strBuilder.append("identity.profile.sur_name,");
@@ -124,7 +123,6 @@ public class Profile {
       ResultSet rs = stmt.executeQuery(sql);
 
       if (rs.next()) {
-        active = rs.getBoolean("active");
         createTimestamp = rs.getTimestamp("create_timestamp");
         updateTimestamp = rs.getTimestamp("update_timestamp");
         surName = rs.getString("sur_name");
@@ -169,24 +167,6 @@ public class Profile {
    */
   public void setProfileId(Integer profileId) {
     this.profileId = profileId;
-  }
-
-  /**
-   * Gets the active state of the Profile.
-   *
-   * @return Active state of the Profile
-   */
-  public boolean isActive() {
-    return active;
-  }
-
-  /**
-   * Sets the active state of the Profile.
-   *
-   * @param active
-   */
-  public void setActive(boolean active) {
-    this.active = active;
   }
 
   /**
@@ -389,11 +369,11 @@ public class Profile {
     try {
       Statement stmt = dbConn.createStatement();
       ResultSet rs = stmt.executeQuery(sql);
+      identities = new ArrayList<Identity>();
 
       while (rs.next()) {
         String userId = rs.getString("user_id");
         String providerId = rs.getString("provider_id");
-        identities = new ArrayList<Identity>();
         try {
           Identity identity = new Identity(userId, providerId);
           identities.add(identity);
@@ -442,7 +422,7 @@ public class Profile {
     loadConfiguration();
 
     StringBuilder strBuilder = new StringBuilder();
-    strBuilder.append("SELECT identity.profile.active,");
+    strBuilder.append("SELECT ");
     strBuilder.append("identity.profile.create_timestamp,");
     strBuilder.append("identity.profile.update_timestamp,");
     strBuilder.append("identity.profile.sur_name,");
@@ -473,7 +453,6 @@ public class Profile {
       ResultSet rs = stmt.executeQuery(sql);
 
       if (rs.next()) {
-        active = rs.getBoolean("active");
         createTimestamp = rs.getTimestamp("create_timestamp");
         updateTimestamp = rs.getTimestamp("update_timestamp");
         surName = rs.getString("sur_name");
@@ -510,17 +489,9 @@ public class Profile {
 
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("INSERT INTO identity.profile ");
-    strBuilder.append("(active,create_timestamp,update_timestamp,sur_name,");
+    strBuilder.append("(create_timestamp,update_timestamp,sur_name,");
     strBuilder.append("given_name,nick_name,institution,email,intent) ");
-    strBuilder.append("VALUES (");
-
-    if (active) {
-      strBuilder.append("TRUE,'");
-    }
-    else {
-      strBuilder.append("FALSE,'");
-    }
-
+    strBuilder.append("VALUES ('");
     strBuilder.append(createTimestamp);
     strBuilder.append("','");
     strBuilder.append(updateTimestamp);
@@ -598,17 +569,9 @@ public class Profile {
 
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("UPDATE identity.profile SET ");
-    strBuilder.append("(active,create_timestamp,update_timestamp,sur_name,");
+    strBuilder.append("(create_timestamp,update_timestamp,sur_name,");
     strBuilder.append("given_name,nick_name,institution,email,intent) ");
-    strBuilder.append("= (");
-
-    if (active) {
-      strBuilder.append("TRUE,'");
-    }
-    else {
-      strBuilder.append("FALSE,'");
-    }
-
+    strBuilder.append("= ('");
     strBuilder.append(createTimestamp);
     strBuilder.append("','");
     strBuilder.append(updateTimestamp);
@@ -714,7 +677,6 @@ public class Profile {
     }
 
     profileId = null;
-    active = null;
     createTimestamp = null;
     updateTimestamp = null;
     surName = null;

@@ -62,7 +62,6 @@ public class ProfileTest {
   private static SimpleDateFormat format =
       new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 
-  private static Boolean activeTest = true;
   private static Date createTimestampTest = now;
   private static Date updateTimestampTest = now;
   private static String surNameTest = "Odocoileus";
@@ -73,7 +72,6 @@ public class ProfileTest {
   private static String intentTest = "Ungulate research";
 
   private static Integer profileIdCarroll = 1;
-  private static Boolean activeCarroll = true;
   private static String createTimestampCarroll = "2013-11-19 13:40:13";
   private static String updateTimestampCarroll = "2013-11-19 13:40:13";
   private static String surNameCarroll = "Carroll";
@@ -83,8 +81,8 @@ public class ProfileTest {
   private static String emailCarroll = "ucarroll@lternet.edu";
   private static String intentCarroll = "Research and testing";
 
-  private static String userIdCarroll = "uid=ucarroll,org=LTER,dc=ecoinformatics,dc=org";
-  private static Integer providerIdCarroll = 1;
+  private static String userIdCarroll = "uid=ucarroll,o=LTER,dc=ecoinformatics,dc=org";
+  private static String providerIdCarroll = "PASTA";
   private static Date verifyTimestampCarroll = new Date(1384893613000L);
 
 
@@ -127,9 +125,6 @@ public class ProfileTest {
     Long testTime;
     String profileString;
     String testString;
-
-    message = "Expected active boolean to be 'true', but received 'false'!)";
-    assertTrue(message, profile.isActive());
 
     profileTime = profile.getCreateTimestamp().getTime();
     testTime = format.parse(createTimestampCarroll).getTime();
@@ -215,9 +210,6 @@ public class ProfileTest {
 
     profile.getProfile(profileIdCarroll);
 
-    message = "Expected active boolean to be 'true', but received 'false'!)";
-    assertTrue(message, profile.isActive());
-
     profileTime = profile.getCreateTimestamp().getTime();
     testTime = format.parse(createTimestampCarroll).getTime();
     message = String.format("Expected create timestamp '%d', but received '%d'!", testTime, profileTime);
@@ -268,7 +260,6 @@ public class ProfileTest {
   @Test
   public void testSaveProfile() throws Exception {
 
-    profile.setActive(activeTest);
     profile.setCreateTimestamp(createTimestampTest);
     profile.setUpdateTimestamp(updateTimestampTest);
     profile.setSurName(surNameTest);
@@ -290,10 +281,6 @@ public class ProfileTest {
      * attributes for match of test attributes.
      */
     Profile profileTest = new Profile(profile.getProfileId());
-
-    boolean activeProfile = profileTest.isActive();
-    message = String.format("Expected active status '%s', but received '%s'!", activeTest, profileTest.isActive());
-    assertEquals(message, activeTest, activeProfile);
 
     profileTime = profileTest.getCreateTimestamp().getTime();
     testTime = createTimestampTest.getTime();
@@ -454,17 +441,9 @@ public class ProfileTest {
 
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("INSERT INTO identity.profile ");
-    strBuilder.append("(active,create_timestamp,update_timestamp,sur_name,");
+    strBuilder.append("(create_timestamp,update_timestamp,sur_name,");
     strBuilder.append("given_name,nick_name,institution,email,intent) ");
-    strBuilder.append("VALUES (");
-
-    if (activeTest) {
-      strBuilder.append("TRUE,'");
-    }
-    else {
-      strBuilder.append("FALSE,'");
-    }
-
+    strBuilder.append("VALUES ('");
     strBuilder.append(createTimestampTest);
     strBuilder.append("','");
     strBuilder.append(updateTimestampTest);
