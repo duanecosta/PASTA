@@ -91,7 +91,7 @@ public class IdentityManager {
 
     // Set "public" identity for all users
     tokenIdentity = objectFactory.createTokenIdentity();
-    tokenIdentity.setId(new BigInteger("1"));
+    tokenIdentity.setId("public");
     tokenIdentity.setIdentifier(PUBLIC);
     tokenIdentity.setProvider(GLOBAL);
     tokenIdentities.add(tokenIdentity);
@@ -135,7 +135,7 @@ public class IdentityManager {
        * Build identity object for token
        */
       tokenIdentity = objectFactory.createTokenIdentity();
-      tokenIdentity.setId(new BigInteger("2"));
+      tokenIdentity.setId("identity");
       tokenIdentity.setIdentifier(userId);
       tokenIdentity.setProvider(providerName);
       tokenIdentities.add(tokenIdentity);
@@ -143,11 +143,10 @@ public class IdentityManager {
       /*
        * Add group identities to token identity block
        */
-      Integer id = 3;
       ArrayList<Group> groups = provider.getGroups();
       for (Group group: groups) {
         tokenIdentity = objectFactory.createTokenIdentity();
-        tokenIdentity.setId(new BigInteger((id++).toString()));
+        tokenIdentity.setId("group");
         tokenIdentity.setIdentifier(group.getGroupName());
         tokenIdentity.setProvider(providerName);
         tokenIdentities.add(tokenIdentity);
