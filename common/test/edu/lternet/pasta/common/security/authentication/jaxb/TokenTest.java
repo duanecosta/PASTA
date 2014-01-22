@@ -91,13 +91,13 @@ public class TokenTest {
     identities = token.getIdentity();
 
     identity = new Token.Identity();
-    identity.setId(new BigInteger("1"));
+    identity.setId("identity");
     identity.setIdentifier("uid=ucarroll,o=LTER,dc=ecoinformatics,dc=org");
     identity.setProvider("https://pasta.lternet.edu/authentication");
     identities.add(identity);
 
     identity = new Token.Identity();
-    identity.setId(new BigInteger("2"));
+    identity.setId("mapped");
     identity.setIdentifier("utah.carroll@gmail.com");
     identity.setProvider("https://google.com");
     identities.add(identity);
@@ -130,11 +130,11 @@ public class TokenTest {
     StringBuilder xml = new StringBuilder();
     xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
     xml.append("<token nickName=\"Dusty\" givenName=\"Utah\" surName=\"Carroll\" expires=\"1389903375597\">\n");
-    xml.append("    <identity id=\"1\">\n");
+    xml.append("    <identity id=\"identity\">\n");
     xml.append("        <identifier>uid=ucarroll,o=LTER,dc=ecoinformatics,dc=org</identifier>\n");
     xml.append("        <provider>https://pasta.lternet.edu/authentication</provider>\n");
     xml.append("    </identity>\n");
-    xml.append("    <identity id=\"2\">\n");
+    xml.append("    <identity id=\"mapped\">\n");
     xml.append("        <identifier>utah.carroll@gmail.com</identifier>\n");
     xml.append("        <provider>https://google.com</provider>\n");
     xml.append("    </identity>\n");
@@ -166,7 +166,7 @@ public class TokenTest {
 
     identities = token.getIdentity();
     for (Token.Identity identity: identities) {
-      System.out.printf("   Id: %d%n", identity.getId());
+      System.out.printf("   Id: %s%n", identity.getId());
       System.out.printf("   Identifier: %s%n", identity.getIdentifier());
       System.out.printf("   Provider: %s%n", identity.getProvider());
     }
