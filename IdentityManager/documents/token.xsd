@@ -9,7 +9,7 @@
                             <xs:element name="identifier" type="xs:string" minOccurs="1" maxOccurs="1" />
                             <xs:element name="provider" type="xs:string" minOccurs="1" maxOccurs="1" />
                         </xs:sequence>
-                        <xs:attribute name="id" type="xs:integer" use="optional" />
+                        <xs:attribute name="id" type="xs:string" use="optional" />
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>
