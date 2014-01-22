@@ -15,12 +15,12 @@ CREATE TABLE identity.profile (
   profile_id INTEGER DEFAULT NEXTVAL('identity.profile_id_seq'),
   create_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
   update_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
-  sur_name TEXT,
+  sur_name TEXT NOT NULL,
   given_name TEXT,
   nick_name TEXT,
-  institution TEXT,
-  email TEXT,
-  intent TEXT,
+  institution TEXT NOT NULL,
+  email TEXT NOT NULL,
+  intent TEXT NOT NULL,
   PRIMARY KEY (profile_id)
 );
 

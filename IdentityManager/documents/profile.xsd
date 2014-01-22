@@ -3,16 +3,16 @@
     <xs:element name="profile">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="surName" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="surName" type="xs:string" minOccurs="1" maxOccurs="1"/>
                 <xs:element name="givenName" type="xs:string" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="nickName" type="xs:string" minOccurs="0" maxOccurs="1"/>
-                <xs:element name="email" type="xs:string" minOccurs="0" maxOccurs="1"/>
-                <xs:element name="institution" type="xs:string" minOccurs="0" maxOccurs="1"/>
-                <xs:element name="dataUse" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="institution" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="email" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="intent" type="xs:string" minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
             <xs:attribute name="profileId" type="xs:integer" use="required"/>
-            <xs:attribute name="active" type="xs:boolean" use="required"/>
             <xs:attribute name="createDate" type="xs:dateTimeStamp" use="required"/>
+            <xs:attribute name="updateDate" type="xs:dateTimeStamp" use="required"/>
         </xs:complexType>
     </xs:element>
 </xs:schema>

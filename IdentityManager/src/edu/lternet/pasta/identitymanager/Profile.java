@@ -497,11 +497,27 @@ public class Profile {
     strBuilder.append(updateTimestamp);
     strBuilder.append("','");
     strBuilder.append(surName);
-    strBuilder.append("','");
-    strBuilder.append(givenName);
-    strBuilder.append("','");
-    strBuilder.append(nickName);
-    strBuilder.append("','");
+    strBuilder.append("',");
+
+    if (givenName == null) {
+      strBuilder.append("NULL,");
+    }
+    else {
+      strBuilder.append("'");
+      strBuilder.append(givenName);
+      strBuilder.append("',");
+    }
+
+    if (nickName == null) {
+      strBuilder.append("NULL,");
+    }
+    else {
+      strBuilder.append("'");
+      strBuilder.append(nickName);
+      strBuilder.append("',");
+    }
+
+    strBuilder.append("'");
     strBuilder.append(institution);
     strBuilder.append("','");
     strBuilder.append(email);
@@ -577,11 +593,27 @@ public class Profile {
     strBuilder.append(updateTimestamp);
     strBuilder.append("','");
     strBuilder.append(surName);
-    strBuilder.append("','");
-    strBuilder.append(givenName);
-    strBuilder.append("','");
-    strBuilder.append(nickName);
-    strBuilder.append("','");
+    strBuilder.append("',");
+
+    if (givenName == null) {
+      strBuilder.append("NULL,");
+    }
+    else {
+      strBuilder.append("'");
+      strBuilder.append(givenName);
+      strBuilder.append("',");
+    }
+
+    if (nickName == null) {
+      strBuilder.append("NULL,");
+    }
+    else {
+      strBuilder.append("'");
+      strBuilder.append(nickName);
+      strBuilder.append("',");
+    }
+
+    strBuilder.append("'");
     strBuilder.append(institution);
     strBuilder.append("','");
     strBuilder.append(email);

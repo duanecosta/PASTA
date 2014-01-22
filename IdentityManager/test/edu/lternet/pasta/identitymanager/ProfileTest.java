@@ -67,6 +67,8 @@ public class ProfileTest {
   private static String surNameTest = "Odocoileus";
   private static String givenNameTest = "hemionus";
   private static String nickNameTest = "Muley";
+  //private static String givenNameTest = null;
+  //private static String nickNameTest = null;
   private static String institutionTest = "Ungulate Research Station";
   private static String emailTest = "h.odocoileu@gmail.com";
   private static String intentTest = "Ungulate research";
