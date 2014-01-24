@@ -8,7 +8,7 @@ INSERT INTO identity.provider
   (provider_id,provider_name,provider_conn,contact_name,contact_phone,contact_email)
 VALUES
   ('PASTA', 'https://pasta.lternet.edu/authentication','ldap.lternet.edu:389:/WebRoot/WEB-INF/conf/lternet.jks','System Administrator','505-277-2551','tech-support@lternet.edu'),
-  ('LTERX','LTERX','jdbc:postgresql://db.lternet.edu/user','System Administrator','505-277-2551','tech-support@lternet.edu');
+  ('LTER','LTER','jdbc:postgresql://db.lternet.edu/user','System Administrator','505-277-2551','tech-support@lternet.edu');
 
 INSERT INTO identity.identity
   (user_id,provider_id,profile_id,verify_timestamp)
