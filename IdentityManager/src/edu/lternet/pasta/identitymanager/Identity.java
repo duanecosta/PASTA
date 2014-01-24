@@ -124,8 +124,9 @@ public class Identity {
       ResultSet rs = stmt.executeQuery(sql);
 
       if (rs.next()) {
-         this.profileId = rs.getInt("profile_id");
-        this.verifyTimestamp = rs.getTimestamp("verify_timestamp");
+         int val = rs.getInt("profile_id");
+         profileId = (val != 0) ? val : null;
+         verifyTimestamp = rs.getTimestamp("verify_timestamp");
       } else {
         String gripe = "Identity does not exist for userId '" + userId +
                        "' and providerId '" + providerId + "'!\n";
