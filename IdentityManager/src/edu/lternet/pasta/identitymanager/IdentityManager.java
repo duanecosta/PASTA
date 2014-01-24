@@ -21,6 +21,7 @@ package edu.lternet.pasta.identitymanager;
 import edu.lternet.pasta.common.security.authentication.TokenUtility;
 import edu.lternet.pasta.common.security.authentication.jaxb.ObjectFactory;
 import edu.lternet.pasta.common.security.authentication.jaxb.Token;
+import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 
 import java.math.BigInteger;
@@ -43,23 +44,34 @@ public class IdentityManager {
 
   /* Instance variables */
 
+  private Long mapIdentityTtl;
+
   /* Class variables */
 
   private static final Logger logger =
       Logger.getLogger(IdentityManager.class);
 
   private static final String PUBLIC = "public";
+  private static final String AUTHENTICATED = "authenticated";
+  private static final String PROFILED = "profiled";
   private static final String GLOBAL = "*";
 
   /* Constructors */
 
+  public IdentityManager() throws PastaConfigurationException {
+
+    loadConfiguration();
+
+  }
+
   /* Instance methods */
 
   /**
+   * Logs the user into PASTA and returns an authentication token.
    *
-   * @param credential
-   * @param idp
-   * @return
+   * @param credential The user's credential
+   * @param idp The Identity Provider identifier
+   * @return Authentication token
    * @throws UserValidationException
    * @throws PastaConfigurationException
    * @throws SQLException
@@ -119,11 +131,16 @@ public class IdentityManager {
       Date now = new Date();
       Identity identity;
       try {
-        identity = new Identity(userId, provider.providerId);
+        identity = new Identity(userId, provider.getProviderId());
         identity.setVerifyTimestamp(now);
         identity.updateIdentity();
       }
       catch (IdentityDoesNotExistException e) { // create new identity and save
+        String message = String.format("login: creating new identity for user" +
+                                           " '%s' and IdP '%s' at %s",
+                                          userId, provider.getProviderId(),
+                                          now.toString());
+        logger.warn(message);
         identity = new Identity();
         identity.setUserId(userId);
         identity.setProviderId(provider.getProviderId());
@@ -153,14 +170,79 @@ public class IdentityManager {
       }
 
       /*
-       * If profile exists, add mapped identities to token identity block
+       * If profile exists, add mapped identities to token
        */
+
+      Profile profile = null;
+
+      try {
+        profile = new Profile(identity.getProfileId());
+      }
+      catch (ProfileDoesNotExistException e) {
+        String message = String.format("login: profile does not exist for " +
+                                           "user '%s' and IdP '%s'", userId,
+                                          provider.getProviderId());
+        logger.warn(message);
+      }
+
+      if (profile != null) {
+        ArrayList<Identity> mapIdentities = profile.getIdentities();
+        for (Identity mapIdentity: mapIdentities) {
+          // ensure identity is not stale
+          if ((mapIdentity.getVerifyTimestamp()).getTime() + mapIdentityTtl
+                  >= now.getTime()) {
+            ProviderFactory.IdP mapIdp =
+                ProviderFactory.getIdP(mapIdentity.getProviderId());
+            Provider mapProvider = ProviderFactory.getProvider(mapIdp);
+            tokenIdentity = objectFactory.createTokenIdentity();
+            tokenIdentity.setId("mapped");
+            tokenIdentity.setIdentifier(mapIdentity.getUserId());
+            tokenIdentity.setProvider(mapProvider.getProviderName());
+
+            if (!token.contains(tokenIdentity)) {
+              tokenIdentities.add(tokenIdentity);
+            }
+
+          } else {
+            String message = String.format("login: identity for user '%s' and" +
+                                               " IdP '%s' is stale and has " +
+                                               "not been added to token",
+                                              mapIdentity.getUserId(),
+                                              mapIdentity.getProviderId());
+            logger.warn(message);
+          }
+        }
+      }
 
     }
 
     tokenXml = TokenUtility.marshalToken(token);
 
     return tokenXml;
+
+  }
+
+  /*
+   * Load local properties from identity.properties
+   */
+  protected void loadConfiguration() throws PastaConfigurationException {
+
+    ConfigurationListener.configure();
+    Configuration options = ConfigurationListener.getOptions();
+
+    if (options == null) {
+      String gripe = "Failed to load the IdentityManager properties file: 'identity.properties'";
+      throw new PastaConfigurationException(gripe);
+    } else {
+      try {
+       mapIdentityTtl = options.getLong("ttl.MapIdentity");
+      }
+      catch (Exception e) {
+        logger.error(e.getMessage());
+        e.printStackTrace();
+        throw new PastaConfigurationException(e.getMessage());
+      }
+    }
 
   }
 

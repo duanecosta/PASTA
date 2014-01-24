@@ -80,7 +80,7 @@ public class IdentityManagerTest {
     credential.setUser(cJackDn);
     credential.setPassword(cJackPwd);
 
-    ProviderFactory.IdP idp = ProviderFactory.IdP.LTERLDAP;
+    ProviderFactory.IdP idp = ProviderFactory.IdP.PASTA;
 
     String tokenXml = idm.login(credential, idp);
 
