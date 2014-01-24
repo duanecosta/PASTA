@@ -54,7 +54,7 @@ public final class ProviderFactory {
     Provider provider = null;
 
     switch(idp) {
-      case LTERLDAP:
+      case PASTA:
         try {
           provider = new LterLdapProvider(idp.valueOf());
         }
@@ -75,7 +75,7 @@ public final class ProviderFactory {
           e.printStackTrace();
         }
         break;
-      case LTEREXTDB:
+      case LTER:
       case GOOGLE:
       case INCOMMON:
       default:
@@ -85,9 +85,33 @@ public final class ProviderFactory {
 
   }
 
+  /**
+   * Return the appropriate ENUM object based on the provider identifier.
+   *
+   * @param identifier Provider identifier
+   * @return Identity provider ENUM object
+   */
+  public static IdP getIdP(String identifier) {
+
+    IdP idp = null;
+
+    if ("PASTA".equals(identifier)) {
+      idp = IdP.PASTA;
+    } else if ("LTER".equals(identifier)) {
+      idp = IdP.LTER;
+    } else if ("GOOGLE".equals(identifier)) {
+      idp = IdP.GOOGLE;
+    } else if ("INCOMMON".equals(identifier)) {
+      idp = IdP.INCOMMON;
+    }
+
+    return idp;
+
+  }
+
   enum IdP {
 
-    LTERLDAP("PASTA"), LTEREXTDB("LTERX"), GOOGLE("GOOGLE"), INCOMMON("INCOMMON");
+    PASTA("PASTA"), LTER("LTER"), GOOGLE("GOOGLE"), INCOMMON("INCOMMON");
 
     private String id;
 
