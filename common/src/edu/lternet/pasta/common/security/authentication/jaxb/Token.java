@@ -197,6 +197,28 @@ public class Token {
         this.nickName = value;
     }
 
+  /**
+   * Tests if the member identity is contained in the identity list.
+   *
+   * @param member Member identity
+   * @return Containment
+   */
+    public boolean contains(Identity member) {
+
+      boolean isMember = false;
+
+      for (Identity item: identity) {
+        if (item.getIdentifier().equals(member.getIdentifier()) &&
+            item.getProvider().equals(member.getProvider())) {
+          isMember = true;
+          break;
+        }
+      }
+
+      return isMember;
+
+    }
+
 
     /**
      * <p>Java class for anonymous complex type.
