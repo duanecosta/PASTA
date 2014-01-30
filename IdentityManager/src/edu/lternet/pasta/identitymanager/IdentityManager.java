@@ -24,7 +24,6 @@ import edu.lternet.pasta.common.security.authentication.jaxb.Token;
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 
-import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,7 +43,7 @@ public class IdentityManager {
 
   /* Instance variables */
 
-  private Long mapIdentityTtl;
+  private Long mMapIdentityTtl;
 
   /* Class variables */
 
@@ -103,7 +102,7 @@ public class IdentityManager {
 
     // Set "public" identity for all users
     tokenIdentity = objectFactory.createTokenIdentity();
-    tokenIdentity.setId("public");
+    tokenIdentity.setId(PUBLIC);
     tokenIdentity.setIdentifier(PUBLIC);
     tokenIdentity.setProvider(GLOBAL);
     tokenIdentities.add(tokenIdentity);
@@ -157,6 +156,13 @@ public class IdentityManager {
       tokenIdentity.setProvider(providerName);
       tokenIdentities.add(tokenIdentity);
 
+      // Set "authenticated" identity for all users
+      tokenIdentity = objectFactory.createTokenIdentity();
+      tokenIdentity.setId(AUTHENTICATED);
+      tokenIdentity.setIdentifier(AUTHENTICATED);
+      tokenIdentity.setProvider(GLOBAL);
+      tokenIdentities.add(tokenIdentity);
+
       /*
        * Add group identities to token identity block
        */
@@ -189,7 +195,7 @@ public class IdentityManager {
         ArrayList<Identity> mapIdentities = profile.getIdentities();
         for (Identity mapIdentity: mapIdentities) {
           // ensure identity is not stale
-          if ((mapIdentity.getVerifyTimestamp()).getTime() + mapIdentityTtl
+          if ((mapIdentity.getVerifyTimestamp()).getTime() + mMapIdentityTtl
                   >= now.getTime()) {
             ProviderFactory.IdP mapIdp =
                 ProviderFactory.getIdP(mapIdentity.getProviderId());
@@ -212,6 +218,14 @@ public class IdentityManager {
             logger.warn(message);
           }
         }
+
+        // Set "profiled" identity for all users
+        tokenIdentity = objectFactory.createTokenIdentity();
+        tokenIdentity.setId(PROFILED);
+        tokenIdentity.setIdentifier(PROFILED);
+        tokenIdentity.setProvider(GLOBAL);
+        tokenIdentities.add(tokenIdentity);
+
       }
 
     }
@@ -235,7 +249,7 @@ public class IdentityManager {
       throw new PastaConfigurationException(gripe);
     } else {
       try {
-       mapIdentityTtl = options.getLong("ttl.MapIdentity");
+       mMapIdentityTtl = options.getLong("ttl.MapIdentity");
       }
       catch (Exception e) {
         logger.error(e.getMessage());
