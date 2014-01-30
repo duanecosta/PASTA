@@ -13,7 +13,10 @@ db.MaxConnections=10
 # LTER LDAP configuration parameters
 ldap.Host=ldap.lternet.edu
 ldap.Port=389
-ldap.Keystore=lternet.jks
+ldap.Keystore=/WebRoot/WEB-INF/conf/lternet.jks
+
+# Identity time-to-live parameters
+ttl.MapIdentity=7776000000
 
 # JUNIT parameters
 junit.cjack.dn=uid=cjack\,o=LTER\,dc=ecoinformatics\,dc=org

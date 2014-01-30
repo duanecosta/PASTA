@@ -120,7 +120,7 @@ public class IdentityManager {
        * Obtain user identity information
        */
       String userId = credential.getUser();
-      String providerName = provider.getProviderName();
+      String providerId = provider.getProviderId();
 
       /*
        * Load user Identity if exists, otherwise create new Identity and save
@@ -153,7 +153,7 @@ public class IdentityManager {
       tokenIdentity = objectFactory.createTokenIdentity();
       tokenIdentity.setId("identity");
       tokenIdentity.setIdentifier(userId);
-      tokenIdentity.setProvider(providerName);
+      tokenIdentity.setProvider(providerId);
       tokenIdentities.add(tokenIdentity);
 
       // Set "authenticated" identity for all users
@@ -171,7 +171,7 @@ public class IdentityManager {
         tokenIdentity = objectFactory.createTokenIdentity();
         tokenIdentity.setId("group");
         tokenIdentity.setIdentifier(group.getGroupName());
-        tokenIdentity.setProvider(providerName);
+        tokenIdentity.setProvider(providerId);
         tokenIdentities.add(tokenIdentity);
       }
 
@@ -197,13 +197,10 @@ public class IdentityManager {
           // ensure identity is not stale
           if ((mapIdentity.getVerifyTimestamp()).getTime() + mMapIdentityTtl
                   >= now.getTime()) {
-            ProviderFactory.IdP mapIdp =
-                ProviderFactory.getIdP(mapIdentity.getProviderId());
-            Provider mapProvider = ProviderFactory.getProvider(mapIdp);
             tokenIdentity = objectFactory.createTokenIdentity();
             tokenIdentity.setId("mapped");
             tokenIdentity.setIdentifier(mapIdentity.getUserId());
-            tokenIdentity.setProvider(mapProvider.getProviderName());
+            tokenIdentity.setProvider(mapIdentity.getProviderId());
 
             if (!token.contains(tokenIdentity)) {
               tokenIdentities.add(tokenIdentity);

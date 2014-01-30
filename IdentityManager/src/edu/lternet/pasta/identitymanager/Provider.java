@@ -41,7 +41,6 @@ public abstract class Provider {
   /* Instance variables */
 
   protected String providerId;
-  protected String providerName;
   protected String providerConnection;
   protected String contactName;
   protected String contactPhone;
@@ -89,7 +88,7 @@ public abstract class Provider {
     loadConfiguration();
 
     StringBuilder strBuilder = new StringBuilder();
-    strBuilder.append("SELECT identity.provider.provider_name,");
+    strBuilder.append("SELECT ");
     strBuilder.append("identity.provider.provider_conn,");
     strBuilder.append("identity.provider.contact_name,");
     strBuilder.append("identity.provider.contact_phone,");
@@ -116,7 +115,6 @@ public abstract class Provider {
       ResultSet rs = stmt.executeQuery(sql);
 
       if (rs.next()) {
-        this.providerName = rs.getString("provider_name");
         this.providerConnection = rs.getString("provider_conn");
         this.contactName = rs.getString("contact_name");
         this.contactPhone = rs.getString("contact_phone");
@@ -157,24 +155,6 @@ public abstract class Provider {
    */
   public String getProviderId() {
     return providerId;
-  }
-
-  /**
-   * Sets the provider name of the Provider.
-   *
-   * @param providerName The provider name
-   */
-  public void setProviderName(String providerName) {
-    this.providerName = providerName;
-  }
-
-  /**
-   * Gets the provider name of the Provider.
-   *
-   * @return The provider name
-   */
-  public String getProviderName() {
-    return providerName;
   }
 
   /**
@@ -336,11 +316,9 @@ public abstract class Provider {
 
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("INSERT INTO identity.provider (provider_id,");
-    strBuilder.append("provider_name,provider_conn,contact_name,");
+    strBuilder.append("provider_conn,contact_name,");
     strBuilder.append("contact_phone,contact_email) VALUES ('");
     strBuilder.append(providerId);
-    strBuilder.append("','");
-    strBuilder.append(providerName);
     strBuilder.append("','");
     strBuilder.append(providerConnection);
     strBuilder.append("','");
@@ -405,9 +383,7 @@ public abstract class Provider {
 
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("UPDATE identity.provider SET ");
-    strBuilder.append("provider_name='");
-    strBuilder.append(providerName);
-    strBuilder.append("', provider_conn='");
+    strBuilder.append("provider_conn='");
     strBuilder.append(providerConnection);
     strBuilder.append("', contact_name='");
     strBuilder.append(contactName);

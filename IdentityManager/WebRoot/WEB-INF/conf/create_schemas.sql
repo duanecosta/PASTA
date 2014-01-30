@@ -2,7 +2,6 @@ CREATE SCHEMA identity AUTHORIZATION pasta;
 
 CREATE TABLE identity.provider (
   provider_id TEXT NOT NULL,
-  provider_name TEXT NOT NULL,
   provider_conn TEXT NOT NULL,
   contact_name TEXT,
   contact_phone TEXT,

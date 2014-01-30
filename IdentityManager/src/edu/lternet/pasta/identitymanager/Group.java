@@ -33,7 +33,7 @@ public class Group {
   /* Instance variables */
 
   private String groupName;
-  private String providerName;
+  private String mProviderId;
  
   /* Class variables */
 
@@ -60,24 +60,24 @@ public class Group {
   }
 
   /**
-   * Sets the provider name for the Group.
+   * Sets the provider identifier for the Group.
    *
-   * @param name Provider name
+   * @param name Provider identifier
    */
-  public void setProviderName(String name) {
+  public void setProviderId(String name) {
 
-    providerName = name;
+    mProviderId = name;
 
   }
 
   /**
-   * Gets the provider name of the Group.
+   * Gets the provider identifier of the Group.
    *
-   * @return Provider name
+   * @return Provider identifier
    */
-  public String getProviderName() {
+  public String getProviderId() {
 
-    return providerName;
+    return mProviderId;
 
   }
   /* Class methods */

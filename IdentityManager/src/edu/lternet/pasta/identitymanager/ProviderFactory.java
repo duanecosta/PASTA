@@ -95,13 +95,13 @@ public final class ProviderFactory {
 
     IdP idp = null;
 
-    if ("PASTA".equals(identifier)) {
+    if ("https://pasta.lternet.edu/authentication".equals(identifier)) {
       idp = IdP.PASTA;
-    } else if ("LTER".equals(identifier)) {
+    } else if ("https://lternet.edu".equals(identifier)) {
       idp = IdP.LTER;
-    } else if ("GOOGLE".equals(identifier)) {
+    } else if ("https://gmail.google.com".equals(identifier)) {
       idp = IdP.GOOGLE;
-    } else if ("INCOMMON".equals(identifier)) {
+    } else if ("https://incommon.org".equals(identifier)) {
       idp = IdP.INCOMMON;
     }
 
@@ -111,7 +111,10 @@ public final class ProviderFactory {
 
   enum IdP {
 
-    PASTA("PASTA"), LTER("LTER"), GOOGLE("GOOGLE"), INCOMMON("INCOMMON");
+    PASTA("https://pasta.lternet.edu/authentication"),
+    LTER("https://lternet.edu"),
+    GOOGLE("https://gmail.google.com"),
+    INCOMMON("https://incommon.org");
 
     private String id;
 

@@ -151,7 +151,7 @@ public class LterLdapProvider extends Provider {
 
     // Add default LTER group
     Group group = new Group();
-    group.setProviderName(providerName);
+    group.setProviderId(providerId);
     group.setGroupName("LTER");
     groups.add(group);
 

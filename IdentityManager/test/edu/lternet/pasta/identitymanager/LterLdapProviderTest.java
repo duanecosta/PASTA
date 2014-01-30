@@ -54,7 +54,7 @@ public class LterLdapProviderTest {
   private static String dbUser;     // database user name
   private static String dbPassword; // database user password
 
-  private static String providerIdLTER = "PASTA";
+  private static String providerIdLTER = "https://pasta.lternet.edu/authentication";
   private static String providerNameLTER = "https://pasta.lternet.edu/authentication";
   private static String providerConnectionLTER = "ldap.lternet.edu:389:/WebRoot/WEB-INF/conf/lternet.jks";
   private static String contactNameLTER = "System Administrator";
@@ -88,20 +88,6 @@ public class LterLdapProviderTest {
 
     LterLdapProviderTest.purgeIdentity(userIdJack, providerIdLTER);
     provider = null;
-
-  }
-
-  /**
-   * Test to ensure that a new provider name is correctly set.
-   */
-  @Test
-  public void testSetProviderName() {
-
-    provider.setProviderName(providerNameLTER);
-    String providerName = provider.getProviderName();
-    String message = "Expected provider name '" + providerNameLTER +
-                     "', but received '" + providerName + "'!\n";
-    assertTrue(message, providerNameLTER.equals(providerName));
 
   }
 
@@ -177,7 +163,6 @@ public class LterLdapProviderTest {
     String contactEmail = "E";
 
     provider.setProviderId(providerId);
-    provider.setProviderName(providerName);
     provider.setProviderConnection(providerConnection);
     provider.setContactName(contactName);
     provider.setContactPhone(contactPhone);
@@ -203,27 +188,24 @@ public class LterLdapProviderTest {
   public void testUpdateProvider() throws Exception {
 
     String providerId = "Z";
-    String providerName = "A";
     String providerConnection = "ldap.lternet.edu:389:/WebRoot/WEB-INF/conf/lternet.jks";
     String contactName = "C";
     String contactPhone = "D";
     String contactEmail = "E";
 
-    LterLdapProviderTest.insertProvider(providerId, providerName, providerConnection,
+    LterLdapProviderTest.insertProvider(providerId, providerConnection,
       contactName, contactPhone, contactEmail);
 
-    providerId = LterLdapProviderTest.getProviderId(providerName,
-      providerConnection, contactName, contactPhone, contactEmail);
+    providerId = LterLdapProviderTest.getProviderId(providerConnection,
+      contactName, contactPhone, contactEmail);
 
     LterLdapProvider provider = new LterLdapProvider(providerId);
 
-    providerName = "1";
     providerConnection = "ldap.lternet.edu:389:/WebRoot/WEB-INF/conf/lternet.jks";
     contactName = "3";
     contactPhone = "4";
     contactEmail = "5";
 
-    provider.setProviderName(providerName);
     provider.setProviderConnection(providerConnection);
     provider.setContactName(contactName);
     provider.setContactPhone(contactPhone);
@@ -231,9 +213,9 @@ public class LterLdapProviderTest {
 
     provider.updateProvider();
 
-    String testProviderName = LterLdapProviderTest.getProviderValue(providerId, "providerName");
-    String message = String.format("Expected provider name '%s', but received '%s'!", providerName, testProviderName);
-    assertTrue(message, providerName.equals(testProviderName));
+    String testContactName = LterLdapProviderTest.getProviderValue(providerId, "contactName");
+    String message = String.format("Expected contact name '%s', but received '%s'!", contactName, testContactName);
+    assertTrue(message, contactName.equals(testContactName));
 
     purgeProvider(providerId);
 
@@ -318,18 +300,16 @@ public class LterLdapProviderTest {
   /*
    * Inserts a test Provider into the Provider database.
    */
-  private static void insertProvider(String providerId, String providerName,
+  private static void insertProvider(String providerId,
     String providerConnection, String contactName, String contactPhone,
     String contactEmail) throws Exception {
 
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("INSERT INTO identity.provider ");
-    strBuilder.append("(provider_id,provider_name,provider_conn,contact_name,");
+    strBuilder.append("(provider_id,provider_conn,contact_name,");
     strBuilder.append("contact_phone,contact_email) VALUES (");
     strBuilder.append("'");
     strBuilder.append(providerId);
-    strBuilder.append("','");
-    strBuilder.append(providerName);
     strBuilder.append("','");
     strBuilder.append(providerConnection);
     strBuilder.append("','");
@@ -376,20 +356,18 @@ public class LterLdapProviderTest {
 
   /*
    * Returns the provider identifier of the Provider database record that
-   * matches the provider name, provider connection, contact name, contact
+   * matches the provider connection, contact name, contact
    * phone, and contact email.
    */
-  private static String getProviderId(String providerName,
-    String providerConnection, String contactName, String contactPhone,
-    String contactEmail) throws Exception {
+  private static String getProviderId(String providerConnection,
+    String contactName, String contactPhone, String contactEmail)
+    throws Exception {
 
     String providerId = null;
 
     StringBuilder strBuilder = new StringBuilder();
     strBuilder.append("SELECT identity.provider.provider_id FROM ");
-    strBuilder.append("identity.provider WHERE provider_name='");
-    strBuilder.append(providerName);
-    strBuilder.append("' AND provider_conn='");
+    strBuilder.append("identity.provider WHERE provider_conn='");
     strBuilder.append(providerConnection);
     strBuilder.append("' AND contact_name='");
     strBuilder.append(contactName);
@@ -420,7 +398,7 @@ public class LterLdapProviderTest {
         providerId = rs.getString("provider_id");
        }
       else {
-        String gripe = String.format("Provider with name '%s' does not exist!\n", providerName);
+        String gripe = String.format("Provider does not exist!");
         throw new ProviderDoesNotExistException(gripe);
       }
     }
@@ -445,14 +423,13 @@ public class LterLdapProviderTest {
   private static String getProviderValue(String providerId, String field)
       throws Exception {
 
-    String providerName;
     String providerConnection;
     String contactName;
     String contactPhone;
     String contactEmail;
 
     StringBuilder strBuilder = new StringBuilder();
-    strBuilder.append("SELECT identity.provider.provider_name,");
+    strBuilder.append("SELECT ");
     strBuilder.append("identity.provider.provider_conn,");
     strBuilder.append("identity.provider.contact_name,");
     strBuilder.append("identity.provider.contact_phone,");
@@ -479,7 +456,6 @@ public class LterLdapProviderTest {
       ResultSet rs = stmt.executeQuery(sql);
 
       if (rs.next()) {
-        providerName = rs.getString("provider_name");
         providerConnection = rs.getString("provider_conn");
         contactName = rs.getString("contact_name");
         contactPhone = rs.getString("contact_phone");
@@ -501,9 +477,7 @@ public class LterLdapProviderTest {
       dbConn.close();
     }
 
-    if (field.equals("providerName")) {
-      return providerName;
-    } else if (field.equals("providerConnection")) {
+    if (field.equals("providerConnection")) {
       return providerConnection;
     } else if (field.equals("contactName")) {
       return contactName;

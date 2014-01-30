@@ -65,8 +65,8 @@ public class IdentityTest {
   private static Integer profileIdJack = 2;
   private static Date verifyTimestampJack = new Date(1384917912619L);
 
-  private static String providerIdLTER = "PASTA";
-  private static String providerIdLTERX = "LTERX";
+  private static String providerIdLTER = "https://pasta.lternet.edu/authentication";
+  private static String providerIdLTERX = "https://lternet.edu";
 
   /* Constructors */
 
@@ -122,7 +122,7 @@ public class IdentityTest {
     message = String.format("Expected verfityTimestamp '%s', " +
       "but received '%s'!", verifyTimestampCarroll.toString(),
       verifyTimestamp.toString());
-    assertTrue(message,
+      assertTrue(message,
       verifyTimestampCarroll.toString().equals(verifyTimestamp.toString()));
 
   }
