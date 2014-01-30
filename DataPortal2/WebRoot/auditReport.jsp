@@ -121,7 +121,6 @@
 						<div class="row-fluid">
 							<div class="span12">
 								<!-- Content -->
-								<fieldset>
 								<p>Review a PASTA audit report<sup>*</sup> by entering your criteria into one or more of the filters below.</p>
 								<hr/>
 								<form id="auditReport" action="./auditReport" method="post" name="auditReport">
@@ -158,7 +157,6 @@
 											<tr>
 												<td>
 												  <form>
-													  <fieldset>
 													    <label for="choices">
 													      <ul class="checklist">
 														      <li>
@@ -187,7 +185,6 @@
 														      </li>
 													      </ul>
 													    </label>
-													  </fieldset>
 												  </form>
 												</td>
 												<td>
@@ -290,10 +287,10 @@
 											</tr>
 											<tr>
 												<td>
-												  <input name="userId" placeholder=" " size="15px" type="text" />
+												  <input name="userId" size="15" type="text" />
 												</td>
 												<td>
-												  <input name="group" placeholder=" " size="15px" type="text" />
+												  <input name="group" size="15" type="text" />
 												</td>
 											</tr>
 										</table>
@@ -301,19 +298,19 @@
 											<tr>
 												<td>
 												  <label class="labelBold">Begin Date:</label>
-												  <input name="beginDate" placeholder="YYYY-MM-DD" size="15px" type="date" />
+												  <input name="beginDate" placeholder="YYYY-MM-DD" type="date" />
 												</td>
 												<td>
 												  <label class="labelBold">Begin Time:<sup>**</sup></label>
-												  <input name="beginTime" placeholder="HH:MM:SS" size="15px" type="time" />
+												  <input name="beginTime" placeholder="HH:MM:SS" type="time" />
 												</td>
 												<td>
 												  <label class="labelBold">End Date:</label>
-												  <input name="endDate" placeholder="YYYY-MM-DD" size="15px" type="date" />
+												  <input name="endDate" placeholder="YYYY-MM-DD" type="date" />
 												</td>
 												<td>
 												  <label class="labelBold">End Time:<sup>**</sup></label>
-												  <input name="endTime" placeholder="HH:MM:SS" size="15px" type="time" />
+												  <input name="endTime" placeholder="HH:MM:SS" type="time" />
 												</td>
 											</tr>
 										</table>
@@ -350,7 +347,6 @@
 				    }
 			    %>
 
-								</fieldset>
 								<!-- /Content -->
 							</div>
 						</div>
