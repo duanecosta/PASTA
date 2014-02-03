@@ -77,7 +77,7 @@ public class LterLdapProvider extends Provider {
   /**
    * Validates the user's identity based on the provided credentials.
    *
-   * @param credential
+   * @param credential The user credentials
    */
   public void validateUser(Credential credential)
       throws UserValidationException {
