@@ -280,6 +280,7 @@ public class AccessElement {
 
 						rule = new Rule();
 						rule.setAccessType("allow");
+            rule.setAuthSystem(this.getAuthSystem());
 						rule.setOrder(this.getAccessOrder());
 						rule.setPermission(highWaterMark);
 						rule.setPrincipal(principal);
@@ -339,6 +340,7 @@ public class AccessElement {
 
 						rule = new Rule();
 						rule.setAccessType("deny");
+            rule.setAuthSystem(this.getAuthSystem());
 						rule.setOrder(this.getAccessOrder());
 						rule.setPermission(lowWaterMark);
 						rule.setPrincipal(principal);
