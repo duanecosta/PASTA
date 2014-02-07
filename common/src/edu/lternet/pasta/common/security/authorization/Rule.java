@@ -48,6 +48,7 @@ public class Rule {
 	 * Instance fields
 	 */
 
+  private String authSystem = null;
 	private String accessType = null;
 	private String order      = null;
 	private String principal  = null;
@@ -58,10 +59,28 @@ public class Rule {
 	 */
 
 	/*
-	 * Class Methods
+	 * Instance Methods
 	 */
 
-	/**
+  /**
+   * Sets the rule's authentication system (or identity provider)
+   *
+   * @param authSystem Rule's authentication system
+   */
+  public void setAuthSystem(String authSystem) {
+    this.authSystem = authSystem;
+  }
+
+  /**
+   * Gets the rule's authentication system (or identity provider)
+   *
+   * @return Rule's authentication system
+   */
+  public String getAuthSystem() {
+    return authSystem;
+  }
+
+  /**
 	 * Setter method for access type of the rule.
 	 *
 	 * @param accessType The access type value to be set (either "allow" or
