@@ -399,7 +399,7 @@ public class AccessElement {
 	private Permission getLowWaterMark(Element allow) throws InvalidPermissionException {
 
 		// Start with highest possible permission.
-		Permission lowWaterMark = Enum.valueOf(Permission.class, "changePermission");;
+		Permission lowWaterMark = Enum.valueOf(Permission.class, "changePermission");
 
 		NodeList allowChildren = allow.getChildNodes();
 
@@ -428,7 +428,7 @@ public class AccessElement {
 						}
 
 					} catch (IllegalArgumentException e) {
-						throw new InvalidPermissionException("Ivalid permission: " + permissionElementText);
+						throw new InvalidPermissionException("Invalid permission: " + permissionElementText);
 					}
 				}
 			}
