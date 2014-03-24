@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 the University of New Mexico.
+ * Copyright 2011-2014 the University of New Mexico.
  *
  * This work was supported by National Science Foundation Cooperative
  * Agreements #DEB-0832652 and #DEB-0936498.
@@ -26,15 +26,15 @@ package edu.lternet.pasta.identitymanager;
  * Project: NIS
  * Package: edu.lternet.pasta.identitymanager
  * <p/>
- * Stores portable credential information for a user.
+ * Stores portable credential information for a mUser.
  */
 public class Credential {
 
   /* Instance variables */
 
-  private String user;
-  private String password;
-  private String assertion;
+  private String mUser;
+  private String mPassword;
+  private String mAssertion;
  
   /* Class variables */
  
@@ -42,28 +42,58 @@ public class Credential {
 
   /* Instance methods */
 
+  /**
+   * Set credential user identifier
+   *
+   * @param user User identifier
+   */
   public void setUser(String user) {
-    this.user = user;
+    this.mUser = user;
   }
 
+  /**
+   * Get credential user identifier
+   *
+   * @return User identifier
+   */
   public String getUser() {
-    return user;
+    return mUser;
   }
 
+  /**
+   * Set credential password
+   *
+   * @param password Credential password
+   */
   public void setPassword(String password) {
-    this.password = password;
+    this.mPassword = password;
   }
 
+  /**
+   * Get credential password
+   *
+   * @return Credential password
+   */
   public String getPassword() {
-    return password;
+    return mPassword;
   }
 
+  /**
+   * Set credential assertion
+   *
+   * @param assertion Credential assertion
+   */
   public void setAssertion(String assertion) {
-    this.assertion = assertion;
+    this.mAssertion = assertion;
   }
 
+  /**
+   * Get credential assertion
+   *
+   * @return Credential assertion
+   */
   public String getAssertion() {
-    return assertion;
+    return mAssertion;
   }
 
   /* Class methods */
