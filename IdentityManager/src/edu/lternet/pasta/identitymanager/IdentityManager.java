@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 the University of New Mexico.
+ * Copyright 2011-2014 the University of New Mexico.
  *
  * This work was supported by National Science Foundation Cooperative
  * Agreements #DEB-0832652 and #DEB-0936498.
@@ -101,11 +101,7 @@ public class IdentityManager {
     Token.Identity tokenIdentity;
 
     // Set "public" identity for all users
-    tokenIdentity = objectFactory.createTokenIdentity();
-    tokenIdentity.setId(PUBLIC);
-    tokenIdentity.setIdentifier(PUBLIC);
-    tokenIdentity.setProvider(GLOBAL);
-    tokenIdentities.add(tokenIdentity);
+    tokenIdentities.add(setPublicIdentity());
 
     if (credential != null) { // && idp != null is always true at this point
 
@@ -126,7 +122,6 @@ public class IdentityManager {
        * Load user Identity if exists, otherwise create new Identity and save
        * to Identity database
        */
-
       Date now = new Date();
       Identity identity;
       try {
@@ -157,11 +152,7 @@ public class IdentityManager {
       tokenIdentities.add(tokenIdentity);
 
       // Set "authenticated" identity for all users
-      tokenIdentity = objectFactory.createTokenIdentity();
-      tokenIdentity.setId(AUTHENTICATED);
-      tokenIdentity.setIdentifier(AUTHENTICATED);
-      tokenIdentity.setProvider(GLOBAL);
-      tokenIdentities.add(tokenIdentity);
+      tokenIdentities.add(setAuthenticatedIdentity());
 
       /*
        * Add group identities to token identity block
@@ -217,11 +208,7 @@ public class IdentityManager {
         }
 
         // Set "profiled" identity for all users
-        tokenIdentity = objectFactory.createTokenIdentity();
-        tokenIdentity.setId(PROFILED);
-        tokenIdentity.setIdentifier(PROFILED);
-        tokenIdentity.setProvider(GLOBAL);
-        tokenIdentities.add(tokenIdentity);
+        tokenIdentities.add(setProfiledIdentity());
 
       }
 
@@ -254,6 +241,48 @@ public class IdentityManager {
         throw new PastaConfigurationException(e.getMessage());
       }
     }
+
+  }
+
+  private Token.Identity setPublicIdentity() {
+
+    ObjectFactory objectFactory = new ObjectFactory();
+    Token.Identity tokenIdentity;
+
+    tokenIdentity = objectFactory.createTokenIdentity();
+    tokenIdentity.setId(PUBLIC);
+    tokenIdentity.setIdentifier(PUBLIC);
+    tokenIdentity.setProvider(GLOBAL);
+
+    return tokenIdentity;
+
+  }
+
+  private Token.Identity setAuthenticatedIdentity() {
+
+    ObjectFactory objectFactory = new ObjectFactory();
+    Token.Identity tokenIdentity;
+
+    tokenIdentity = objectFactory.createTokenIdentity();
+    tokenIdentity.setId(AUTHENTICATED);
+    tokenIdentity.setIdentifier(AUTHENTICATED);
+    tokenIdentity.setProvider(GLOBAL);
+
+    return tokenIdentity;
+
+  }
+
+  private Token.Identity setProfiledIdentity() {
+
+    ObjectFactory objectFactory = new ObjectFactory();
+    Token.Identity tokenIdentity;
+
+    tokenIdentity = objectFactory.createTokenIdentity();
+    tokenIdentity.setId(PROFILED);
+    tokenIdentity.setIdentifier(PROFILED);
+    tokenIdentity.setProvider(GLOBAL);
+
+    return tokenIdentity;
 
   }
 
