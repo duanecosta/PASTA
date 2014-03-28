@@ -1,10 +1,5 @@
-/**
- *
- * $Date$
- * $Author$
- * $Revision$
- *
- * Copyright 2011 the University of New Mexico.
+/*
+ * Copyright 2011-2014 the University of New Mexico.
  *
  * This work was supported by National Science Foundation Cooperative
  * Agreements #DEB-0832652 and #DEB-0936498.
@@ -19,12 +14,9 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
- *
  */
 
 package edu.lternet.pasta.common.security.authorization;
-
-import java.util.*;
 
 /**
  * @author servilla
