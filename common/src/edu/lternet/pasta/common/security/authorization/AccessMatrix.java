@@ -1,10 +1,5 @@
-/**
- *
- * $Date$
- * $Author$
- * $Revision$
- *
- * Copyright 2011 the University of New Mexico.
+/*
+ * Copyright 2011-2014 the University of New Mexico.
  *
  * This work was supported by National Science Foundation Cooperative
  * Agreements #DEB-0832652 and #DEB-0936498.
@@ -19,19 +14,16 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the License.
- *
  */
 
 package edu.lternet.pasta.common.security.authorization;
 
-import java.io.*;
+import edu.lternet.pasta.common.security.authorization.Rule.Permission;
+import edu.lternet.pasta.common.security.token.AuthToken;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Set;
-
-import edu.lternet.pasta.common.security.token.*;
-import edu.lternet.pasta.common.security.authorization.Rule.Permission;
 
 /**
  * @author servilla
@@ -63,7 +55,7 @@ public class AccessMatrix {
 	/**
 	 * Generate access matrix from XML access element.
 	 *
-	 * @param accessElement The XML access element.
+	 * @param ae The XML access element.
 	 * @throws InvalidPermissionException
 	 */
 	public AccessMatrix(String ae) throws InvalidPermissionException {
@@ -100,6 +92,12 @@ public class AccessMatrix {
 	 *         the resource at the requested permission.
 	 */
 	public boolean isAuthorized(AuthToken authToken, String submitter, Permission permission) {
+
+    // TODO: Compare each identity element of authToken
+    // TODO: 1. Test list of non-group identities to submitter
+    // TODO: 2. Test each identity against each rule
+    // TODO:    Iterate through authToken identity list
+    // TODO:       Iterate through rule list testing each identity
 
 		boolean isAuthorized = false;
 
