@@ -24,6 +24,7 @@ import edu.lternet.pasta.common.security.authentication.jaxb.Token;
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 
+import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -100,6 +101,9 @@ public class IdentityManager {
     List<Token.Identity> tokenIdentities = token.getIdentity();
     Token.Identity tokenIdentity;
 
+    Date now = new Date();
+    token.setExpires(BigInteger.valueOf(now.getTime()));
+
     // Set "public" identity for all users
     tokenIdentities.add(setPublicIdentity());
 
@@ -122,8 +126,8 @@ public class IdentityManager {
        * Load user Identity if exists, otherwise create new Identity and save
        * to Identity database
        */
-      Date now = new Date();
       Identity identity;
+      now = new Date();
       try {
         identity = new Identity(userId, provider.getProviderId());
         identity.setVerifyTimestamp(now);
@@ -183,6 +187,11 @@ public class IdentityManager {
       }
 
       if (profile != null) {
+
+        token.setSurName(profile.getSurName());
+        token.setGivenName(profile.getGivenName());
+        token.setNickName(profile.getNickName());
+
         ArrayList<Identity> mapIdentities = profile.getIdentities();
         for (Identity mapIdentity: mapIdentities) {
           // ensure identity is not stale
