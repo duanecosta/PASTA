@@ -18,17 +18,7 @@
 
 package edu.lternet.pasta.common.security.authorization;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import edu.lternet.pasta.common.security.authorization.Rule.Permission;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -36,7 +26,16 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import edu.lternet.pasta.common.security.authorization.Rule.Permission;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 /**
  * @author servilla
@@ -83,62 +82,8 @@ public class AccessElement {
 	}
 
 	/*
-	 * Class Methods
+	 * Instance Methods
 	 */
-
-	/**
-	 * Converts the eml-access element String to an Input Stream, which
-	 * is required by the document buidler.
-	 *
-	 * @param accessElement
-	 * @return InputStream is - The eml-access element as an Input Stream
-	 */
-	private InputStream StringToInputStream(String accessElement) {
-
-		InputStream is = null;
-
-	    try {
-	        is = new ByteArrayInputStream(accessElement.getBytes("UTF-8"));
-	    } catch (UnsupportedEncodingException e) {
-	        e.printStackTrace();
-	    }
-
-	    return is;
-	 }
-
-	/**
-	 * Creates a document object model and parses the eml-access element from
-	 * the input stream.
-	 *
-	 * @param is The eml-access element input stream to be parsed.
-	 * @return Document doc - The document object model of the parsed eml-access input stream.
-	 */
-	private Document parseXMLFile(InputStream is) {
-
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = null;
-		Document doc = null;
-
-		try {
-			builder = factory.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
-			System.err.print("AccessElement.parseXML: " + e);
-			e.printStackTrace();
-		}
-
-		try {
-			doc = builder.parse(is);
-		} catch (SAXException e) {
-			System.err.print("AccessElement.parseXML: " + e);
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.err.print("AccessElement.parseXML: " + e);
-			e.printStackTrace();
-		}
-
-		return doc;
-
-	}
 
 	/**
 	 * Returns the value of the "authSystem" attribute - this attribute is required.
@@ -182,7 +127,61 @@ public class AccessElement {
 		return this.ruleList;
 	}
 
-	/**
+  /**
+   * Converts the eml-access element String to an Input Stream, which
+   * is required by the document buidler.
+   *
+   * @param accessElement
+   * @return InputStream is - The eml-access element as an Input Stream
+   */
+  private InputStream StringToInputStream(String accessElement) {
+
+    InputStream is = null;
+
+    try {
+      is = new ByteArrayInputStream(accessElement.getBytes("UTF-8"));
+    } catch (UnsupportedEncodingException e) {
+      e.printStackTrace();
+    }
+
+    return is;
+  }
+
+  /**
+   * Creates a document object model and parses the eml-access element from
+   * the input stream.
+   *
+   * @param is The eml-access element input stream to be parsed.
+   * @return Document doc - The document object model of the parsed eml-access input stream.
+   */
+  private Document parseXMLFile(InputStream is) {
+
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = null;
+    Document doc = null;
+
+    try {
+      builder = factory.newDocumentBuilder();
+    } catch (ParserConfigurationException e) {
+      System.err.print("AccessElement.parseXML: " + e);
+      e.printStackTrace();
+    }
+
+    try {
+      doc = builder.parse(is);
+    } catch (SAXException e) {
+      System.err.print("AccessElement.parseXML: " + e);
+      e.printStackTrace();
+    } catch (IOException e) {
+      System.err.print("AccessElement.parseXML: " + e);
+      e.printStackTrace();
+    }
+
+    return doc;
+
+  }
+
+  /**
 	 * Parse the access element and process the "allow" or "deny" blocks.
 	 * @throws InvalidPermissionException
 	 */
