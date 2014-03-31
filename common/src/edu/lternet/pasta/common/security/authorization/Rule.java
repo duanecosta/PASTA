@@ -150,6 +150,15 @@ public class Rule {
 		return this.permission;
 	}
 
+  @Override
+  public String toString() {
+
+    return String.format("%s - %s - %s - %s - %s", getAuthSystem(),
+                            getOrder(), getAccessType(), getPrincipal(),
+                            getPermission());
+
+  }
+
 	/**
 	 * Permission enumeration that corresponds to permissions recognized by PASTA
 	 * access control rules.
