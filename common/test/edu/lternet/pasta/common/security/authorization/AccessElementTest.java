@@ -18,11 +18,16 @@
 
 package edu.lternet.pasta.common.security.authorization;
 
+import com.sun.javafx.binding.StringFormatter;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.ArrayList;
+
+import static org.junit.Assert.*;
 
 /**
  * User: servilla
@@ -42,7 +47,16 @@ public class AccessElementTest {
 
   /* Class variables */
 
-  private static final String PASTA_AUTHSYSTEM = "http://pasta.lternet.edu/authentication";
+  private static final String PASTA_AUTHSYSTEM = "https://pasta.lternet.edu/authentication";
+  private static final String ACCESS_ORDER = "allowFirst";
+  private static final String RULE_1 = "https://pasta.lternet" +
+                                           ".edu/authentication - allowFirst " +
+                                           "- allow - uid=ucarroll,o=LTER," +
+                                           "dc=ecoinformatics," +
+                                           "dc=org - changePermission";
+  private static final String RULE_2 = "https://pasta.lternet" +
+                                           ".edu/authentication - allowFirst " +
+                                           "- deny - public - read";
 
 
   /* Constructors */
@@ -69,6 +83,10 @@ public class AccessElementTest {
     ae.append("<principal>uid=ucarroll,o=LTER,dc=ecoinformatics,dc=org</principal>");
     ae.append("<permission>changePermission</permission>");
     ae.append("</allow>");
+    ae.append("<deny>");
+    ae.append("<principal>public</principal>");
+    ae.append("<permission>read</permission>");
+    ae.append("</deny>");
     ae.append("</access>");
 
     mAccessElement = new AccessElement(ae.toString());
@@ -86,17 +104,46 @@ public class AccessElementTest {
   public void testGetAuthSystem() throws Exception {
 
     String authSystem = mAccessElement.getAuthSystem();
-    System.out.printf("%s%n", authSystem);
+    String message = String.format("Expected authentication system \"%s\", " +
+                                       "but received \"%s\"",
+                                      PASTA_AUTHSYSTEM, authSystem);
+    assertTrue(message, PASTA_AUTHSYSTEM.equals(authSystem));
 
   }
 
   @Test
   public void testGetAccessOrder() throws Exception {
 
+    String accessOrder = mAccessElement.getAccessOrder();
+    String message = String.format("Expected access order \"%s\", " +
+                                       "but received \"%s\"", ACCESS_ORDER,
+                                      accessOrder);
+    assertTrue(message, ACCESS_ORDER.equals(accessOrder));
+
   }
 
   @Test
   public void testGetRuleList() throws Exception {
+
+    ArrayList<Rule> rules = mAccessElement.getRuleList();
+
+    String message = String.format("Expected rule size of \"2\", " +
+                                       "but received \"%d\"", rules.size());
+    assertEquals(message, 2, rules.size());
+
+    message = String.format("Expected rule 1 to be \"%s\", " +
+                                "but received \"%s\"", RULE_1,
+                               rules.get(0).toString());
+    assertTrue(message, RULE_1.equals(rules.get(0).toString()));
+
+    message = String.format("Expected rule 2 to be \"%s\", " +
+                                "but received \"%s\"", RULE_2,
+                               rules.get(1).toString());
+    assertTrue(message, RULE_2.equals(rules.get(1).toString()));
+
+    for (Rule rule: rules) {
+      System.out.printf("%s%n", rule.toString());
+    }
 
   }
 
