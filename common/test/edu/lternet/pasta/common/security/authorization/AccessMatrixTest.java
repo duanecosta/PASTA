@@ -35,6 +35,7 @@ public class AccessMatrixTest {
   /* Instance variables */
 
   private AccessMatrix mAccessMatrix;
+  private AccessElement mAccessElement;
  
   /* Class variables */
  
@@ -44,6 +45,31 @@ public class AccessMatrixTest {
 
   @Before
   public void setUp() throws Exception {
+
+    StringBuilder ae = new StringBuilder();
+    ae.append("<access ");
+    ae.append("system='https://pasta.lternet.edu' ");
+    ae.append("order='allowFirst' ");
+    ae.append("authSystem='https://pasta.lternet.edu/authentication'>");
+    ae.append("<allow>");
+    ae.append("<principal>uid=ucarroll,o=LTER,dc=ecoinformatics,dc=org</principal>");
+    ae.append("<permission>read</permission>");
+    ae.append("</allow>");
+    ae.append("<allow>");
+    ae.append("<principal>uid=ucarroll,o=LTER,dc=ecoinformatics,dc=org</principal>");
+    ae.append("<permission>write</permission>");
+    ae.append("</allow>");
+    ae.append("<allow>");
+    ae.append("<principal>uid=ucarroll,o=LTER,dc=ecoinformatics,dc=org</principal>");
+    ae.append("<permission>changePermission</permission>");
+    ae.append("</allow>");
+    ae.append("<deny>");
+    ae.append("<principal>public</principal>");
+    ae.append("<permission>read</permission>");
+    ae.append("</deny>");
+    ae.append("</access>");
+
+    mAccessMatrix = new AccessMatrix(ae.toString());
 
   }
 
