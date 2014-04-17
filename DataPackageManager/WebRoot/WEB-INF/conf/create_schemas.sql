@@ -13,6 +13,7 @@ CREATE TABLE datapackagemanager.resource_registry (
   entity_id VARCHAR(256),                                   -- the entity id (as appears in the URL)
   entity_name VARCHAR(256),                                 -- the entity name (as appears in the EML)
   principal_owner VARCHAR(250) NOT NULL,                    -- the principal who owns this resource
+  auth_system TEXT NOT NULL,                                -- the authentication system of principal owner
   date_created TIMESTAMP NOT NULL,                          -- creation date/time
   date_deactivated TIMESTAMP,                               -- deactivation date/time; NULL indicates still active
   sha1_checksum CHAR(40),                                   -- SHA-1 checksum of this resource, a 40-character string
