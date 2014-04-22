@@ -28,8 +28,8 @@ CREATE SEQUENCE datapackagemanager.access_matrix_id_seq;
 CREATE TABLE datapackagemanager.access_matrix (
   access_matrix_id INT8 default nextval('datapackagemanager.access_matrix_id_seq'), -- access matrix id, the primary key
   resource_id VARCHAR(350) NOT NULL,                                                -- resource id, a foreign key
-  auth_system TEXT,                                                                 -- the authentication system of this rule
   principal VARCHAR(250) NOT NULL,                                                  -- the principal for whom this access rule applies
+  auth_system TEXT NOT NULL,                                                        -- the authentication system of this rule
   access_type datapackagemanager.access_type NOT NULL,                              -- the EML access type ('allow', 'deny')
   access_order datapackagemanager.order_type NOT NULL,                              -- the EML order attribute ('allowFirst', 'denyFirst')
   permission datapackagemanager.permission NOT NULL,                                -- the EML permission ('read', 'write', 'changePermission')
