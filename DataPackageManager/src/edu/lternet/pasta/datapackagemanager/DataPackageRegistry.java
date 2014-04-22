@@ -96,9 +96,8 @@ public class DataPackageRegistry {
    * 
    * @param   dbDriver      the database driver
    * @param   dbURL         the database URL
-   * @paramm  dbUser        the database user name
+   * @param   dbUser        the database user name
    * @param   dbPassword    the database user password
-   * @return  an EMLDataCache object
    */
   public DataPackageRegistry(String dbDriver, String dbURL, String dbUser,
                       String dbPassword) 
@@ -172,15 +171,17 @@ public class DataPackageRegistry {
   /**
    * Adds an access control rule to the access_matrix table.
    * @param resourceId   the resource identifier value
-   * @param principal    the user that the rule applies to  
+   * @param principal    the user that the rule applies to
+   * @param authSystem   the user's authentication system
    * @param accessType   the access type, e.g. 'allow', 'deny'
    * @param accessOrder  the access order,e.g. 'allowFirst', 'denyFirst'
    * @param permission   the permission, e.g. 'read'
    * @param mayOverwrite boolean to determine whether this rule may
    *                     overwrite an existing rule (used for evaluate mode)
    */
-  public void addAccessControlRule(String resourceId, 
-                                   String principal, 
+  public void addAccessControlRule(String resourceId,
+                                   String principal,
+                                   String authSystem,
                                    Authorizer.AccessType accessType,
                                    Authorizer.AccessOrder accessOrder,
                                    Rule.Permission permission,
@@ -222,8 +223,8 @@ public class DataPackageRegistry {
  
     StringBuffer insertSQL = 
       new StringBuffer("INSERT INTO " + ACCESS_MATRIX + "(");
-    insertSQL.append("resource_id, principal, access_type, access_order, permission) " + 
-                     "VALUES(?,?,?,?,?)");      
+    insertSQL.append("resource_id, principal, auth_system, access_type, access_order, permission) " +
+                     "VALUES(?,?,?,?,?,?)");
     String insertString = insertSQL.toString();
     logger.debug("insertString: " + insertString);
 
@@ -232,9 +233,10 @@ public class DataPackageRegistry {
       PreparedStatement pstmt = connection.prepareStatement(insertString);
       pstmt.setString(1, resourceId);
       pstmt.setString(2, principal);
-      pstmt.setObject(3, accessType, java.sql.Types.OTHER);
-      pstmt.setObject(4, accessOrder, java.sql.Types.OTHER);
-      pstmt.setObject(5, permission, java.sql.Types.OTHER);
+      pstmt.setString(3, authSystem);
+      pstmt.setObject(4, accessType, java.sql.Types.OTHER);
+      pstmt.setObject(5, accessOrder, java.sql.Types.OTHER);
+      pstmt.setObject(6, permission, java.sql.Types.OTHER);
       pstmt.executeUpdate();
       if (pstmt != null) {
         pstmt.close();
@@ -300,6 +302,7 @@ public class DataPackageRegistry {
       for (Rule rule : ruleList) {
 
         String principal = rule.getPrincipal();
+        String authSystem = rule.getAuthSystem();
         String accessType = rule.getAccessType();
         String accessOrder = rule.getOrder();
         Rule.Permission permission = rule.getPermission();
@@ -307,7 +310,7 @@ public class DataPackageRegistry {
         StringBuffer insertSQL = new StringBuffer("INSERT INTO "
             + ACCESS_MATRIX + "(");
         insertSQL
-            .append("resource_id, principal, access_type, access_order, permission) "
+            .append("resource_id, principal, auth_system, access_type, access_order, permission) "
                 + "VALUES(?,?,?,?,?)");
         String insertString = insertSQL.toString();
         logger.debug("insertString: " + insertString);
@@ -317,9 +320,10 @@ public class DataPackageRegistry {
           PreparedStatement pstmt = connection.prepareStatement(insertString);
           pstmt.setString(1, resourceId);
           pstmt.setString(2, principal);
-          pstmt.setObject(3, accessType, java.sql.Types.OTHER);
-          pstmt.setObject(4, accessOrder, java.sql.Types.OTHER);
-          pstmt.setObject(5, permission, java.sql.Types.OTHER);
+          pstmt.setString(3, authSystem);
+          pstmt.setObject(4, accessType, java.sql.Types.OTHER);
+          pstmt.setObject(5, accessOrder, java.sql.Types.OTHER);
+          pstmt.setObject(6, permission, java.sql.Types.OTHER);
           pstmt.executeUpdate();
           if (pstmt != null) {
             pstmt.close();
@@ -352,20 +356,21 @@ public class DataPackageRegistry {
 	 * @param revision     The revision value
 	 * @param entityId     The entityId value (may be null if this is not a data entity resource)
 	 * @param entityName   The entityName value (may be null if this is not a data entity resource)
-	 * @param principalOwner The user (principal) who owns the the resource 
+	 * @param principalOwner The user (principal) who owns the the resource
+   * @param authSystem   The user's authentication system
 	 * @param mayOverwrite If true, an existing resource with the same resourceId may
 	 *                     be overwritten by the new resource by updating its creation date.
 	 *                     This would be typically be set true only for evaluation resources
 	 *                     such as evaluation reports. If false, an error is generated.
 	 */
- 	public void addDataPackageResource(
- 	   String resourceId, 
- 	   DataPackageManager.ResourceType resourceType,
- 	   String resourceLocation,
- 	   String packageId, String scope, Integer identifier, Integer revision,
- 	   String entityId, String entityName, String principalOwner, 
- 	   boolean mayOverwrite)
-          throws ClassNotFoundException, SQLException {
+  public void addDataPackageResource(
+    String resourceId,
+    DataPackageManager.ResourceType
+        resourceType,
+    String resourceLocation,
+    String packageId, String scope, Integer identifier, Integer revision,
+    String entityId, String entityName, String principalOwner, String authSystem,
+    boolean mayOverwrite) throws ClassNotFoundException, SQLException {
     Connection connection = null;
 	  java.sql.Timestamp ts = new java.sql.Timestamp(System.currentTimeMillis());
 	  
@@ -405,14 +410,19 @@ public class DataPackageRegistry {
                                                 RESOURCE_REGISTRY + 
                                                 "(");
       if (resourceType == ResourceType.data) {
-        insertSQL.append("resource_id, resource_type, package_id, scope, identifier, " + 
-                         "revision, resource_location, entity_id, entity_name, principal_owner, date_created) " + 
-                         "VALUES(?,?,?,?,?,?,?,?,?,?,?)");
+        insertSQL.append("resource_id, resource_type, package_id, scope, " +
+                             "identifier, " +
+                             "revision, resource_location, entity_id, " +
+                             "entity_name, principal_owner, auth_system, " +
+                             "date_created) " +
+                             "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
       }
       else {
-        insertSQL.append("resource_id, resource_type, package_id, scope, identifier, " + 
-                         "revision, principal_owner, date_created) " + 
-                         "VALUES(?,?,?,?,?,?,?,?)");
+        insertSQL.append("resource_id, resource_type, package_id, scope, " +
+                             "identifier, " +
+                             "revision, principal_owner, auth_system, " +
+                             "date_created) " +
+                             "VALUES(?,?,?,?,?,?,?,?,?)");
       }
       String insertString = insertSQL.toString();
       logger.debug("insertString: " + insertString);
@@ -431,11 +441,13 @@ public class DataPackageRegistry {
           pstmt.setString(8, entityId);
           pstmt.setString(9, entityName);
           pstmt.setString(10, principalOwner);
-          pstmt.setTimestamp(11, ts);
+          pstmt.setString(11, authSystem);
+          pstmt.setTimestamp(12, ts);
         }
         else {
           pstmt.setString(7, principalOwner);
-          pstmt.setTimestamp(8, ts);
+          pstmt.setString(8, authSystem);
+          pstmt.setTimestamp(9, ts);
         }
         pstmt.executeUpdate();
         if (pstmt != null) {
@@ -670,7 +682,7 @@ public class DataPackageRegistry {
       Connection connection = null;
       
       String selectString = 
-        "SELECT principal, access_type, access_order, permission FROM " + ACCESS_MATRIX +
+        "SELECT principal, auth_system, access_type, access_order, permission FROM " + ACCESS_MATRIX +
         "  WHERE resource_id='" + resourceId + "'";
       
       Statement stmt = null;
@@ -682,12 +694,14 @@ public class DataPackageRegistry {
         
         while (rs.next()) {
           String principal = rs.getString(1);
-          String access_type = rs.getString(2);
-          String access_order = rs.getString(3);
-          String permissionStr = rs.getString(4);
+          String authSystem = rs.getString(2);
+          String access_type = rs.getString(3);
+          String access_order = rs.getString(4);
+          String permissionStr = rs.getString(5);
           Rule.Permission permission = Rule.Permission.valueOf(permissionStr);
           Rule rule = new Rule();
           rule.setPrincipal(principal);
+          rule.setAuthSystem(authSystem);
           rule.setAccessType(access_type);
           rule.setOrder(access_order);
           rule.setPermission(permission);
@@ -1049,8 +1063,56 @@ public class DataPackageRegistry {
     
     return principalOwner;
   }
-  
-  
+
+
+  /**
+   * Gets the authentication system value for a given resourceId
+   *
+   * @param resourceId   the resource identifier
+   * @return  the value of the 'auth_system' field matching
+   *          the specified resourceId ('resource_id') value
+   */
+  public String getAuthSystem(String resourceId)
+      throws ClassNotFoundException, SQLException {
+    String authSystem = null;
+
+    Connection connection = null;
+    String selectString =
+        "SELECT auth_system FROM " + RESOURCE_REGISTRY +
+            "  WHERE resource_id='" + resourceId + "'";
+    logger.debug("selectString: " + selectString);
+
+    Statement stmt;
+
+    try {
+      connection = getConnection();
+      stmt = connection.createStatement();
+      ResultSet rs = stmt.executeQuery(selectString);
+
+      while (rs.next()) {
+        authSystem = rs.getString(1);
+      }
+
+      stmt.close();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("ClassNotFoundException: " + e.getMessage());
+      e.printStackTrace();
+      throw (e);
+    }
+    catch (SQLException e) {
+      logger.error("SQLException: " + e.getMessage());
+      e.printStackTrace();
+      throw (e);
+    }
+    finally {
+      returnConnection(connection);
+    }
+
+    return authSystem;
+  }
+
+
   /**
    * Composes an access control list (ACL) XML string for a given resourceId
    * 
@@ -1062,27 +1124,57 @@ public class DataPackageRegistry {
    */
   public String getResourceAcl(String resourceId) 
           throws ClassNotFoundException, SQLException {
-	boolean isOwner = true;
-	String principalOwner = null;
-    String principal = null;
-    String access_type = null;
-    String access_order = null;
-    String permission = null;
+	  boolean isOwner = true;
+	  String principalOwner;
+    String principal;
+    String authSystem;
+    String access_type;
+    String access_order;
+    String permission;
     boolean allowFirst = true;
-      StringBuffer accessXmlBuffer =
-          new StringBuffer("<access:access " +
-                               "xmlns:access=\"eml://ecoinformatics" +
-                               ".org/access-" + EML_VERSION + "\" " +
-                               "authSystem=\"https://pasta.lternet" +
-                               ".edu/authentication\" " +
-                               "order=\"allowFirst\" " +
-                               "system=\"https://pasta.lternet.edu\">\n"
-          );
 
-    /* First compose an 'allow' entry for the resource owner/submitter */
     Connection connection = null;
-    Statement stmt = null;
-    String selectString = 
+    Statement stmt;
+    String selectString;
+    StringBuffer accessXmlBuffer = new StringBuffer();
+
+    /* Obtain authSystem for root element attribute */
+    selectString = "SELECT auth_system FROM " +
+                       RESOURCE_REGISTRY + " WHERE resource_id='" +
+                       resourceId + "'";
+    try {
+      connection = getConnection();
+      stmt = connection.createStatement();
+      ResultSet rs = stmt.executeQuery(selectString);
+
+      while (rs.next()) {
+        authSystem = rs.getString(1);
+        accessXmlBuffer.append("<access:access " +
+                                   "xmlns:access=\"eml://ecoinformatics" +
+                                   ".org/access-" + EML_VERSION + "\" " +
+                                   "authSystem=\"" + authSystem + "\" " +
+                                   "order=\"allowFirst\" " +
+                                   "system=\"https://pasta.lternet.edu\">\n");
+      }
+
+      stmt.close();
+    }
+    catch (ClassNotFoundException e) {
+      logger.error("ClassNotFoundException: " + e.getMessage());
+      e.printStackTrace();
+      throw (e);
+    }
+    catch (SQLException e) {
+      logger.error("SQLException: " + e.getMessage());
+      e.printStackTrace();
+      throw (e);
+    }
+    finally {
+      returnConnection(connection);
+    }
+
+    /* Compose an 'allow' entry for the resource owner/submitter */
+    selectString =
             "SELECT principal_owner FROM " + RESOURCE_REGISTRY +
             "  WHERE resource_id='" + resourceId + "'";
 
@@ -1097,7 +1189,7 @@ public class DataPackageRegistry {
     	  accessXmlBuffer.append(element);
       }
 
-      if (stmt != null) stmt.close();
+      stmt.close();
     }
     catch (ClassNotFoundException e) {
       logger.error("ClassNotFoundException: " + e.getMessage());
@@ -1134,7 +1226,7 @@ public class DataPackageRegistry {
     	  accessXmlBuffer.append(element);
       }
 
-      if (stmt != null) stmt.close();
+      stmt.close();
     }
     catch (ClassNotFoundException e) {
       logger.error("ClassNotFoundException: " + e.getMessage());
@@ -1163,10 +1255,10 @@ public class DataPackageRegistry {
   private String composeAllowOrDenyElement(String principal, String accessType, String permission, boolean isOwner) {
 	  String element = null;
 	  StringBuffer elementBuffer = new StringBuffer("");
-	  elementBuffer.append(String.format("  <%s>\n", accessType));
-	  elementBuffer.append(String.format("    <principal>%s</principal>\n", principal));
-	  elementBuffer.append(String.format("    <permission>%s</permission>\n", permission));
-	  elementBuffer.append(String.format("  </%s>\n", accessType));
+	  elementBuffer.append(String.format("  <%s>%n", accessType));
+	  elementBuffer.append(String.format("    <principal>%s</principal>%n", principal));
+	  elementBuffer.append(String.format("    <permission>%s</permission>%n", permission));
+	  elementBuffer.append(String.format("  </%s>%n", accessType));
 	  element = elementBuffer.toString();	  
 	  return element;
   }
@@ -1189,7 +1281,7 @@ public class DataPackageRegistry {
             "  WHERE resource_id='" + resourceId + "'";
     logger.debug("selectString: " + selectString);
 
-    Statement stmt = null;
+    Statement stmt;
 
     try {
       connection = getConnection();
@@ -1200,7 +1292,7 @@ public class DataPackageRegistry {
         checksum = rs.getString(1);
       }
 
-      if (stmt != null) stmt.close();
+      stmt.close();
     }
     catch (ClassNotFoundException e) {
       logger.error("ClassNotFoundException: " + e.getMessage());
@@ -1237,7 +1329,7 @@ public class DataPackageRegistry {
             "  WHERE resource_id='" + resourceId + "'";
     logger.debug("selectString: " + selectString);
 
-    Statement stmt = null;
+    Statement stmt;
 
     try {
       connection = getConnection();
@@ -1248,7 +1340,7 @@ public class DataPackageRegistry {
         resourceLocation = rs.getString(1);
       }
 
-      if (stmt != null) stmt.close();
+      stmt.close();
     }
     catch (ClassNotFoundException e) {
       logger.error("ClassNotFoundException: " + e.getMessage());
@@ -1285,7 +1377,7 @@ public class DataPackageRegistry {
       "        identifier='" + identifier + "' AND " +
       "        resource_type != 'report'";
   
-    Statement stmt = null;
+    Statement stmt;
   
     try {
       connection = getConnection();
@@ -1297,7 +1389,7 @@ public class DataPackageRegistry {
         hasDataPackage = (count > 0);
       }
 
-      if (stmt != null) stmt.close();
+      stmt.close();
     }
     catch(ClassNotFoundException e) {
       logger.error("ClassNotFoundException: " + e.getMessage());
@@ -1334,7 +1426,7 @@ public class DataPackageRegistry {
       "        identifier='" + identifier + "' AND " +
       "        revision='" + revision + "'";
   
-    Statement stmt = null;
+    Statement stmt;
   
     try {
       connection = getConnection();
@@ -1346,7 +1438,7 @@ public class DataPackageRegistry {
         hasDataPackage = (count > 0);
       }
 
-      if (stmt != null) stmt.close();
+      stmt.close();
     }
     catch(ClassNotFoundException e) {
       logger.error("ClassNotFoundException: " + e.getMessage());
@@ -1373,13 +1465,13 @@ public class DataPackageRegistry {
    */
   public boolean hasResource(String resourceId)
           throws ClassNotFoundException, SQLException {
-    boolean hasReource = false;
+    boolean hasResource = false;
     Connection connection = null;
     String selectString = 
       "SELECT count(*) FROM " + RESOURCE_REGISTRY +
       "  WHERE resource_id='" + resourceId + "'";
   
-    Statement stmt = null;
+    Statement stmt;
   
     try {
       connection = getConnection();
@@ -1388,10 +1480,10 @@ public class DataPackageRegistry {
     
       while (rs.next()) {
         int count = rs.getInt("count");
-        hasReource = (count > 0);
+        hasResource = (count > 0);
       }
 
-      if (stmt != null) stmt.close();
+      stmt.close();
     }
     catch(ClassNotFoundException e) {
       logger.error("ClassNotFoundException: " + e.getMessage());
@@ -1405,7 +1497,7 @@ public class DataPackageRegistry {
       returnConnection(connection);
     }
     
-    return hasReource;
+    return hasResource;
   }
   
 
@@ -1441,8 +1533,8 @@ public class DataPackageRegistry {
             isPresent = true;
           }
         }
-      
-        if (rs != null) rs.close();
+
+        rs.close();
       }
       else {
         SQLException e = new SQLException("Unable to connect to database.");
@@ -1450,9 +1542,11 @@ public class DataPackageRegistry {
       }
     }
     catch (ClassNotFoundException e) {
+      logger.error("ClassNotFoundException: " + e.getMessage());
       throw(e);
     }
     catch (SQLException e) {
+      logger.error("SQLException: " + e.getMessage());
       throw(e);
     }
     finally {
@@ -1481,7 +1575,7 @@ public class DataPackageRegistry {
       "        resource_type='" + ResourceType.dataPackage + "' AND " +
       "        date_deactivated IS NOT NULL";
   
-    Statement stmt = null;
+    Statement stmt;
   
     try {
       connection = getConnection();
@@ -1493,7 +1587,7 @@ public class DataPackageRegistry {
         isDeactivated = (count > 0);
       }
 
-      if (stmt != null) stmt.close();
+      stmt.close();
     }
     catch(ClassNotFoundException e) {
       logger.error("ClassNotFoundException: " + e.getMessage());
@@ -1513,14 +1607,13 @@ public class DataPackageRegistry {
 	/**
 	 * Determines whether the given resource is publicly accessible.
 	 * 
-	 * @param resourceId
+	 * @param resourceId The resource in question
 	 * @return Is publicly accessible
 	 * @throws SQLException
-	 * @throws ClassNotFoundException
 	 */
 	public Boolean isPublicAccessible(String resourceId) throws SQLException {
 
-		Boolean publicAccessible = false;
+		Boolean publicAccessible;
 
 		ArrayList<Rule> ruleList = new ArrayList<Rule>();
 
@@ -1537,7 +1630,7 @@ public class DataPackageRegistry {
 		    + "access_order, permission FROM datapackagemanager.access_matrix WHERE"
 		    + " resource_id='" + resourceId + "';";
 
-		Statement stat = null;
+		Statement stat;
 
 		try {
 
@@ -1580,8 +1673,14 @@ public class DataPackageRegistry {
 
   
   /**
-   * 
-   * @param scope
+   * Lists data entities for the given data package
+   *
+   * @param scope The data package scope
+   * @param identifier The data package identifier
+   * @param revision The data package revision
+   * @throws java.lang.ClassNotFoundException
+   * @throws java.sql.SQLException
+   * @throws java.lang.IllegalArgumentException
    */
   public ArrayList<String> listDataEntities(String scope, Integer identifier, Integer revision)
     throws ClassNotFoundException, SQLException, IllegalArgumentException {
@@ -1633,8 +1732,12 @@ public class DataPackageRegistry {
 
   
 	/**
-	 * 
-	 * @param scope
+	 * Lists data package identifiers for the given scope value
+   *
+	 * @param scope The data package scope
+   * @throws java.lang.ClassNotFoundException
+   * @throws java.sql.SQLException
+   * @throws java.lang.IllegalArgumentException
 	 */
 	public ArrayList<String> listDataPackageIdentifiers(String scope)
         throws ClassNotFoundException, SQLException, IllegalArgumentException {
@@ -1683,10 +1786,14 @@ public class DataPackageRegistry {
 
 	
 	/**
-	 * 
-	 * @param scope
-	 * @param identifier
-	 */
+	 * Lists data package revisions for the given scope and identifier
+   *
+	 * @param scope The data package scope
+	 * @param identifier The data package identifier
+   * @throws java.lang.ClassNotFoundException
+   * @throws java.sql.SQLException
+   * @throws java.lang.IllegalArgumentException
+   */
 	public ArrayList<String> listDataPackageRevisions(String scope, Integer identifier)
           throws ClassNotFoundException, SQLException, IllegalArgumentException {
     ArrayList<String> revisionList = new ArrayList<String>();
@@ -1733,7 +1840,16 @@ public class DataPackageRegistry {
     return revisionList;
   }
 
-	
+
+  /**
+   * Lists distinct scope values for all data packages in the system
+   *
+   * @return A list of all distinct scope values in the system
+   *
+   * @throws ClassNotFoundException
+   * @throws SQLException
+   * @throws IllegalArgumentException
+   */
   public ArrayList<String> listDataPackageScopes()
       throws ClassNotFoundException, SQLException, IllegalArgumentException {
     ArrayList<String> scopeList = new ArrayList<String>();
@@ -2129,6 +2245,8 @@ public class DataPackageRegistry {
 	
   /**
    * Closes the connection to the database.
+   *
+   * @param conn The database connection
    */
   public void returnConnection(Connection conn) {
     try {
