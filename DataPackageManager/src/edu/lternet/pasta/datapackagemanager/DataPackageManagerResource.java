@@ -800,6 +800,9 @@ public class DataPackageManagerResource extends PastaWebService {
 		authToken = getAuthToken(headers);
 		String userId = authToken.getUserId();
 
+    // TODO: assign correct authentication system
+    String authSystem = null;
+
 		// Is user authorized to run the 'createDataPackage' service method?
 		boolean serviceMethodAuthorized = isServiceMethodAuthorized(
 				serviceMethodName, permission, authToken);
@@ -810,7 +813,7 @@ public class DataPackageManagerResource extends PastaWebService {
 		}
 
 		// Perform createDataPackage in new thread
-		Creator creator = new Creator(emlFile, userId, authToken, transaction);
+		Creator creator = new Creator(emlFile, userId, authSystem, authToken, transaction);
 		ExecutorService executorService = Executors.newCachedThreadPool();
 		executorService.execute(creator);
 		executorService.shutdown();
@@ -1002,7 +1005,7 @@ public class DataPackageManagerResource extends PastaWebService {
 	 * </tr>
 	 * </table>
 	 * 
-	 * @param emlDocument
+	 * @param emlFile
 	 *            The URL to an EML document, as specified in the payload of the
 	 *            request.
 	 * 
@@ -1027,7 +1030,10 @@ public class DataPackageManagerResource extends PastaWebService {
 		authToken = getAuthToken(headers);
 		String userId = authToken.getUserId();
 
-		// Is user authorized to run the 'createDataPackage' service method?
+    // TODO: assign correct authentication system
+    String authSystem = null;
+
+    // Is user authorized to run the 'createDataPackage' service method?
 		boolean serviceMethodAuthorized = isServiceMethodAuthorized(
 				serviceMethodName, permission, authToken);
 		if (!serviceMethodAuthorized) {
@@ -1037,7 +1043,7 @@ public class DataPackageManagerResource extends PastaWebService {
 		}
 
 		// Perform evaluateDataPackage in new thread
-		Evaluator evaluator = new Evaluator(emlFile, userId, authToken,
+		Evaluator evaluator = new Evaluator(emlFile, userId, authSystem, authToken,
 				transaction);
 		ExecutorService executorService = Executors.newCachedThreadPool();
 		executorService.execute(evaluator);
@@ -1887,7 +1893,7 @@ public class DataPackageManagerResource extends PastaWebService {
 	 * 
 	 * @param scope
 	 *            The scope of the metadata document.
-	 * @param identifier
+	 * @param identifierStr
 	 *            The identifier of the metadata document.
 	 * @param filter
 	 *            To return either the "oldest" or "newest" revision
@@ -4345,12 +4351,6 @@ public class DataPackageManagerResource extends PastaWebService {
 	 * </tr>
 	 * </table>
 	 * 
-	 * @param scope
-	 *            The scope of the data package
-	 * @param identifier
-	 *            The identifier of the data package
-	 * @param revision
-	 *            The revision of the data package
 	 * @param transaction
 	 *            The transaction of the data package error
 	 * @return a Response object containing a data package error if found, else
@@ -5325,12 +5325,6 @@ public class DataPackageManagerResource extends PastaWebService {
 	 * </tr>
 	 * </table>
 	 * 
-	 * @param scope
-	 *            The scope of the data package
-	 * @param identifier
-	 *            The identifier of the data package
-	 * @param revision
-	 *            The revision of the data package
 	 * @param transaction
 	 *            The transaction identifier, e.g. "1364424858431"
 	 * @return A Response object containing the evaluate quality report
@@ -6489,6 +6483,9 @@ public class DataPackageManagerResource extends PastaWebService {
 		authToken = getAuthToken(headers);
 		String userId = authToken.getUserId();
 
+    // TODO: assign correct authentication system
+    String authSystem = null;
+
 		// Is user authorized to run the service method?
 		boolean serviceMethodAuthorized = isServiceMethodAuthorized(
 				serviceMethodName, permission, authToken);
@@ -6499,7 +6496,7 @@ public class DataPackageManagerResource extends PastaWebService {
 		}
 
 		// Perform updateDataPackage in new thread
-		Updator updator = new Updator(emlFile, scope, identifier, userId,
+		Updator updator = new Updator(emlFile, scope, identifier, userId, authSystem,
 				authToken, transaction);
 		ExecutorService executorService = Executors.newCachedThreadPool();
 		executorService.execute(updator);
@@ -7626,15 +7623,18 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		File emlFile = null;
 		String userId = null;
+    String authSystem = null;
 		AuthToken authToken = null;
 		String transaction = null;
 
 
-		public Creator(File emlFile, String userId, AuthToken authToken,
-				String transaction) {
+    public Creator(File emlFile, String userId, String authSystem,
+                   AuthToken authToken,
+                   String transaction) {
 
 			this.emlFile = emlFile;
 			this.userId = userId;
+      this.authSystem = authSystem;
 			this.authToken = authToken;
 			this.transaction = transaction;
 
@@ -7654,7 +7654,7 @@ public class DataPackageManagerResource extends PastaWebService {
 			try {
 
 				dpm = new DataPackageManager();
-				map = dpm.createDataPackage(emlFile, userId, authToken,
+				map = dpm.createDataPackage(emlFile, userId, authSystem, authToken,
 						transaction);
 
 				if (map == null) {
@@ -7730,15 +7730,18 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		File emlFile = null;
 		String userId = null;
+    String authSystem = null;
 		AuthToken authToken = null;
 		String transaction = null;
 
 
-		public Evaluator(File emlFile, String userId, AuthToken authToken,
-				String transaction) {
+    public Evaluator(File emlFile, String userId, String authSystem,
+                     AuthToken authToken,
+                     String transaction) {
 
 			this.emlFile = emlFile;
 			this.userId = userId;
+      this.authSystem = authSystem;
 			this.authToken = authToken;
 			this.transaction = transaction;
 
@@ -7758,7 +7761,7 @@ public class DataPackageManagerResource extends PastaWebService {
 			try {
 
 				dpm = new DataPackageManager();
-				xmlString = dpm.evaluateDataPackage(emlFile, userId, authToken,
+				xmlString = dpm.evaluateDataPackage(emlFile, userId, authSystem, authToken,
 						transaction);
 
 				if (xmlString == null) {
@@ -7833,17 +7836,19 @@ public class DataPackageManagerResource extends PastaWebService {
 		String scope = null;
 		Integer identifier = null;
 		String userId = null;
+    String authSystem = null;
 		AuthToken authToken = null;
 		String transaction = null;
 
 
 		public Updator(File emlFile, String scope, Integer identifier,
-				String userId, AuthToken authToken, String transaction) {
+				String userId, String authSystem, AuthToken authToken, String transaction) {
 
 			this.emlFile = emlFile;
 			this.scope = scope;
 			this.identifier = identifier;
 			this.userId = userId;
+      this.authSystem = authSystem;
 			this.authToken = authToken;
 			this.transaction = transaction;
 
@@ -7863,7 +7868,7 @@ public class DataPackageManagerResource extends PastaWebService {
 			try {
 
 				dpm = new DataPackageManager();
-				map = dpm.updateDataPackage(emlFile, scope, identifier, userId,
+				map = dpm.updateDataPackage(emlFile, scope, identifier, userId, authSystem,
 						authToken, transaction);
 
 				if (map == null) {
