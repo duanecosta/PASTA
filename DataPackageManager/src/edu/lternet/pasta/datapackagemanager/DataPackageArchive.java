@@ -115,8 +115,8 @@ public class DataPackageArchive {
 	 *          The identifier value of the data package
 	 * @param revision
 	 *          The revision value of the data package
-	 * @param map
-	 *          The resource map of the data package
+	 * @param userId
+	 *          The user identifier of the owner of the data package
 	 * @param authToken
 	 *          The authentication token of the user requesting the archive
 	 * @param transaction
