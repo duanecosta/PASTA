@@ -229,23 +229,41 @@ public class DataPackageManagerResourceTest {
   
   
   @Test public void runAllTests() {
+    System.out.print("**************** testEvaluateDataPackage ****************\n");
 	  testEvaluateDataPackage();
+    System.out.print("**************** testCreateDataPackage ****************\n");
 	  testCreateDataPackage();
+    System.out.print("**************** testListDataPackageScopes ****************\n");
 	  testListDataPackageScopes();
+    System.out.print("**************** testListDataPackageIdentifiers ****************\n");
 	  testListDataPackageIdentifiers();
+    System.out.print("**************** testListDataPackageRevisions ****************\n");
 	  testListDataPackageRevisions();
+    System.out.print("**************** testListDataEntities ****************\n");
 	  testListDataEntities();
+    System.out.print("**************** testReadDataPackage ****************\n");
 	  testReadDataPackage();
+    System.out.print("**************** testReadDataPackageAcl ****************\n");
 	  testReadDataPackageAcl();
+    System.out.print("**************** testReadMetadata ****************\n");
 	  testReadMetadata();
+    System.out.print("**************** testReadMetadataAcl ****************\n");
 	  testReadMetadataAcl();
+    System.out.print("**************** testReadDataEntity ****************\n");
 	  testReadDataEntity();
+    System.out.print("**************** testReadDataEntityName ****************\n");
 	  testReadDataEntityName();
+    System.out.print("**************** testReadDataEntityAcl ****************\n");
 	  testReadDataEntityAcl();
+    System.out.print("**************** testReadDataPackageReport ****************\n");
 	  testReadDataPackageReport();
+    System.out.print("**************** testReadDataPackageReportAcl ****************\n");
 	  testReadDataPackageReportAcl();
+    System.out.print("**************** testSearchDataPackages ****************\n");
 	  testSearchDataPackages();
+    System.out.print("**************** testUpdateDataPackage ****************\n");
 	  testUpdateDataPackage();
+    System.out.print("**************** testDeleteDataPackage ****************\n");
 	  testDeleteDataPackage();
   }
   
