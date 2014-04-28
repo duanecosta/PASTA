@@ -801,7 +801,7 @@ public class DataPackageManagerResource extends PastaWebService {
 		String userId = authToken.getUserId();
 
     // TODO: assign correct authentication system
-    String authSystem = null;
+    String authSystem = "https://pasta.lternet.edu/authentication";
 
 		// Is user authorized to run the 'createDataPackage' service method?
 		boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -1031,7 +1031,7 @@ public class DataPackageManagerResource extends PastaWebService {
 		String userId = authToken.getUserId();
 
     // TODO: assign correct authentication system
-    String authSystem = null;
+    String authSystem = "https://pasta.lternet.edu/authentication";
 
     // Is user authorized to run the 'createDataPackage' service method?
 		boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -6484,7 +6484,7 @@ public class DataPackageManagerResource extends PastaWebService {
 		String userId = authToken.getUserId();
 
     // TODO: assign correct authentication system
-    String authSystem = null;
+    String authSystem = "https://pasta.lternet.edu/authentication";
 
 		// Is user authorized to run the service method?
 		boolean serviceMethodAuthorized = isServiceMethodAuthorized(
