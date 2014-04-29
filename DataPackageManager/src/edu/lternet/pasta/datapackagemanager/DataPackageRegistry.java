@@ -311,7 +311,7 @@ public class DataPackageRegistry {
             + ACCESS_MATRIX + "(");
         insertSQL
             .append("resource_id, principal, auth_system, access_type, access_order, permission) "
-                + "VALUES(?,?,?,?,?)");
+                + "VALUES(?,?,?,?,?,?)");
         String insertString = insertSQL.toString();
         logger.debug("insertString: " + insertString);
 
