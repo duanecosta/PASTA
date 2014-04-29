@@ -134,4 +134,21 @@ public class TokenUtility {
 
   }
 
+  /**
+   * Returns the user's identity provider used to login.
+   *
+   * @param token The authentication token
+   * @return The user's login identity provider
+   */
+  public static String getLoginProvider(Token token) {
+
+    String provider = null;
+
+    for (Token.Identity identity: token.getIdentity()) {
+      if (identity.getId().equals("identity")) return identity.getProvider();
+    }
+
+    return provider;
+  }
+
 }

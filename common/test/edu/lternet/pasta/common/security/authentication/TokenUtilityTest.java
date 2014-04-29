@@ -48,6 +48,8 @@ public class TokenUtilityTest {
   private String tokenXml;
 
   /* Class variables */
+
+  private static final String PASTA_IDP = "https://pasta.lternet.edu/authentication";
  
   /* Constructors */
 
@@ -64,7 +66,7 @@ public class TokenUtilityTest {
 
     StringBuilder xml = new StringBuilder();
     xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
-    xml.append("<token nickName=\"Dusty\" givenName=\"Utah\" surName=\"Carroll\" expires=\"1389903375597\">\n");
+    xml.append("<token expires=\"1389903375597\" surName=\"Carroll\" givenName=\"Utah\" nickName=\"Dusty\">\n");
     xml.append("    <identity id=\"identity\">\n");
     xml.append("        <identifier>uid=ucarroll,o=LTER,dc=ecoinformatics,dc=org</identifier>\n");
     xml.append("        <provider>https://pasta.lternet.edu/authentication</provider>\n");
@@ -176,6 +178,19 @@ public class TokenUtilityTest {
     assertEquals(message, identity1.getId(), testIdentity1.getId());
     assertEquals(message, identity1.getIdentifier(), testIdentity1.getIdentifier());
     assertEquals(message, identity1.getProvider(), testIdentity1.getProvider());
+
+  }
+
+  /**
+   * Test getter for user's login identity provider.
+   */
+  @Test
+  public void testGetLoginProvider() {
+
+    String provider = TokenUtility.getLoginProvider(token);
+
+    String message = String.format("Expected login provider to be %s, but received %s!%n", PASTA_IDP, provider);
+    assertTrue(message, PASTA_IDP.equals(provider));
 
   }
 
