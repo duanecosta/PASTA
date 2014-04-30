@@ -18,7 +18,13 @@
 
 package edu.lternet.pasta.common.security.authorization;
 
+import edu.lternet.pasta.common.security.token.AuthToken;
+import edu.lternet.pasta.common.security.token.DummyCookieHttpHeaders;
 import org.junit.*;
+
+import javax.ws.rs.core.HttpHeaders;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * User: servilla
@@ -36,8 +42,12 @@ public class AccessMatrixTest {
 
   private AccessMatrix mAccessMatrix;
   private AccessElement mAccessElement;
+  private AuthToken mAuthToken;
+
  
   /* Class variables */
+
+  private static final String OWNER="uid=ucarroll,o=LTER,dc=ecoinformatics,dc=org";
  
   /* Constructors */
 
@@ -48,9 +58,9 @@ public class AccessMatrixTest {
 
     StringBuilder ae = new StringBuilder();
     ae.append("<access ");
-    ae.append("system='https://pasta.lternet.edu' ");
-    ae.append("order='allowFirst' ");
-    ae.append("authSystem='https://pasta.lternet.edu/authentication'>");
+    ae.append("system=\"https://pasta.lternet.edu\" ");
+    ae.append("order=\"allowFirst\" ");
+    ae.append("authSystem=\"https://pasta.lternet.edu/authentication\">");
     ae.append("<allow>");
     ae.append("<principal>uid=ucarroll,o=LTER,dc=ecoinformatics,dc=org</principal>");
     ae.append("<permission>read</permission>");
@@ -70,6 +80,8 @@ public class AccessMatrixTest {
     ae.append("</access>");
 
     mAccessMatrix = new AccessMatrix(ae.toString());
+    HttpHeaders httpHeadersOwner = new DummyCookieHttpHeaders(OWNER);
+    mAuthToken = DummyCookieHttpHeaders.getAuthToken(httpHeadersOwner);
 
   }
 
@@ -81,10 +93,16 @@ public class AccessMatrixTest {
   @Test
   public void testIsAuthorized() throws Exception {
 
+    assertTrue(mAccessMatrix.isAuthorized(mAuthToken, OWNER, Rule.Permission.changePermission));
+
   }
 
   @Test
   public void testGetRuleList() throws Exception {
+
+    for (Rule rule: mAccessMatrix.getRuleList()) {
+      System.out.printf("%s%n", rule.toString());
+    }
 
   }
 
