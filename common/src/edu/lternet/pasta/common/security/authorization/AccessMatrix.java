@@ -86,12 +86,12 @@ public class AccessMatrix {
 	 *
 	 * @param authToken The authentication token identifying the principal user and
 	 *                  their group affiliations.
-	 * @param submitter The submitter of the resource being requested.
+	 * @param owner The submitter of the resource being requested.
 	 * @param permission The requested permission.
 	 * @return The assertion of whether the principal user is authorized to access
 	 *         the resource at the requested permission.
 	 */
-	public boolean isAuthorized(AuthToken authToken, String submitter, Permission permission) {
+	public boolean isAuthorized(AuthToken authToken, String owner, Permission permission) {
 
     // TODO: Compare each identity element of authToken
     // TODO: 1. Test list of non-group identities to submitter
@@ -104,7 +104,7 @@ public class AccessMatrix {
 		// Force principal identifier to lower case for hash table comparison.
 		String principal = authToken.getUserId().toLowerCase();
 
-		if (submitter != null && submitter.equalsIgnoreCase(principal)) {  // The submitter has full access.
+		if (owner != null && owner.equalsIgnoreCase(principal)) {  // The submitter has full access.
 			isAuthorized = true;
 			return isAuthorized;
 		}
