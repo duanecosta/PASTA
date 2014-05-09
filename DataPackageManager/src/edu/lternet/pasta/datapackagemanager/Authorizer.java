@@ -85,7 +85,8 @@ public class Authorizer {
    * @return true if the user (authToken) is authorized to access the resource 
    *         with the specified permission, else false
    */
-  public boolean isAuthorized(AuthToken authToken, String resourceId, Rule.Permission permission)
+  public boolean isAuthorized(AuthToken authToken, String resourceId,
+                              Rule.Permission permission)
           throws ClassNotFoundException, SQLException {
     boolean isAuthorized = false;
     
@@ -93,13 +94,15 @@ public class Authorizer {
     if (!hasResource) {
       throw new ResourceNotFoundException("Resource not found with resourceId: " + resourceId);
     }
-    
+
     String principalOwner = dataPackageRegistry.getPrincipalOwner(resourceId);
+    String authSystem = dataPackageRegistry.getAuthSystem(resourceId);
     
     if (principalOwner != null) {
       ArrayList<Rule> ruleList = dataPackageRegistry.getAccessControlRules(resourceId);
       AccessMatrix accessMatrix = new AccessMatrix(ruleList);
-      isAuthorized = accessMatrix.isAuthorized(authToken, principalOwner, permission);
+      isAuthorized = accessMatrix.isAuthorized(authToken, principalOwner,
+                                                  authSystem, permission);
     }
     
     return isAuthorized;
