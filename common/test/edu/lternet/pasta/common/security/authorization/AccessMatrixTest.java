@@ -93,7 +93,7 @@ public class AccessMatrixTest {
   @Test
   public void testIsAuthorized() throws Exception {
 
-    assertTrue(mAccessMatrix.isAuthorized(mAuthToken, OWNER, Rule.Permission.changePermission));
+    assertTrue(mAccessMatrix.isAuthorized(mAuthToken, OWNER, null, Rule.Permission.changePermission));
 
   }
 
