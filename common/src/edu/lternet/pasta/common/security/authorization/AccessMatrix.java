@@ -85,13 +85,14 @@ public class AccessMatrix {
 	 * authorized for the requested permission.
 	 *
 	 * @param authToken The authentication token identifying the principal user and
-	 *                  their group affiliations.
-	 * @param owner The submitter of the resource being requested.
-	 * @param permission The requested permission.
+	 *                  their group affiliations
+	 * @param owner The owner of the resource being requested
+   * @param authSystem The authentication system used to identify the owner
+	 * @param permission The requested permission
 	 * @return The assertion of whether the principal user is authorized to access
 	 *         the resource at the requested permission.
 	 */
-	public boolean isAuthorized(AuthToken authToken, String owner, Permission permission) {
+	public boolean isAuthorized(AuthToken authToken, String owner, String authSystem, Permission permission) {
 
     // TODO: Compare each identity element of authToken
     // TODO: 1. Test list of non-group identities to submitter
