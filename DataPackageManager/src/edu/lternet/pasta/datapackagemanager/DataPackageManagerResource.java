@@ -566,10 +566,9 @@ public class DataPackageManagerResource extends PastaWebService {
 										AccessMatrix accessMatrix = new AccessMatrix(
 												accessXML);
 										String principalOwner = "pasta";
-										isAuthorized = accessMatrix
-												.isAuthorized(authToken,
-														principalOwner,
-														permission);
+                    String authSystem = "https://pasta.lternet.edu/authentication";
+										isAuthorized = accessMatrix.isAuthorized(authToken,
+														principalOwner, authSystem,	permission);
 									}
 								}
 							}
