@@ -1665,7 +1665,7 @@ public class DataPackageRegistry {
 		AccessMatrix accessMatrix = new AccessMatrix(ruleList);
 		Rule.Permission permission = (Rule.Permission) Enum.valueOf(
 		    Rule.Permission.class, Rule.READ);
-		publicAccessible = accessMatrix.isAuthorized(authToken, null, permission);
+		publicAccessible = accessMatrix.isAuthorized(authToken, null, null, permission);
 
 		return publicAccessible;
 
