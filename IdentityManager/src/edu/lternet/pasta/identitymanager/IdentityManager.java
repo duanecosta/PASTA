@@ -90,7 +90,7 @@ public class IdentityManager {
 
     if (credential == null && idp != null) {
       String gripe = "login: credential is null, when identity provider is " +
-                         "not be null!";
+                         "not null!";
       throw new UserValidationException(gripe);
     }
 
