@@ -83,9 +83,9 @@
 								<p class="nis-warn"><%= warningMessage %></p>								
 
 								<p>Data packages may be evaluated without uploading 
-								them to the NIS by selecting <b>Evaluate</b>. Once you 
+								them to the <abbr title="Network Information System">NIS</abbr> by selecting <b>Evaluate</b>. Once you 
 								are satisfied that data packages are ready to be 
-								uploaded to the NIS, you may do so by selecting 
+								uploaded to the <abbr title="Network Information System">NIS</abbr>, you may do so by selecting 
 								<b>Upload</b>. Several alternatives for supplying the 
 								EML metadata for your data packages are available below.</p>
 
@@ -121,16 +121,15 @@
 										<input checked="checked" name="desktopUpload" type="radio" value="0" />
 									  Data will be accessed using the online URLs as documented in the EML 
 									</div>
-                </div>
+                                </div>
 								<div class="table-row">
 									<div class="table-cell">
-								    <input name="desktopUpload" type="radio" value="1" /> 
-									  I want to manually upload the data by selecting files on my local system
-									  <span name="When using this method to upload data, any online data URLs documented in the EML will be ignored and the data files you select will be used in their place." 
-									        class="tooltip">
-									    [<em> Please note </em>]
-									  </span>
-                  </div>
+										<span name="Important: When using this method to upload data, online data URLs documented in the EML will be replaced with links to the data files you select." 
+									          class="tooltip">
+								    		<input name="desktopUpload" type="radio" value="1" /> 
+								    	</span>
+										I want to manually upload the data by selecting files on my local system
+									</div>
 								</div>
 								<div class="table-row">
 									<div class="table-cell"></div>

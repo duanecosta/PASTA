@@ -1,8 +1,29 @@
-<%@ page import="edu.lternet.pasta.portal.DataPortalServlet" %>
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ page import="edu.lternet.pasta.portal.DataPortalServlet"%>
 
 <%
-  final String pageTitle = "Contact Us";
-  final String titleText = DataPortalServlet.getTitleText(pageTitle);
+    final String pageTitle = "Audit Report";
+    final String titleText = DataPortalServlet.getTitleText(pageTitle);
+
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://" + request.getServerName()
+	    + ":" + request.getServerPort() + path + "/";
+
+	HttpSession httpSession = request.getSession();
+
+	String uid = (String) httpSession.getAttribute("uid");
+
+	if (uid == null || uid.isEmpty()) {
+		request.setAttribute("from", "./auditReportTable.jsp");
+		String loginWarning = DataPortalServlet.getLoginWarning();
+		request.setAttribute("message", loginWarning);
+		RequestDispatcher requestDispatcher = request
+		    .getRequestDispatcher("./login.jsp");
+		requestDispatcher.forward(request, response);
+	}
+	
+	String reportMessage = (String) request.getAttribute("reportMessage");
+
 %>
 
 <!DOCTYPE html>
@@ -51,55 +72,25 @@
 					<div class="row-fluid">
 						<div class="span12">
 							<div class="recent_title">
-								<h2>Contact Us</h2>
+								<h2>Audit Report</h2>
 							</div>
 							<span class="row-fluid separator_border"></span>
 						</div>
 						<div class="row-fluid">
 							<div class="span12">
 								<!-- Content -->
-								<h3 align="left">People</h3>
-								<ul>
-									<li>
-									<a class="searchsubcat" href="http://search.lternet.edu/directory_view.php?personid=10391">
-									James Brunt</a>, LTER Chief Information Officer</li>
-									<li>
-									<a class="searchsubcat" href="http://search.lternet.edu/directory_view.php?personid=13823">
-									Mark Servilla</a>, <abbr title="Network Information System">NIS</abbr> Lead Scientist</li>
-									<li>
-									<a class="searchsubcat" href="http://search.lternet.edu/directory_view.php?personid=13757">
-									Duane Costa</a>, <abbr title="Network Information System">NIS</abbr> Analyst/Programmer III</li>
-								</ul>
-								<h3 align="left">Physical Address</h3>
-								<ul class="no-list-style">
-									<li>LTER Network Office<br />
-									Suite 320, CERIA Bldg #83,<br />
-									University of New Mexico (Main Campus)<br />
-									Albuquerque, New Mexico, USA<br />
-									Phone: 505 277-2597<br />
-									Fax: 505 277-2541<br />
-									Email:
-									<a class="searchsubcat" href="mailto:tech-support@lternet.edu">tech-support@lternet.edu</a><br />
-									URL: <a class="searchsubcat" href="https://lno.lternet.edu">https://lno.lternet.edu</a>
-									</li>
-								</ul>
-								<h3 align="left">Mailing Address</h3>
-								<ul class="no-list-style">
-									<li>LTER Network Office<br />
-									UNM Dept of Biology, MSC03 2020<br />
-									1 University of New Mexico<br />
-									Albuquerque, New Mexico, USA<br />
-									87131-0001</li>
-								</ul>
-								<!-- /Content --></div>
+			                    <%= reportMessage %>
+								<!-- /Content -->
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-
-		<jsp:include page="footer.jsp" />
+	
+	<jsp:include page="footer.jsp" />
+	
 </div>
 
 </body>

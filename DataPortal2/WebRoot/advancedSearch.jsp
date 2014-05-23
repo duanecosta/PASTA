@@ -1,5 +1,6 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ page import="edu.lternet.pasta.portal.DataPortalServlet" %>
+<%@ page import="edu.lternet.pasta.portal.Tooltip" %>
 <%@ page import="edu.lternet.pasta.portal.search.LTERSite" %>
 
 <%
@@ -190,14 +191,9 @@
 												  <div>
 													  <!-- <h3 class="separator_border labelBolder span12">Spatial Criteria</h3> -->
 													  <input name="boundsChangedCount" type="hidden" value="0" />
-													  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAcbgq4MRleYDjHPQoQazyHMAiavmj0s0U&amp;sensor=false" 
-													          type="text/javascript">
-            							  </script>
-													  <script src="./js/map_functions.js" 
-													          type="text/javascript">
-													  </script>
-													  <script type="text/javascript">google.maps.event.addDomListener(window, 'load', initialize);
-            							  </script>
+													  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAcbgq4MRleYDjHPQoQazyHMAiavmj0s0U&amp;sensor=false" type="text/javascript"></script>
+													  <script src="./js/map_functions.js" type="text/javascript"></script>
+													  <script type="text/javascript">google.maps.event.addDomListener(window, 'load', initialize);</script>
 														<table>														
 													  	<tr>										
 														    <td>
@@ -362,7 +358,10 @@
 															  </td>
 															  <td class="spacerwd"></td>														  
 															  <td>
-															    <input name="subjectValue" type="search" placeholder="enter search terms" />
+															  	<span name='<%= Tooltip.SEARCH_TERMS %>'
+															  		  class="tooltip">
+															  		<input name="subjectValue" type="search" placeholder="enter search terms" />
+															  	</span>
 															  </td>
 															</tr>
 															<tr>

@@ -705,7 +705,7 @@ h2 .title_labeled {
 	right: 15px;
 	top: 9px;
 	z-index: 50;
-	margin-top: 25px;
+	margin-top: 0px;
 }
 .columns2 .portfolio_shadow {
 	background: url('../images/455px.png') no-repeat;
@@ -2473,12 +2473,12 @@ select.select-menu {
 
 /* LTER TOOLTIP CSS */
 .tooltip {
-  display: inline;
-  position: relative;
+	display: inline;
+	position: relative;
 	font-family: 'Open Sans';
 	line-height: 20px;
 	font-size: 14px;
-	color: #666666;
+	color: #5990bd;
 }
 
 .tooltip:hover:after {

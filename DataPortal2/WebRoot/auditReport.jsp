@@ -5,6 +5,7 @@
 <%
   final String pageTitle = "Audit Reports";
   final String titleText = DataPortalServlet.getTitleText(pageTitle);
+  String serviceMethodsHTML = "";
 
 	String path = request.getContextPath();
 	String basePath = request.getScheme() + "://" + request.getServerName()
@@ -22,19 +23,13 @@
 		    .getRequestDispatcher("./login.jsp");
 		requestDispatcher.forward(request, response);
 	}
-	
-	AuditReportServlet ars = new AuditReportServlet();
-	String serviceMethodsHTML = ars.serviceMethodsHTML(uid);
-
-	String reportMessage = (String) request.getAttribute("reportMessage");
-	String type = (String) request.getAttribute("type");
-
-	if (type == null) {
-		type = "";
-	} else {
-		type = "class=\"" + type + "\"";
+	else {
+	  AuditReportServlet ars = new AuditReportServlet();
+	  serviceMethodsHTML = ars.serviceMethodsHTML(uid);
 	}
 
+	String reportMessage = (String) request.getAttribute("reportMessage");
+	
 	String limitHTML = "";
 	String auditRecordLimit = (String) ConfigurationListener.getOptions().getProperty("auditreport.limit");
 	if (auditRecordLimit != null && !auditRecordLimit.equals("")) {
@@ -124,7 +119,7 @@
 						<div class="row-fluid">
 							<div class="span12">
 								<!-- Content -->
-								<p>Review a PASTA audit report<sup>*</sup> by entering your criteria into one or more of the filters below.</p>
+								<p>Review an audit report<sup>*</sup> by entering your criteria into one or more of the filters below.</p>
 								<hr/>
 								<form id="auditReport" action="./auditReport" method="post" name="auditReport">
 									<div class="section">
@@ -338,18 +333,12 @@
 									</div>
 									<!-- section -->
 					<%
-						if (reportMessage != null && type.equals("class=\"warning\"")) {
+						if (reportMessage != null) {
 							out.println(String.format("<p class=\"nis-warn\">%s</p>", reportMessage));
 						}
 					%>
 
 								</form>
-			    <%
-				    if (reportMessage != null && type.equals("class=\"info\"")) {
-					    out.println(reportMessage);
-				    }
-			    %>
-
 								<!-- /Content -->
 							</div>
 						</div>
