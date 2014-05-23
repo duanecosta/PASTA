@@ -20,6 +20,9 @@ package edu.lternet.pasta.common.security.authorization;
 
 import edu.lternet.pasta.common.security.authorization.Rule.Permission;
 import edu.lternet.pasta.common.security.token.AuthToken;
+import edu.lternet.pasta.common.security.authentication.jaxb.Token;
+import edu.lternet.pasta.common.security.authentication.jaxb.ObjectFactory;
+import edu.lternet.pasta.common.security.authentication.TokenUtility;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
