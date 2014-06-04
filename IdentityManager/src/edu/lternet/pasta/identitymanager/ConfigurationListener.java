@@ -82,7 +82,7 @@ public class ConfigurationListener implements ServletContextListener {
     PropertyConfigurator.configureAndWatch(log4jPropertiesPath);
 
     // Initialize commons configuration
-    String appConfigPath = cwd + "/WEB-INF/conf/dataportal.properties";
+    String appConfigPath = cwd + "/WEB-INF/conf/identity.properties";
     try {
       config = new PropertiesConfiguration(appConfigPath);
       config.setProperty("system.cwd", cwd);
