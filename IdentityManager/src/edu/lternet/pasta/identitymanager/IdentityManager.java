@@ -18,6 +18,7 @@
 
 package edu.lternet.pasta.identitymanager;
 
+import edu.lternet.pasta.common.security.authentication.IdentityFactory;
 import edu.lternet.pasta.common.security.authentication.TokenUtility;
 import edu.lternet.pasta.common.security.authentication.jaxb.ObjectFactory;
 import edu.lternet.pasta.common.security.authentication.jaxb.Token;
@@ -29,6 +30,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static edu.lternet.pasta.common.security.authentication
+                  .IdentityFactory.getGlobalIdentity;
 
 /**
  * User: servilla
@@ -105,7 +109,7 @@ public class IdentityManager {
     token.setExpires(BigInteger.valueOf(now.getTime()));
 
     // Set "public" identity for all users
-    tokenIdentities.add(setPublicIdentity());
+    tokenIdentities.add(getGlobalIdentity(IdentityFactory.GlobalId.PUBLIC));
 
     if (credential != null) { // && idp != null is always true at this point
 
@@ -150,13 +154,14 @@ public class IdentityManager {
        * Build identity object for token
        */
       tokenIdentity = objectFactory.createTokenIdentity();
-      tokenIdentity.setId("identity");
+      tokenIdentity.setId(Token.Identity.LOGIN);
       tokenIdentity.setIdentifier(userId);
       tokenIdentity.setProvider(providerId);
       tokenIdentities.add(tokenIdentity);
 
-      // Set "authenticated" identity for all users
-      tokenIdentities.add(setAuthenticatedIdentity());
+      // Set "authenticated" identity for all authenticated users
+      tokenIdentities.add(getGlobalIdentity(IdentityFactory.GlobalId
+                                                .AUTHENTICATED));
 
       /*
        * Add group identities to token identity block
@@ -164,14 +169,14 @@ public class IdentityManager {
       ArrayList<Group> groups = provider.getGroups();
       for (Group group: groups) {
         tokenIdentity = objectFactory.createTokenIdentity();
-        tokenIdentity.setId("group");
+        tokenIdentity.setId(Token.Identity.GROUP);
         tokenIdentity.setIdentifier(group.getGroupName());
         tokenIdentity.setProvider(providerId);
         tokenIdentities.add(tokenIdentity);
       }
 
       /*
-       * If profile exists, add mapped identities to token
+       * If aura exists, add mapped identities to token
        */
 
       Profile profile = null;
@@ -198,7 +203,7 @@ public class IdentityManager {
           if ((mapIdentity.getVerifyTimestamp()).getTime() + mMapIdentityTtl
                   >= now.getTime()) {
             tokenIdentity = objectFactory.createTokenIdentity();
-            tokenIdentity.setId("mapped");
+            tokenIdentity.setId(Token.Identity.MAP);
             tokenIdentity.setIdentifier(mapIdentity.getUserId());
             tokenIdentity.setProvider(mapIdentity.getProviderId());
 
@@ -216,8 +221,8 @@ public class IdentityManager {
           }
         }
 
-        // Set "profiled" identity for all users
-        tokenIdentities.add(setProfiledIdentity());
+        // Set "aura" identity for all users with a digital aura
+        tokenIdentities.add(getGlobalIdentity(IdentityFactory.GlobalId.AURA));
 
       }
 
@@ -250,48 +255,6 @@ public class IdentityManager {
         throw new PastaConfigurationException(e.getMessage());
       }
     }
-
-  }
-
-  private Token.Identity setPublicIdentity() {
-
-    ObjectFactory objectFactory = new ObjectFactory();
-    Token.Identity tokenIdentity;
-
-    tokenIdentity = objectFactory.createTokenIdentity();
-    tokenIdentity.setId(PUBLIC);
-    tokenIdentity.setIdentifier(PUBLIC);
-    tokenIdentity.setProvider(GLOBAL);
-
-    return tokenIdentity;
-
-  }
-
-  private Token.Identity setAuthenticatedIdentity() {
-
-    ObjectFactory objectFactory = new ObjectFactory();
-    Token.Identity tokenIdentity;
-
-    tokenIdentity = objectFactory.createTokenIdentity();
-    tokenIdentity.setId(AUTHENTICATED);
-    tokenIdentity.setIdentifier(AUTHENTICATED);
-    tokenIdentity.setProvider(GLOBAL);
-
-    return tokenIdentity;
-
-  }
-
-  private Token.Identity setProfiledIdentity() {
-
-    ObjectFactory objectFactory = new ObjectFactory();
-    Token.Identity tokenIdentity;
-
-    tokenIdentity = objectFactory.createTokenIdentity();
-    tokenIdentity.setId(PROFILED);
-    tokenIdentity.setIdentifier(PROFILED);
-    tokenIdentity.setProvider(GLOBAL);
-
-    return tokenIdentity;
 
   }
 
