@@ -49,6 +49,11 @@ public class AccessElement {
 	 * Class fields
 	 */
 
+  public static final String ALLOW_FIRST = "allowFirst";
+  public static final String DENY_FIRST = "denyFirst";
+  public static final String RULE_ALLOW = "allow";
+  public static final String RULE_DENY = "deny";
+
 	/*
 	 * Instance fields
 	 */
