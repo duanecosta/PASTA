@@ -145,7 +145,7 @@ public class TokenUtility {
     String provider = null;
 
     for (Token.Identity identity: token.getIdentity()) {
-      if (identity.getId().equals("identity")) return identity.getProvider();
+      if (identity.getId().equals(Token.Identity.LOGIN)) return identity.getProvider();
     }
 
     return provider;
