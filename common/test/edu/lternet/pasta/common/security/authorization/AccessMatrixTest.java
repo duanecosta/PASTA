@@ -18,8 +18,8 @@
 
 package edu.lternet.pasta.common.security.authorization;
 
-import edu.lternet.pasta.common.security.token.AuthToken;
-import edu.lternet.pasta.common.security.token.DummyCookieHttpHeaders;
+import edu.lternet.pasta.common.security.authentication.jaxb.ObjectFactory;
+import edu.lternet.pasta.common.security.authentication.jaxb.Token;
 import org.junit.*;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -42,7 +42,7 @@ public class AccessMatrixTest {
 
   private AccessMatrix mAccessMatrix;
   private AccessElement mAccessElement;
-  private AuthToken mAuthToken;
+  private Token mAuthToken;
 
  
   /* Class variables */
@@ -80,8 +80,8 @@ public class AccessMatrixTest {
     ae.append("</access>");
 
     mAccessMatrix = new AccessMatrix(ae.toString());
-    HttpHeaders httpHeadersOwner = new DummyCookieHttpHeaders(OWNER);
-    mAuthToken = DummyCookieHttpHeaders.getAuthToken(httpHeadersOwner);
+    ObjectFactory objectFactory = new ObjectFactory();
+    mAuthToken = objectFactory.createToken();
 
   }
 
