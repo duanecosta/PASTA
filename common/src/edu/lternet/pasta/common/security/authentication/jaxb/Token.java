@@ -61,7 +61,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "token")
 public class Token {
 
-    @XmlElement(required = true)
+  @XmlElement(required = true)
     protected List<Token.Identity> identity;
     @XmlAttribute(required = true)
     protected BigInteger expires;
@@ -248,7 +248,12 @@ public class Token {
     })
     public static class Identity {
 
-        @XmlElement(required = true)
+        // Identity types
+        public final static String LOGIN = "login";
+        public final static String MAP = "map";
+        public final static String GROUP = "group";
+
+      @XmlElement(required = true)
         protected String identifier;
         @XmlElement(required = true)
         protected String provider;
