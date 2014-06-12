@@ -5,7 +5,7 @@
 .myeclipse
 .DS_Store
 .idea
-*/*.jks
+*.jks
 */*.iml
 /out
 classes
