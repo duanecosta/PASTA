@@ -14,7 +14,8 @@ public class UserAccessControllerV1 extends AbstractAuthTokenAccessController
 
     private boolean canDo(AuthToken authtoken, String acr, String resourceSubmitter, Permission action) {
         AccessMatrix matrix = makeAccessMatrix(acr);
-        return matrix.isAuthorized(authtoken, resourceSubmitter, null, action);
+        return false;
+        // return matrix.isAuthorized(authtoken, resourceSubmitter, null, action);
     }
 
     private AccessMatrix makeAccessMatrix(String acr) {

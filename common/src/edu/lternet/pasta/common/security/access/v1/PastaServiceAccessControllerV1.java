@@ -19,7 +19,10 @@ public class PastaServiceAccessControllerV1 implements JaxRsHttpAccessController
         AuthToken token =
                 AuthTokenFactory.makeAuthToken(requestHeaders.getCookies());
         AccessMatrix matrix = makeAccessMatrix(acr);
-        return matrix.isAuthorized(token, resourceSubmitter, null, action);
+
+        return false;
+
+        // return matrix.isAuthorized(token, resourceSubmitter, null, action);
     }
 
     private AccessMatrix makeAccessMatrix(String acr) {
