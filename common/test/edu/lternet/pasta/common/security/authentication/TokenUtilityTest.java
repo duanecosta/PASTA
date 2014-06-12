@@ -65,16 +65,26 @@ public class TokenUtilityTest {
     token = of.createToken();
 
     StringBuilder xml = new StringBuilder();
-    xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
-    xml.append("<token expires=\"1389903375597\" surName=\"Carroll\" givenName=\"Utah\" nickName=\"Dusty\">\n");
-    xml.append("    <identity id=\"identity\">\n");
-    xml.append("        <identifier>uid=ucarroll,o=LTER,dc=ecoinformatics,dc=org</identifier>\n");
-    xml.append("        <provider>https://pasta.lternet.edu/authentication</provider>\n");
-    xml.append("    </identity>\n");
-    xml.append("    <identity id=\"mapped\">\n");
-    xml.append("        <identifier>utah.carroll@gmail.com</identifier>\n");
-    xml.append("        <provider>https://google.com</provider>\n");
-    xml.append("    </identity>\n");
+    xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\" " +
+                   "standalone=\"yes\"?>\n");
+    xml.append("<token expires=\"1402523921519\">\n");
+    xml.append("<identity id=\"group\">\n");
+    xml.append("<identifier>public</identifier>\n");
+    xml.append("<provider>*</provider>\n");
+    xml.append("</identity>\n");
+    xml.append("<identity id=\"login\">\n");
+    xml.append("<identifier>uid=cjack,o=LTER,dc=ecoinformatics," +
+                   "dc=org</identifier>\n");
+    xml.append("<provider>https://pasta.lternet.edu/authentication</provider>\n");
+    xml.append("</identity>\n");
+    xml.append("<identity id=\"group\">\n");
+    xml.append("<identifier>authenticated</identifier>\n");
+    xml.append("<provider>*</provider>\n");
+    xml.append("</identity>\n");
+    xml.append("<identity id=\"group\">\n");
+    xml.append("<identifier>LTER</identifier>\n");
+    xml.append("<provider>https://pasta.lternet.edu/authentication</provider>\n");
+    xml.append("</identity>\n");
     xml.append("</token>\n");
 
     tokenXml = xml.toString();
