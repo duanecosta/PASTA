@@ -18,15 +18,12 @@
 
 package edu.lternet.pasta.common.security.authorization;
 
+import edu.lternet.pasta.common.security.authentication.IdentityFactory;
 import edu.lternet.pasta.common.security.authorization.Rule.Permission;
-import edu.lternet.pasta.common.security.token.AuthToken;
 import edu.lternet.pasta.common.security.authentication.jaxb.Token;
-import edu.lternet.pasta.common.security.authentication.jaxb.ObjectFactory;
-import edu.lternet.pasta.common.security.authentication.TokenUtility;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Set;
 
 /**
  * @author servilla
@@ -87,7 +84,7 @@ public class AccessMatrix {
 	 * Determine if the principal user or any of their group affiliations are
 	 * authorized for the requested permission.
 	 *
-	 * @param authToken The authentication token identifying the principal user and
+	 * @param token The authentication token identifying the principal user and
 	 *                  their group affiliations
 	 * @param owner The owner of the resource being requested
    * @param authSystem The authentication system used to identify the owner
@@ -95,7 +92,7 @@ public class AccessMatrix {
 	 * @return The assertion of whether the principal user is authorized to access
 	 *         the resource at the requested permission.
 	 */
-	public boolean isAuthorized(AuthToken authToken, String owner, String authSystem, Permission permission) {
+	public boolean isAuthorized(Token token, String owner, String authSystem, Permission permission) {
 
     // TODO: Compare each identity element of authToken
     // TODO: 1. Test list of non-group identities to submitter
@@ -105,22 +102,26 @@ public class AccessMatrix {
 
 		boolean isAuthorized = false;
 
-		// Force principal identifier to lower case for hash table comparison.
-		String principal = authToken.getUserId().toLowerCase();
-
-		if (owner != null && owner.equalsIgnoreCase(principal)) {  // The submitter has full access.
-			isAuthorized = true;
-			return isAuthorized;
-		}
+    // Test identity match to resource owner, who does not need to be in the
+    // rule
+    for (Token.Identity identity: token.getIdentity()) {
+      String id = identity.getId();
+      if (id.equals(Token.Identity.LOGIN) || id.equals(Token.Identity.MAP)) {
+        String uid = identity.getIdentifier();
+        String idP = identity.getProvider();
+        if (uid.equalsIgnoreCase(owner) && idP.equalsIgnoreCase(authSystem))
+          return true; // Owner has full access to resource
+      }
+    }
 
 		if (this.ruleList != null) {
 
-			// Iterate through rule list adding to either "allow" or "deny" hash tables.
+			// Build "allow"/"deny" rule hash tables
 			for (int i = 0; i < this.ruleList.size(); i++) {
 
 				Rule rule = this.ruleList.get(i);
 
-				if (rule.getAccessType().equals("allow")) {
+				if (rule.getAccessType().equals(AccessElement.RULE_ALLOW)) {
 					this.order = rule.getOrder();
 					// Set hash key to lower case to simulate case insensitivity.
 					this.allowRules.put(rule.getPrincipal().toLowerCase(), rule);
@@ -134,52 +135,29 @@ public class AccessMatrix {
 
 			// Begin the process to determine if there exists an "allow" rule that
 			// allows access to the principal or one of their groups or public.
-			if (isAllowed(principal, permission)) {
-				isAuthorized = true;
-			} else { // Not principal, see if any group affiliation is allowed.
-
-				Set<String> groups = authToken.getGroups();
-
-				// Determine if there a rule that allows a group identifier.
-				for (String groupId: groups) {
-
-					// Force all identifiers to lower case for hash table comparison.
-					groupId = groupId.toLowerCase();
-
-					if (isAllowed(groupId, permission)) {
-						isAuthorized = true;
-						break;
-					}
-				}
+      for (Token.Identity identity: token.getIdentity()) {
+      	if (isAllowed(identity, permission)) {
+          isAuthorized = true;
+          break;
+        }
 			}
 
 			// If order is "allowFirst" and the principal is temporarily authorized,
 			// see if there are any "deny" rules that block access.
-			if (this.order.equals("allowFirst") && isAuthorized) {
-
-				if (isDenied(principal, permission)) {
-					isAuthorized = false;
-				} else { // Not principal, see if any group affiliation is denied.
-
-					Set<String> groups = authToken.getGroups();
-
-					// Determine if there a rule that denies a group identifier.
-					for (String groupId: groups) {
-
-						// Force all identifiers to lower case for hash table comparison.
-						groupId = groupId.toLowerCase();
-
-						if (isDenied(groupId, permission)) {
-							isAuthorized = false;
-							break;
-						}
-					}
-				}
+			if (this.order.equals(AccessElement.ALLOW_FIRST) && isAuthorized) {
+        for (Token.Identity identity: token.getIdentity()) {
+          if (isDenied(identity, permission)) {
+            isAuthorized = true;
+            break;
+          }
+        }
 			}
 
-			// If not authorized, try "public".
+			// If not authorized, test if "public" can access the resource
 			if (!isAuthorized) {
-				if (isAllowed("public", permission)) {
+        IdentityFactory.GlobalId gid = IdentityFactory.GlobalId.PUBLIC;
+        Token.Identity identity = IdentityFactory.getGlobalIdentity(gid);
+				if (isAllowed(identity, permission)) {
 					isAuthorized = true;
 				}
 			}
@@ -191,27 +169,32 @@ public class AccessMatrix {
 	}
 
 	/**
-	 * Determine whether the principal identified is allowed access at the requested
+	 * Determine whether the Identity is allowed access at the requested
 	 * permission.
 	 *
-	 * @param principal The identifier of the principal.
-	 * @param permission The requested permission.
-	 * @return The boolean value of whether the principal is allowed access to the
+	 * @param identity Token identity.
+	 * @param permission Requested permission.
+	 * @return Boolean value of whether the Identity is allowed access to the
 	 *         resource at the requested permission.
 	 */
-	private boolean isAllowed(String principal, Permission permission){
+	private boolean isAllowed(Token.Identity identity, Permission permission){
 
 		boolean isAllowed = false;
+    String uid = identity.getIdentifier().toLowerCase();
 
-		if (allowRules.containsKey(principal)) {  // Principal key in hash table.
+		if (allowRules.containsKey(uid)) { // User identifier in hash table
 
-			Rule rule = allowRules.get(principal);
+			Rule rule = allowRules.get(uid);
+      String idP = identity.getProvider();
 
-			// Determine if requested permission is less than or equal to the rule permission.
-			if (permission.getRank() <= rule.getPermission().getRank()) {
-				isAllowed = true;
-			}
-
+      // Confirm matching identity provider
+      if (idP.equalsIgnoreCase(rule.getAuthSystem())) {
+        // Determine if requested permission is less than or equal
+        // to the rule permission
+        if (permission.getRank() <= rule.getPermission().getRank()) {
+          isAllowed = true;
+        }
+      }
 		}
 
 		return isAllowed;
@@ -222,24 +205,29 @@ public class AccessMatrix {
 	 * Determine whether the principal identified is denied access at the requested
 	 * permission.
 	 *
-	 * @param principal The identifier of the principal.
-	 * @param permission The requested permission.
-	 * @return The boolean value of whether the principal is denied access to the
+	 * @param identity Token identity
+	 * @param permission Requested permission.
+	 * @return Boolean value of whether the Identity is denied access to the
 	 *         resource at the requested permission.
 	 */
-	private boolean isDenied(String principal, Permission permission){
+	private boolean isDenied(Token.Identity identity, Permission permission){
 
 		boolean isDenied = false;
+    String uid = identity.getIdentifier().toLowerCase();
 
-		if (denyRules.containsKey(principal)) {  // Principal key in hash table.
+		if (denyRules.containsKey(uid)) {  // User identifier in hash table.
 
-			Rule rule = denyRules.get(principal);
+			Rule rule = denyRules.get(uid);
+      String idP = identity.getProvider();
 
-			// Determine if requested permission is greater or equal to the rule permission.
-			if (permission.getRank() >= rule.getPermission().getRank()) {
-				isDenied = true;
-			}
-
+      // Confirm matching identity provider
+      if (idP.equalsIgnoreCase(rule.getAuthSystem())) {
+        // Determine if requested permission is greater or equal
+        // to the rule permission
+        if (permission.getRank() >= rule.getPermission().getRank()) {
+          isDenied = true;
+        }
+      }
 		}
 
 		return isDenied;
