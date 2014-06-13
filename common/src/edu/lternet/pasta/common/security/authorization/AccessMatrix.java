@@ -94,12 +94,6 @@ public class AccessMatrix {
 	 */
 	public boolean isAuthorized(Token token, String owner, String authSystem, Permission permission) {
 
-    // TODO: Compare each identity element of authToken
-    // TODO: 1. Test list of non-group identities to submitter
-    // TODO: 2. Test each identity against each rule
-    // TODO:    Iterate through authToken identity list
-    // TODO:       Iterate through rule list testing each identity
-
 		boolean isAuthorized = false;
 
     // Test identity match to resource owner, who does not need to be in the
@@ -147,7 +141,7 @@ public class AccessMatrix {
 			if (this.order.equals(AccessElement.ALLOW_FIRST) && isAuthorized) {
         for (Token.Identity identity: token.getIdentity()) {
           if (isDenied(identity, permission)) {
-            isAuthorized = true;
+            isAuthorized = false;
             break;
           }
         }
@@ -188,7 +182,7 @@ public class AccessMatrix {
       String idP = identity.getProvider();
 
       // Confirm matching identity provider
-      if (idP.equalsIgnoreCase(rule.getAuthSystem())) {
+      if (idP.equalsIgnoreCase(rule.getAuthSystem()) || idP.equals(IdentityFactory.GLOBAL)) {
         // Determine if requested permission is less than or equal
         // to the rule permission
         if (permission.getRank() <= rule.getPermission().getRank()) {
@@ -221,7 +215,7 @@ public class AccessMatrix {
       String idP = identity.getProvider();
 
       // Confirm matching identity provider
-      if (idP.equalsIgnoreCase(rule.getAuthSystem())) {
+      if (idP.equalsIgnoreCase(rule.getAuthSystem()) || idP.equals(IdentityFactory.GLOBAL)) {
         // Determine if requested permission is greater or equal
         // to the rule permission
         if (permission.getRank() >= rule.getPermission().getRank()) {
