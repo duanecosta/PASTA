@@ -99,7 +99,7 @@ public final class ProviderFactory {
       idp = IdP.PASTA;
     } else if ("https://lternet.edu".equals(identifier)) {
       idp = IdP.LTER;
-    } else if ("https://gmail.google.com".equals(identifier)) {
+    } else if ("https://google.com".equals(identifier)) {
       idp = IdP.GOOGLE;
     } else if ("https://incommon.org".equals(identifier)) {
       idp = IdP.INCOMMON;
