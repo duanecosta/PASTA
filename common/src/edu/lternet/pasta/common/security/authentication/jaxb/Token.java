@@ -248,10 +248,10 @@ public class Token {
     })
     public static class Identity {
 
-        // Identity types
-        public final static String LOGIN = "login";
-        public final static String MAP = "map";
-        public final static String GROUP = "group";
+      // Identity types
+      public final static String LOGIN = "login";
+      public final static String MAP = "map";
+      public final static String GROUP = "group";
 
       @XmlElement(required = true)
         protected String identifier;
