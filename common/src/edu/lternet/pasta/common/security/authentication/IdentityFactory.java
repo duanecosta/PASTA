@@ -36,6 +36,8 @@ public final class IdentityFactory {
   /* Instance variables */
 
   /* Class variables */
+
+  public static final String GLOBAL = "*";
  
   /* Constructors */
 
@@ -49,7 +51,7 @@ public final class IdentityFactory {
 
     identity.setId(Token.Identity.GROUP);
     identity.setIdentifier(gid.valueOf());
-    identity.setProvider("*");
+    identity.setProvider(GLOBAL);
 
     return identity;
 
