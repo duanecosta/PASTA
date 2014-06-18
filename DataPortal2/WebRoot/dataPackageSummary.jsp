@@ -1,22 +1,25 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
 <%@ page import="edu.lternet.pasta.portal.DataPortalServlet" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <%
   final String pageTitle = "Data Package Summary";
   final String titleText = DataPortalServlet.getTitleText(pageTitle);
 
-  String path = request.getContextPath();
-  String basePath = request.getScheme() + "://" + request.getServerName()
-      + ":" + request.getServerPort() + path + "/";
+  String titleHTML = (String) request.getAttribute("dataPackageTitleHTML");
+  String creatorsHTML = (String) request.getAttribute("dataPackageCreatorsHTML");
+  String publicationDateHTML = (String) request.getAttribute("dataPackagePublicationDateHTML");
+  String packageIdHTML = (String) request.getAttribute("dataPackageIdHTML");
+  String resourcesHTML = (String) request.getAttribute("dataPackageResourcesHTML");
+  String citationHTML = (String) request.getAttribute("dataPackageCitationHTML");
+  String digitalObjectIdentifier = (String) request.getAttribute("digitalObjectIdentifier");
+  String pastaDataObjectIdentifier = (String) request.getAttribute("pastaDataObjectIdentifier");
+  String provenanceHTML = (String) request.getAttribute("provenanceHTML");
+  String codeGenerationHTML = (String) request.getAttribute("codeGenerationHTML");
 
-  HttpSession httpSession = request.getSession();
-  
-  String browseMessage = (String) httpSession.getAttribute("browsemessage");
-  String html = (String) httpSession.getAttribute("dataPackageSummaryHTML");
-  String cnt = (String) httpSession.getAttribute("count");
-
-  if (html == null) {
-    html = "";
-  }
+  String uid = (String) session.getAttribute("uid");
+  boolean showProvenance = !(uid == null || uid.isEmpty());
+  boolean showPubDate = !(publicationDateHTML == null || publicationDateHTML.isEmpty());
 %>
 
 <!DOCTYPE html>
@@ -66,12 +69,124 @@
 						<div class="span12">
 							<div class="recent_title">
 								<h2>Data Package Summary</h2>
-							</div>
+							</div>		
 							<span class="row-fluid separator_border"></span>
 						</div>
 						<div class="row-fluid">
 							<div class="span12">
-				        <%=html%>
+								<div class="display-table">
+
+									<div class="table-row">										
+										<div class="table-cell">
+											<label class="labelBold">Title</label>
+										</div>
+										<div class="table-cell">
+											<%= titleHTML %>
+										</div>
+									</div>
+											
+									<div class="table-row">										
+										<div class="table-cell">
+											<label class="labelBold">Creators</label>
+										</div>
+										<div class="table-cell">
+											<%= creatorsHTML %>
+										</div>											
+									</div>
+
+							<c:set var="showDate" value="<%= showPubDate %>"/>
+							<c:choose>
+								<c:when test="${showDate}">
+									<div class="table-row">										
+										<div class="table-cell">
+											<label class="labelBold">Publication Date</label>
+										</div>
+										<div class="table-cell">
+											<%= publicationDateHTML %>
+										</div>											
+									</div>
+								</c:when>
+							</c:choose>
+
+									<div class="table-row">										
+										<div class="table-cell">
+											<label class="labelBold">Package ID</label>
+										</div>
+										<div class="table-cell">
+											<%= packageIdHTML %>
+										</div>											
+									</div>
+
+									<div class="table-row">										
+										<div class="table-cell">
+											<label class="labelBold">Resources</label>
+										</div>
+										<div class="table-cell">
+											<%= resourcesHTML %>
+										</div>											
+									</div>
+
+									<div class="table-row">										
+										<div class="table-cell">
+											<label class="labelBold">Digital Object Identifier</label>
+										</div>
+										<div class="table-cell">
+											<ul class="no-list-style">
+												<li><%= digitalObjectIdentifier %></li>
+											</ul>
+										</div>											
+									</div>
+
+									<div class="table-row">										
+										<div class="table-cell">
+											<label class="labelBold">PASTA Identifier</label>
+										</div>
+										<div class="table-cell">
+											<ul class="no-list-style">
+												<li><%= pastaDataObjectIdentifier %></li>
+											</ul>
+										</div>											
+									</div>
+
+									<div class="table-row">										
+										<div class="table-cell">
+											<label class="labelBold">Citation</label>
+										</div>
+										<div class="table-cell">
+											<ul class="no-list-style">
+												<li><%= citationHTML %></li>
+											</ul>
+										</div>											
+									</div>
+
+							<c:set var="showProv" value="<%= showProvenance %>"/>
+							<c:choose>
+								<c:when test="${showProv}">
+									<div class="table-row">										
+										<div class="table-cell">
+											<label class="labelBold">Provenance</label>
+										</div>
+										<div class="table-cell">
+											<ul class="no-list-style">
+												<li><%= provenanceHTML %></li>
+											</ul>
+										</div>											
+									</div>
+								</c:when>
+							</c:choose>
+
+									<div class="table-row">										
+										<div class="table-cell">
+											<label class="labelBold">Code Generation</label>
+										</div>
+										<div class="table-cell">
+											<ul class="no-list-style">
+												<li><%= codeGenerationHTML %></li>
+											</ul>
+										</div>											
+									</div>
+									
+								</div>
 							</div>
 						</div>
 					</div>

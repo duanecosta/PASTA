@@ -40,8 +40,6 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
 
 import edu.lternet.pasta.client.DataPackageManagerClient;
-import edu.lternet.pasta.client.PastaAuthenticationException;
-import edu.lternet.pasta.client.PastaConfigurationException;
 import edu.lternet.pasta.common.UserErrorException;
 import edu.lternet.pasta.common.eml.EmlObject;
 import edu.lternet.pasta.common.eml.ResponsibleParty;
@@ -64,6 +62,17 @@ public class MapBrowseServlet extends DataPortalServlet {
 	/**
 	 * Instance variables
 	 */
+	
+	private String titleHTML = "";
+	private String creatorsHTML = "";
+	private String publicationDateHTML = "";
+	private String packageIdHTML = "";
+	private String resourcesHTML = "";
+	private String citationHTML = "";
+	private String digitalObjectIdentifier = "";
+	private String pastaDataObjectIdentifier = "";
+	private String provenanceHTML = "";
+	private String codeGenerationHTML = "";
 
 
 	/**
@@ -120,12 +129,19 @@ public class MapBrowseServlet extends DataPortalServlet {
 	    throws ServletException, IOException {
 
 		HttpSession httpSession = request.getSession();
+		titleHTML = "";
+		creatorsHTML = "";
+		publicationDateHTML = "";
+		packageIdHTML = "";
+		resourcesHTML = "";
+		citationHTML = "";
+		provenanceHTML = "";
+		codeGenerationHTML = "";
 
 		String uid = (String) httpSession.getAttribute("uid");
 
 		if (uid == null || uid.isEmpty()) uid = "public";
 
-		String html = null;
 		Integer id = null;
 		boolean isPackageId = false;
 
@@ -170,7 +186,7 @@ public class MapBrowseServlet extends DataPortalServlet {
 				}
 
 			if (isPackageId) {
-				html = this.mapFormatter(uid, scope, id, revision);
+				this.mapFormatter(uid, scope, id, revision);
 			}
 			else {
 				String msg = "The 'scope', 'identifier', or 'revision' field of the packageId is empty.";
@@ -182,7 +198,16 @@ public class MapBrowseServlet extends DataPortalServlet {
 		}
 
 		httpSession.setAttribute("browsemessage", null);
-		httpSession.setAttribute("dataPackageSummaryHTML", html);
+		request.setAttribute("dataPackageTitleHTML", titleHTML);
+		request.setAttribute("dataPackageCreatorsHTML", creatorsHTML);
+		request.setAttribute("dataPackagePublicationDateHTML", publicationDateHTML);
+		request.setAttribute("dataPackageIdHTML", packageIdHTML);
+		request.setAttribute("dataPackageResourcesHTML", resourcesHTML);
+		request.setAttribute("dataPackageCitationHTML", citationHTML);
+		request.setAttribute("digitalObjectIdentifier", digitalObjectIdentifier);
+		request.setAttribute("pastaDataObjectIdentifier", pastaDataObjectIdentifier);
+		request.setAttribute("provenanceHTML", provenanceHTML);
+		request.setAttribute("codeGenerationHTML", codeGenerationHTML);
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher(forward);
 		requestDispatcher.forward(request, response);
 	}
@@ -212,12 +237,17 @@ public class MapBrowseServlet extends DataPortalServlet {
 	 *          The data package identifier (accession number) value
 	 * @param revision
 	 *          The data package revision value
-	 * 
-	 * @return The formatted resource map as HTML
 	 */
-	private String mapFormatter(String uid, String scope, Integer identifier, String revision) {
-
-		String html = "";
+	private void mapFormatter(String uid, String scope, Integer identifier, String revision) 
+		throws Exception {
+		StringBuilder titleHTMLBuilder = new StringBuilder();
+		StringBuilder creatorsHTMLBuilder = new StringBuilder();
+		StringBuilder publicationDateHTMLBuilder = new StringBuilder();
+		StringBuilder packageIdHTMLBuilder = new StringBuilder();
+		StringBuilder resourcesHTMLBuilder = new StringBuilder();
+		StringBuilder citationHTMLBuilder = new StringBuilder();
+		StringBuilder provenanceHTMLBuilder = new StringBuilder();
+		StringBuilder codeGenerationHTMLBuilder = new StringBuilder();
 
 		String packageId = null;
 
@@ -267,87 +297,73 @@ public class MapBrowseServlet extends DataPortalServlet {
 			titles = emlObject.getTitles();
 
 			if (titles != null) {
-
-				html += "<h3>Title</h3>\n";
-				html += "<ul class=\"no-list-style\">\n";
+				titleHTMLBuilder.append("<ul class=\"no-list-style\">\n");
 
 				for (Title title : titles) {
-					html += "<li>" + title.getTitle() + "</li>\n";
+					String listItem = "<li>" + title.getTitle() + "</li>\n";
+					titleHTMLBuilder.append(listItem);
 				}
 
-				html += "</ul>\n";
-
+				titleHTMLBuilder.append("</ul>\n");
+				this.titleHTML = titleHTMLBuilder.toString();
 			}
 
 			creators = emlObject.getCreators();
 
 			if (creators != null) {
 
-				html += "<h3>Creators</h3>\n";
-				html += "<ul class=\"no-list-style\">\n";
+				creatorsHTMLBuilder.append("<ul class=\"no-list-style\">\n");
 
 				for (ResponsibleParty creator : creators) {
-					html += "<li>";
+					creatorsHTMLBuilder.append("<li>");
 					
 					String individualName = creator.getIndividualName();
 					String positionName = creator.getPositionName();
 					String organizationName = creator.getOrganizationName();
 					
 					if (individualName != null) {
-						html += individualName;
+						creatorsHTMLBuilder.append(individualName);
 					}
 					
 					if (positionName != null) {
 						if (individualName != null) {
-							html += "; " + positionName;
+							creatorsHTMLBuilder.append("; " + positionName);
 						} else {
-							html += positionName;
+							creatorsHTMLBuilder.append(positionName);
 						}
 					}
 					
 					if (organizationName != null) {
 						if (positionName != null || individualName != null) {
-							html += "; " + organizationName;
+							creatorsHTMLBuilder.append("; " + organizationName);
 						} else {
-							html += organizationName;
+							creatorsHTMLBuilder.append(organizationName);
 						}
 					}
 					
-					html += "</li>\n";
+					creatorsHTMLBuilder.append("</li>\n");
 				}
 
-				html += "</ul>\n";
-
+				creatorsHTMLBuilder.append("</ul>\n");
+				this.creatorsHTML = creatorsHTMLBuilder.toString();
 			}
 			
 			String pubDate = emlObject.getPubDate();
 			
-			if (pubDate != null) {
-				
-				html += "<h3>Publication Date</h3>\n";
-				html += "<ul class=\"no-list-style\">\n";
-				html += "<li>" + pubDate + "</li>";
-				html += "</ul>";				
-
+			if (pubDate != null) {			
+				publicationDateHTMLBuilder.append("<ul class=\"no-list-style\">\n");
+				publicationDateHTMLBuilder.append("<li>" + pubDate + "</li>");
+				publicationDateHTMLBuilder.append("</ul>");				
+				this.publicationDateHTML = publicationDateHTMLBuilder.toString();
 			}
 
 			map = dpmClient.readDataPackage(scope, identifier, revision);
 			
-		} catch (PastaAuthenticationException e) {
+		} 
+		catch (Exception e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
-			html = "<p class=\"warning\">" + e.getMessage() + "</p>\n";
-			return html;
-		} catch (PastaConfigurationException e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-			html = "<p class=\"warning\">" + e.getMessage() + "</p>\n";
-			return html;
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			e.printStackTrace();
-			html = "<p class=\"warning\">" + e.getMessage() + "</p>\n";
-			return html;
+			throw(e);
 		}
 
 		tokens = new StrTokenizer(map);
@@ -359,7 +375,6 @@ public class MapBrowseServlet extends DataPortalServlet {
 		String report = null;
 		String data = null;
 		String doiId = null;
-		String pastaId = null;
 
 		while (tokens.hasNext()) {
 			resource = tokens.nextToken();
@@ -438,13 +453,15 @@ public class MapBrowseServlet extends DataPortalServlet {
 			} else {
 				
 				try {
-	        doiId = dpmClient.readDataPackageDoi(scope, identifier, revision);
-        } catch (Exception e) {
-  				logger.error(e.getMessage());
-  				e.printStackTrace();
-        }
+					doiId = dpmClient.readDataPackageDoi(scope,
+									identifier, revision);
+				}
+				catch (Exception e) {
+					logger.error(e.getMessage());
+					e.printStackTrace();
+				}
 
-				pastaId = dpmClient.getPastaPackageUri(scope, identifier, revision);
+				pastaDataObjectIdentifier = dpmClient.getPastaPackageUri(scope, identifier, revision);
 
 				dataPackage = "<li>" + packageId + "</li>\n";
 				
@@ -470,53 +487,61 @@ public class MapBrowseServlet extends DataPortalServlet {
 				
 		}
 
-		html += "<h3>Package Id</h3>\n";
-		html += "<ul class=\"no-list-style\">\n";
-		html += dataPackage;
-		html += "<ul>";
-		html += previous;
-		html += next;
-		html += revisions;
-		html += "</ul>";
-		html += "</ul>\n";
-		html += "<h3>Resources</h3>\n";
-		html += "<ul>\n";
-		html += metadata;
-		html += report;
-		html += "<li>Data*\n";
-		html += "<ol>\n";
-		html += data;
-		html += "</ol>\n";
-		html += "</li>\n";
-		html += "</ul>\n";
+		packageIdHTMLBuilder.append("<ul class=\"no-list-style\">\n");
+		packageIdHTMLBuilder.append(dataPackage);
+		packageIdHTMLBuilder.append(previous);
+		packageIdHTMLBuilder.append(next);
+		packageIdHTMLBuilder.append(revisions);
+		packageIdHTMLBuilder.append("</ul>\n");
+		packageIdHTML = packageIdHTMLBuilder.toString();
+				
+		resourcesHTMLBuilder.append("<ul class=\"no-list-style\">\n");
+		resourcesHTMLBuilder.append(metadata);
+		resourcesHTMLBuilder.append(report);
+		resourcesHTMLBuilder.append("<li>Data <sup><strong>*</strong></sup>\n");
+		resourcesHTMLBuilder.append("<ol>\n");
+		resourcesHTMLBuilder.append(data);
+		resourcesHTMLBuilder.append("</ol>\n");
+		resourcesHTMLBuilder.append("</li>\n");
+
+		resourcesHTMLBuilder.append("<li>&nbsp;</li>\n");
+
+		resourcesHTMLBuilder.append("<li>\n");
+		resourcesHTMLBuilder.append("<div class=\"zip\">");
+		resourcesHTMLBuilder.append("<form id=\"archive\" name=\"archiveform\" method=\"post\" action=\"./archiveDownload\"	target=\"_top\">");
+		resourcesHTMLBuilder.append("<input type=\"hidden\" name=\"packageid\" value=\"" + packageId + "\" />");
+		resourcesHTMLBuilder.append("<input class=\"btn btn-info btn-default\" type=\"submit\" name=\"archive\" value=\"Download Zip Archive\" />");
+		resourcesHTMLBuilder.append(" <sup><strong>*</strong></sup></form>");
+		resourcesHTMLBuilder.append("</div>");
+		resourcesHTMLBuilder.append("</li>\n");
 		
-		html += "<div class=\"zip\">";
-		html += "<form id=\"archive\" name=\"archiveform\" method=\"post\" action=\"./archiveDownload\"	target=\"_top\">";
-		html += "<input type=\"hidden\" name=\"packageid\" value=\"" + packageId + "\" />";
-		html += "<input class=\"btn btn-info btn-default\" type=\"submit\" name=\"archive\" value=\"Download Zip Archive\" />";
-		html += "</form>";
-		html += "</div>";
+		resourcesHTMLBuilder.append("<li>\n");
+		resourcesHTMLBuilder.append(
+			"<sup><strong>*</strong></sup> <em>By downloading any data you implicitly acknowledge the " +
+			"<a class=\"searchsubcat\" href=\"http://www.lternet.edu/data/netpolicy.html\">" +
+			"LTER Data Policy</a></em>");
+		resourcesHTMLBuilder.append("</li>\n");
 		
-		
-		html += "<h3>Citation</h3>\n";
-		html += "<ul class=\"no-list-style\">\n";
-		html += "<li><a class=\"searchsubcat\" href=\"./dataPackageCitation?scope=" + scope + "&"
-				+ "identifier=" + identifier.toString() + "&"
-				+ "revision=" + revision
-		    + "\">How to cite this data package</a></li>\n";
+		resourcesHTMLBuilder.append("</ul>\n");
+		resourcesHTML = resourcesHTMLBuilder.toString();
 		
 		if (doiId != null) {
-			html += "<li>Digital Object Identifier - <em>" + doiId + "</em></li>\n";
+			digitalObjectIdentifier = doiId;
 		}
 		
-		html += "<li>PASTA Data Package Identifier - <em>" + pastaId + "</em></li>\n";
-		html += "</ul>\n";
-		
-		html += "<p><em>*By downloading any data you implicitly acknowledge the "
-				+ "<a class=\"searchsubcat\" href=\"http://www.lternet.edu/data/netpolicy.html\">"
-				+ " LTER Data Policy</a></em></p>";
+		citationHTMLBuilder.append("<a class=\"searchsubcat\" href=\"./dataPackageCitation?scope=" + scope + "&"
+				+ "identifier=" + identifier.toString() + "&"
+				+ "revision=" + revision
+		    + "\">How to cite this data package</a>\n");		
+		citationHTML = citationHTMLBuilder.toString();
 
-		return html;
+		provenanceHTMLBuilder.append("<a class=\"searchsubcat\" href=\"./provenanceViewer?packageid=" + packageId +
+		    "\">View provenance metadata for this data package</a>\n");		
+		provenanceHTML = provenanceHTMLBuilder.toString();
+
+		codeGenerationHTMLBuilder.append("<a class=\"searchsubcat\" href=\"./codeGeneration?packageid=" + packageId +
+			    "\">Work with this data package in R, SAS, SPSS, SPS, or Matlab</a>\n");		
+		codeGenerationHTML = codeGenerationHTMLBuilder.toString();
 
 	}
 
