@@ -28,7 +28,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import edu.lternet.pasta.common.ResourceNotFoundException;
-import edu.lternet.pasta.common.security.token.AuthToken;
+import edu.lternet.pasta.common.security.authentication.jaxb.Token;
 import edu.lternet.pasta.common.security.authorization.AccessMatrix;
 import edu.lternet.pasta.common.security.authorization.Rule;
 
@@ -79,13 +79,13 @@ public class Authorizer {
    * with the specified permission to access or modify the specified
    * resource.
    * 
-   * @param authToken       The AuthToken object
+   * @param token       The AuthToken object
    * @param resourceId      The resource identifier
    * @param permission      The permission type
-   * @return true if the user (authToken) is authorized to access the resource 
+   * @return true if the user (token) is authorized to access the resource
    *         with the specified permission, else false
    */
-  public boolean isAuthorized(AuthToken authToken, String resourceId,
+  public boolean isAuthorized(Token token, String resourceId,
                               Rule.Permission permission)
           throws ClassNotFoundException, SQLException {
     boolean isAuthorized = false;
@@ -101,7 +101,7 @@ public class Authorizer {
     if (principalOwner != null) {
       ArrayList<Rule> ruleList = dataPackageRegistry.getAccessControlRules(resourceId);
       AccessMatrix accessMatrix = new AccessMatrix(ruleList);
-      isAuthorized = accessMatrix.isAuthorized(authToken, principalOwner,
+      isAuthorized = accessMatrix.isAuthorized(token, principalOwner,
                                                   authSystem, permission);
     }
     

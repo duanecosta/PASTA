@@ -24,6 +24,7 @@
 
 package edu.lternet.pasta.datapackagemanager;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -35,7 +36,11 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
+import edu.lternet.pasta.common.security.authentication.IdentityFactory;
+import edu.lternet.pasta.common.security.authentication.jaxb.ObjectFactory;
 import org.apache.log4j.Logger;
 
 import edu.lternet.pasta.datapackagemanager.DataPackageManager.ResourceType;
@@ -44,10 +49,11 @@ import edu.lternet.pasta.doi.DOIException;
 import edu.lternet.pasta.doi.Resource;
 import edu.lternet.pasta.common.security.authorization.AccessMatrix;
 import edu.lternet.pasta.common.security.authorization.Rule;
-import edu.lternet.pasta.common.security.token.AuthToken;
-import edu.lternet.pasta.common.security.token.AuthTokenFactory;
-import edu.lternet.pasta.common.security.token.BasicAuthToken;
+import edu.lternet.pasta.common.security.authentication.jaxb.Token;
 import edu.ucsb.nceas.utilities.Options;
+
+import static edu.lternet.pasta.common.security.authentication
+                  .IdentityFactory.getGlobalIdentity;
 
 
 /**
@@ -1658,14 +1664,22 @@ public class DataPackageRegistry {
 			conn.close();
 		}
 
-		String tokenString = BasicAuthToken.makeTokenString(PUBLIC, PUBLIC);
-		AuthToken authToken = AuthTokenFactory
-		    .makeAuthTokenWithPassword(tokenString);
+    ObjectFactory objectFactory = new ObjectFactory();
+    Token token = objectFactory.createToken();
+    List<Token.Identity> tokenIdentities = token.getIdentity();
 
-		AccessMatrix accessMatrix = new AccessMatrix(ruleList);
+    Date now = new Date();
+    token.setExpires(BigInteger.valueOf(now.getTime()));
+
+    // Set "public" identity for all users
+    tokenIdentities.add(getGlobalIdentity(IdentityFactory.GlobalId.PUBLIC));
+
+
+
+    AccessMatrix accessMatrix = new AccessMatrix(ruleList);
 		Rule.Permission permission = (Rule.Permission) Enum.valueOf(
 		    Rule.Permission.class, Rule.READ);
-		publicAccessible = accessMatrix.isAuthorized(authToken, null, null, permission);
+		publicAccessible = accessMatrix.isAuthorized(token, null, null, permission);
 
 		return publicAccessible;
 
