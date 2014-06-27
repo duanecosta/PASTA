@@ -8,11 +8,12 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import edu.lternet.pasta.common.security.authentication.TokenUtility;
 import org.owasp.esapi.codecs.XMLEntityCodec;
 
 import edu.lternet.pasta.common.ISO8601Utility;
 import edu.lternet.pasta.common.security.auth.AuthSystemDef;
-import edu.lternet.pasta.common.security.token.AuthToken;
+import edu.lternet.pasta.common.security.authentication.jaxb.Token;
 
 
 /**
@@ -44,8 +45,6 @@ public class AuditRecord {
   private String groups;
   private String authSystem;
   private String entryText;
-  private AuthToken authToken;
-
   
   /* 
    * Constructors 
@@ -63,20 +62,16 @@ public class AuditRecord {
   
   public AuditRecord(
       Date date, String service, String entryText,
-      AuthToken authToken, int httpStatusCode, String serviceMethod,
+      Token token, int httpStatusCode, String serviceMethod,
       String resourceId) {
     super();
     this.entryTime = ISO8601Utility.formatDateTime(date);
     this.category = categoryFromStatusCode(httpStatusCode);
     this.service = service;
     this.serviceMethod = serviceMethod;
-    this.authToken = authToken;
-    if (authToken != null) {
-      this.user = authToken.getUserId();
-      Set<String> groupsSet = authToken.getGroups();
-      this.groups = groupsSetToGroupsString(groupsSet);
-      AuthSystemDef authSystemDef = authToken.getAuthSystem();
-      this.authSystem = authSystemDef.getCanonicalName();
+    if (token != null) {
+      this.user = TokenUtility.getLoginIdentity(token).getIdentifier();
+      this.authSystem = TokenUtility.getLoginIdentity(token).getProvider();
     }
     this.responseStatus = httpStatusCode;
     this.resourceId = resourceId;
@@ -344,9 +339,9 @@ public class AuditRecord {
     String xmlString = null;
     StringBuffer stringBuffer = new StringBuffer("");
     
-    /*if (authToken != null) {
-      user = authToken.getUserId();
-      Set<String> groupsSet = authToken.getGroups();
+    /*if (token != null) {
+      user = token.getUserId();
+      Set<String> groupsSet = token.getGroups();
       String groups = groupsSetToGroupsString(groupsSet);
       authSystem = AuthSystemDef.KNB.getCanonicalName();
     }*/
