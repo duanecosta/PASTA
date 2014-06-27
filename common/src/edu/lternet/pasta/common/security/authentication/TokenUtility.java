@@ -134,6 +134,15 @@ public class TokenUtility {
 
   }
 
+  public static Token.Identity getLoginIdentity(Token token) {
+
+    for (Token.Identity identity: token.getIdentity()) {
+      if (identity.getId().equals(Token.Identity.LOGIN)) return identity;
+    }
+
+    return null;
+  }
+
   /**
    * Returns the user's identity provider used to login.
    *
@@ -142,13 +151,12 @@ public class TokenUtility {
    */
   public static String getLoginProvider(Token token) {
 
-    String provider = null;
-
-    for (Token.Identity identity: token.getIdentity()) {
-      if (identity.getId().equals(Token.Identity.LOGIN)) return identity.getProvider();
+    for (Token.Identity identity : token.getIdentity()) {
+      if (identity.getId().equals(Token.Identity.LOGIN))
+        return identity.getProvider();
     }
 
-    return provider;
+    return null;
   }
 
 }

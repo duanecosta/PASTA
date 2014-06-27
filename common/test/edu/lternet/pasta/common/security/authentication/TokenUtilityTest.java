@@ -187,7 +187,7 @@ public class TokenUtilityTest {
   @Test
   public void testGetLoginProvider() {
 
-    String provider = TokenUtility.getLoginProvider(token);
+    String provider = TokenUtility.getLoginIdentity(token).getProvider();
 
     String message = String.format("Expected login provider to be %s, but received %s!%n", PASTA_IDP, provider);
     assertTrue(message, PASTA_IDP.equals(provider));
