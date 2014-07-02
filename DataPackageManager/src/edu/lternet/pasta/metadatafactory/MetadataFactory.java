@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import edu.lternet.pasta.common.security.authentication.TokenUtility;
+import edu.lternet.pasta.common.security.authentication.jaxb.Token;
 import org.w3c.dom.Document;
 
 import edu.lternet.pasta.common.EmlPackageId;
@@ -77,7 +79,7 @@ public final class MetadataFactory {
      */
     public Document make(Document emlToModify,
                          Map<EmlPackageId, List<String>> provenance,
-                         AuthToken token) throws Exception {
+                         Token token) throws Exception {
 
         MethodStepFactory msf = new MethodStepFactory();
 
@@ -89,7 +91,7 @@ public final class MetadataFactory {
             Integer identifier = emlPackageId.getIdentifier();
             Integer revision = emlPackageId.getRevision();
             String revisionStr = revision.toString();
-            String user = token.getUserId();
+            String user = TokenUtility.getLoginIdentity(token).getIdentifier();
             DataPackageManager dataPackageManager = new DataPackageManager();
             String eml = dataPackageManager.readMetadata(scope, identifier, revisionStr, user, token);
             if (eml == null) {

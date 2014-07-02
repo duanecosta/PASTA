@@ -792,13 +792,12 @@ public class DataPackageManagerResource extends PastaWebService {
 		Response response = null;
 		final String serviceMethodName = "createDataPackage";
 		Rule.Permission permission = Rule.Permission.write;
-		Token token = null;
 
 		Long time = new Date().getTime();
 		String transaction = time.toString();
 
-		token = getToken(headers);
-		String userId = token.getUserId();
+		Token token = getToken(headers);
+    String userId = TokenUtility.getLoginIdentity(token).getIdentifier();
 
     // TODO: assign correct authentication system
     String authSystem = "https://pasta.lternet.edu/authentication";
@@ -913,7 +912,7 @@ public class DataPackageManagerResource extends PastaWebService {
 		String transaction = time.toString();
 
 		token = getToken(headers);
-		String userId = token.getUserId();
+    String userId = TokenUtility.getLoginIdentity(token).getIdentifier();
 
 		// Is user authorized to run the 'createDataPackage' service method?
 		boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -1028,7 +1027,7 @@ public class DataPackageManagerResource extends PastaWebService {
 		String transaction = time.toString();
 
 		token = getToken(headers);
-		String userId = token.getUserId();
+		    String userId = TokenUtility.getLoginIdentity(token).getIdentifier();
 
     // TODO: assign correct authentication system
     String authSystem = "https://pasta.lternet.edu/authentication";
@@ -1212,8 +1211,8 @@ public class DataPackageManagerResource extends PastaWebService {
 		Rule.Permission permission = Rule.Permission.write;
 
 		try {
-			token = TokenFactory.makeToken(headers.getCookies());
-			String userId = token.getUserId();
+			token = getToken(headers);
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier();
 
 			// Is user authorized to run the 'appendProvenance' service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -1367,7 +1366,7 @@ public class DataPackageManagerResource extends PastaWebService {
 		Rule.Permission permission = Rule.Permission.read;
 
 		token = getToken(headers);
-		String userId = token.getUserId();
+		    String userId = TokenUtility.getLoginIdentity(token).getIdentifier();
 
 		// Is user authorized to run the service method?
 		boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -1543,7 +1542,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -1728,7 +1727,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -1929,7 +1928,7 @@ public class DataPackageManagerResource extends PastaWebService {
 			}
 
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -2095,7 +2094,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -2246,7 +2245,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -2413,7 +2412,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -2635,7 +2634,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -2713,7 +2712,7 @@ public class DataPackageManagerResource extends PastaWebService {
 						dataPackageResourceId, entityResourceId, token);
 
 				String xmlMetadata = dataPackageManager.readMetadata(scope,
-						identifier, revision, token.getUserId(), token);
+						identifier, revision, TokenUtility.getLoginIdentity(token).getIdentifier(), token);
 
 				String objectName = findObjectName(xmlMetadata, entityName);
 
@@ -2898,7 +2897,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -3080,7 +3079,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -3262,7 +3261,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -3443,7 +3442,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -3654,7 +3653,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -3843,7 +3842,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -4021,7 +4020,7 @@ public class DataPackageManagerResource extends PastaWebService {
 		Rule.Permission permission = Rule.Permission.read;
 
 		token = getToken(headers);
-		String userId = token.getUserId();
+		    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 		// Is user authorized to run the service method?
 		boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -4201,7 +4200,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -4371,7 +4370,7 @@ public class DataPackageManagerResource extends PastaWebService {
 		Rule.Permission permission = Rule.Permission.read;
 
 		token = getToken(headers);
-		String userId = token.getUserId();
+		    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 		// Is user authorized to run the service method?
 		boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -4569,7 +4568,7 @@ public class DataPackageManagerResource extends PastaWebService {
 		Response response = null;
 		EmlPackageIdFormat emlPackageIdFormat = new EmlPackageIdFormat();
 		token = getToken(headers);
-		String userId = token.getUserId();
+		    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 		// Is user authorized to run the service method?
 		boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -4795,7 +4794,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -4971,7 +4970,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -5146,7 +5145,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -5357,7 +5356,7 @@ public class DataPackageManagerResource extends PastaWebService {
 		Response response = null;
 		EmlPackageIdFormat emlPackageIdFormat = new EmlPackageIdFormat();
 		token = getToken(headers);
-		String userId = token.getUserId();
+		    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 		// Is user authorized to run the service method?
 		boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -5580,7 +5579,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -5806,7 +5805,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -5982,7 +5981,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -6157,7 +6156,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -6335,7 +6334,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -6482,7 +6481,7 @@ public class DataPackageManagerResource extends PastaWebService {
 		String transaction = time.toString();
 
 		token = getToken(headers);
-		String userId = token.getUserId();
+		    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
     // TODO: assign correct authentication system
     String authSystem = "https://pasta.lternet.edu/authentication";
@@ -6613,7 +6612,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the 'deleteDataPackage' service method?
 			boolean serviceMethodAuthorized = isServiceMethodAuthorized(
@@ -6766,7 +6765,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the 'createSubscription' service
 			// method?
@@ -6897,7 +6896,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier(); 
 
 			// Is user authorized to run the 'deleteSubscription' service
 			// method?
@@ -7064,9 +7063,8 @@ public class DataPackageManagerResource extends PastaWebService {
 		String serviceMethodName = MethodNameUtility.methodName();
 
 		try {
-			token = TokenFactory
-					.makeToken(httpHeaders.getCookies());
-			String userId = token.getUserId();
+			token = getToken(httpHeaders);
+			String userId = TokenUtility.getLoginIdentity(token).getIdentifier();
 
 			// Is user authorized to run the 'executeSubscription' service
 			// method?
@@ -7239,7 +7237,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier();
 
 			// Is user authorized to run the 'getMatchingSubscriptions' service
 			// method?
@@ -7389,7 +7387,7 @@ public class DataPackageManagerResource extends PastaWebService {
 
 		try {
 			token = getToken(headers);
-			String userId = token.getUserId();
+			    String userId = TokenUtility.getLoginIdentity(token).getIdentifier();
 
 			// Is user authorized to run the 'getSubscriptionWithId' service
 			// method?

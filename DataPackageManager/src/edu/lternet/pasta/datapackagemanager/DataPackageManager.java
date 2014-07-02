@@ -39,6 +39,7 @@ import java.util.Map;
 import javax.xml.transform.TransformerException;
 import javax.ws.rs.core.MediaType;
 
+import edu.lternet.pasta.common.security.authentication.TokenUtility;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.ClientProtocolException;
@@ -58,7 +59,7 @@ import edu.lternet.pasta.common.ResourceNotFoundException;
 import edu.lternet.pasta.common.UserErrorException;
 import edu.lternet.pasta.common.eml.EMLParser;
 import edu.lternet.pasta.common.security.access.UnauthorizedException;
-import edu.lternet.pasta.common.security.token.AuthToken;
+import edu.lternet.pasta.common.security.authentication.jaxb.Token;
 import edu.lternet.pasta.datamanager.EMLDataManager;
 import edu.lternet.pasta.datapackagemanager.ConfigurationListener;
 import edu.lternet.pasta.datapackagemanager.checksum.DigestUtilsWrapper;
@@ -143,7 +144,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	private Integer revision;
 	private String packageId;
 	private String user;
-	private AuthToken authToken;
+	private Token token;
 
 	
 	/*
@@ -415,7 +416,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 *          The EML document to be created in the metadata catalog
 	 * @param user
 	 *          The user value
-	 * @param authToken
+	 * @param token
 	 *          The authorization token
 	 * @param transaction
 	 *          The transaction identifier
@@ -423,7 +424,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 *         package.
 	 */
 	public String createDataPackage(File emlFile, String user, String authSystem,
-	    AuthToken authToken, String transaction) throws ClientProtocolException,
+	    Token token, String transaction) throws ClientProtocolException,
 	    FileNotFoundException, IOException, Exception {
 		boolean isEvaluate = false;
 		String resourceMap = null;
@@ -490,7 +491,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 			boolean isUpdate = false;
 			resourceMap = createDataPackageAux(emlFile, levelZeroDataPackage,
 			    dataPackageRegistry, packageId, scope, identifier, revision, user,
-			    authSystem, authToken, isUpdate, isEvaluate, transaction);
+			    authSystem, token, isUpdate, isEvaluate, transaction);
 		}
 		
 		// Return the resource map
@@ -504,7 +505,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 */
 	private String createDataPackageAux(File emlFile, EMLDataPackage levelZeroDataPackage,
 				DataPackageRegistry dataPackageRegistry, String packageId, String scope,
-				Integer identifier, Integer revision, String user, String authSystem, AuthToken authToken,
+				Integer identifier, Integer revision, String user, String authSystem, Token token,
 				boolean isUpdate, boolean isEvaluate, String transaction)
 			throws	ClassNotFoundException, SQLException, IOException,
 					ClientProtocolException, TransformerException, Exception {
@@ -641,7 +642,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 				
 				// Store the checksum of the data entity resource
 				File file = getDataEntityFile(scope, identifier,
-						revision.toString(), entityId, authToken, user);
+						revision.toString(), entityId, token, user);
 				storeChecksum(entityURI, file);
 
 				/*
@@ -664,7 +665,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 			
 			// Store the checksum of the metadata resource
 			File file = getMetadataFile(scope, identifier, revision.toString(),
-					user, authToken);
+					user, token);
 			storeChecksum(metadataURI, file);
 			
 			/*
@@ -686,7 +687,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 
 			// Store the checksum of the report resource
 			File file = readDataPackageReport(scope, identifier,
-					revision.toString(), emlPackageId, authToken, user);
+					revision.toString(), emlPackageId, token, user);
 			storeChecksum(reportURI, file);
 
 			/*
@@ -752,7 +753,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 				 * Notify the Event Manager about the new resource
 				 */
 				notifyEventManager(packageId, scope, identifier, revision, user,
-				    authToken);
+				    token);
 			} else {
 				throw new UserErrorException(qualityReportXML);
 			}
@@ -767,13 +768,13 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 * EventManagerClient object.
 	 */
 	private void notifyEventManager(String packageId, String scope,
-	    Integer identifier, Integer revision, String user, AuthToken authToken) {
+	    Integer identifier, Integer revision, String user, Token token) {
 		this.packageId = packageId;
 		this.scope = scope;
 		this.identifier = identifier;
 		this.revision = revision;
 		this.user = user;
-		this.authToken = authToken;
+		this.token = token;
 
 		EventManagerClient eventManagerClient = new EventManagerClient();
 
@@ -798,11 +799,11 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 *          The identifier value of the data package to be deleted
 	 * @param user
 	 *          The user value
-	 * @param authToken
+	 * @param token
 	 *          The authentication token object
 	 */
 	public boolean deleteDataPackage(String scope, Integer identifier,
-	    String user, AuthToken authToken) throws ClassNotFoundException,
+	    String user, Token token) throws ClassNotFoundException,
 	    SQLException, ClientProtocolException, IOException, Exception {
 		boolean hasDataPackage = false;
 		boolean deleted = false;
@@ -823,7 +824,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 			String resourceId = composeResourceId(ResourceType.dataPackage, scope,
 			    identifier, revision, entityId);
 			Authorizer authorizer = new Authorizer(dataPackageRegistry);
-			boolean isAuthorized = authorizer.isAuthorized(authToken, resourceId,
+			boolean isAuthorized = authorizer.isAuthorized(token, resourceId,
 			    Rule.Permission.write);
 			if (!isAuthorized) {
 				String message = "User " + user
@@ -897,14 +898,14 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 *          file containing the EML document to be evalauted
 	 * @param user
 	 *          the user name
-	 * @param authToken
+	 * @param token
 	 *          the authentication token object
 	 * @param transaction
 	 *          the transaction identifier
 	 * @return the quality report XML string
 	 */
 	public String evaluateDataPackage(File emlFile, String user, String authSystem,
-	    AuthToken authToken, String transaction) throws ClientProtocolException,
+	    Token token, String transaction) throws ClientProtocolException,
 	    FileNotFoundException, IOException, Exception {
 		DataPackage dataPackage = null;
 		final boolean isEvaluate = true;
@@ -956,7 +957,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 			boolean isUpdate = false;
 			xmlString = createDataPackageAux(emlFile, levelZeroDataPackage,
 			    dataPackageRegistry, packageId, scope, identifier, revision, user,
-			    authSystem, authToken, isUpdate, isEvaluate, transaction);
+			    authSystem, token, isUpdate, isEvaluate, transaction);
 
 			// Clean up resources in evaluate mode
 			levelZeroDataPackage.deleteDataPackageResources(isEvaluate);
@@ -1064,7 +1065,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 * authorized to access the given resource identifier with the given
 	 * permission.
 	 * 
-	 * @param authToken
+	 * @param token
 	 *          The user's authentication token.
 	 * @param resourceId
 	 *          The resource identifier of the requested resource.
@@ -1073,13 +1074,13 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 * @return The boolean result of the request.
 	 * @throws IllegalArgumentException, UnauthorizedException
 	 */
-	public Boolean isAuthorized(AuthToken authToken, String resourceId,
+	public Boolean isAuthorized(Token token, String resourceId,
 	    Rule.Permission permission) throws IllegalArgumentException,
 	    UnauthorizedException {
 
 		Boolean isAuthorized = null;
 		DataPackageRegistry dpr = null;
-		String userId = authToken.getUserId();
+		String userId = TokenUtility.getLoginIdentity(token).getIdentifier();
 
 		if (resourceId == null || resourceId.isEmpty()) {
 			String gripe = "ResourceId parameter is null or is empty!";
@@ -1098,7 +1099,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
     
 		Authorizer authorizer = new Authorizer(dpr);
 		try {
-	    isAuthorized = authorizer.isAuthorized(authToken, resourceId, permission);
+	    isAuthorized = authorizer.isAuthorized(token, resourceId, permission);
 	    
 			if (!isAuthorized) {
 				String gripe = "User \"" + userId + "\" is not authorized to "
@@ -1392,7 +1393,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 * @return a byte array object containing the locally stored entity data
 	 */
 	public byte[] readDataEntity(String scope, Integer identifier,
-	    String revision, String entityId, AuthToken authToken, String user)
+	    String revision, String entityId, Token token, String user)
 	    throws ClassNotFoundException, SQLException, ClientProtocolException,
 	    IOException, Exception {
 		byte[] byteArray = null;
@@ -1430,7 +1431,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 			 * whether the user is authorized to read the data entity.
 			 */
 			Authorizer authorizer = new Authorizer(dataPackageRegistry);
-			boolean isAuthorized = authorizer.isAuthorized(authToken, resourceId,
+			boolean isAuthorized = authorizer.isAuthorized(token, resourceId,
 			    Rule.Permission.read);
 			if (!isAuthorized) {
 				String message = "User " + user
@@ -1473,7 +1474,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 * @param entityResourceId
 	 *          the entity resource identifier, used as the key to the entityName
 	 *          value
-	 * @param authToken
+	 * @param token
 	 *          the authentication token object
 	 * @return the data entity name string for this resource, if it exists
 	 * @throws ClassNotFoundException
@@ -1483,12 +1484,12 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 * @throws Exception
 	 */
 	public String readDataEntityName(String dataPackageResourceId,
-	    String entityResourceId, AuthToken authToken)
+	    String entityResourceId, Token token)
 	    throws ClassNotFoundException, SQLException, UnauthorizedException,
 	    ResourceNotFoundException, Exception {
 
 		String entityName = null;
-		String user = authToken.getUserId();
+		String user = TokenUtility.getLoginIdentity(token).getIdentifier();
 
 		try {
 			DataPackageRegistry dataPackageRegistry = new DataPackageRegistry(
@@ -1500,7 +1501,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 			 * rules specified for reading the data entity.
 			 */
 			Authorizer authorizer = new Authorizer(dataPackageRegistry);
-			boolean isAuthorized = authorizer.isAuthorized(authToken,
+			boolean isAuthorized = authorizer.isAuthorized(token,
 			    dataPackageResourceId, Rule.Permission.read);
 			if (!isAuthorized) {
 				String gripe = "User "
@@ -1549,7 +1550,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 * @return a File object containing the locally stored entity data
 	 */
 	public File getDataEntityFile(String scope, Integer identifier,
-	    String revision, String entityId, AuthToken authToken, String user)
+	    String revision, String entityId, Token token, String user)
 	    throws ClassNotFoundException, SQLException, ClientProtocolException,
 	    IOException, Exception {
 
@@ -1588,7 +1589,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 			 * whether the user is authorized to read the data entity.
 			 */
 			Authorizer authorizer = new Authorizer(dataPackageRegistry);
-			boolean isAuthorized = authorizer.isAuthorized(authToken, resourceId,
+			boolean isAuthorized = authorizer.isAuthorized(token, resourceId,
 			    Rule.Permission.read);
 			if (!isAuthorized) {
 				String message = "User " + user
@@ -1634,7 +1635,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 *          The user name
 	 */
 	public String readDataPackage(String scope, Integer identifier,
-	    String revisionStr, AuthToken authToken, String user)
+	    String revisionStr, Token token, String user)
 	    throws ClassNotFoundException, SQLException, IllegalArgumentException {
 		
 		boolean hasDataPackage = false;
@@ -1692,7 +1693,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 			 * Check whether user is authorized to read the data package
 			 */
 			Authorizer authorizer = new Authorizer(dataPackageRegistry);
-			boolean isAuthorized = authorizer.isAuthorized(authToken, dataPackageId,
+			boolean isAuthorized = authorizer.isAuthorized(token, dataPackageId,
 			    Rule.Permission.read);
 			if (!isAuthorized) {
 				String message = "User " + user
@@ -1776,7 +1777,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 * @return a file object containing the data package quality report XML
 	 */
 	public File readDataPackageReport(String scope, Integer identifier,
-	    String revision, EmlPackageId emlPackageId, AuthToken authToken,
+	    String revision, EmlPackageId emlPackageId, Token token,
 	    String user) throws ClassNotFoundException, SQLException {
 		boolean evaluate = false;
 		File xmlFile = null;
@@ -1809,7 +1810,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 				 * Check whether user is authorized to read the data package report
 				 */
 				Authorizer authorizer = new Authorizer(dataPackageRegistry);
-				boolean isAuthorized = authorizer.isAuthorized(authToken, reportId,
+				boolean isAuthorized = authorizer.isAuthorized(token, reportId,
 				    Rule.Permission.read);
 				if (!isAuthorized) {
 					String message = "User " + user
@@ -1860,12 +1861,12 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 *          The revision of the metadata document.
 	 * @param user
 	 *          The user name value
-	 * @param authToken
-	 *          The AuthToken object
+	 * @param token
+	 *          The Token object
 	 * @return The metadata document, an XML string.
 	 */
 	public String readMetadata(String scope, Integer identifier, String revision,
-	    String user, AuthToken authToken) throws ClassNotFoundException,
+	    String user, Token token) throws ClassNotFoundException,
 	    SQLException, ClientProtocolException, IOException, Exception {
 		String entityId = null;
 		String metadataXML = null;
@@ -1896,7 +1897,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 				 * Check whether user is authorized to read the data package metadata
 				 */
 				Authorizer authorizer = new Authorizer(dataPackageRegistry);
-				boolean isAuthorized = authorizer.isAuthorized(authToken, metadataId,
+				boolean isAuthorized = authorizer.isAuthorized(token, metadataId,
 				    Rule.Permission.read);
 				if (!isAuthorized) {
 					String message = "User " + user
@@ -1945,12 +1946,12 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 *          The revision of the metadata document.
 	 * @param user
 	 *          The user name value
-	 * @param authToken
-	 *          The AuthToken object
+	 * @param token
+	 *          The Token object
 	 * @return The metadata document, an XML string.
 	 */
 	public File getMetadataFile(String scope, Integer identifier,
-	    String revision, String user, AuthToken authToken)
+	    String revision, String user, Token token)
 	    throws ClassNotFoundException, SQLException, ClientProtocolException,
 	    IOException, Exception {
 		String entityId = null;
@@ -1982,7 +1983,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 				 * Check whether user is authorized to read the data package metadata
 				 */
 				Authorizer authorizer = new Authorizer(dataPackageRegistry);
-				boolean isAuthorized = authorizer.isAuthorized(authToken, metadataId,
+				boolean isAuthorized = authorizer.isAuthorized(token, metadataId,
 				    Rule.Permission.read);
 				if (!isAuthorized) {
 					String message = "User " + user
@@ -2074,7 +2075,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 * it exists; otherwise, throw a ResourceNotFoundException.
 	 * 
 	 * @param resourceId
-	 * @param authToken
+	 * @param token
 	 * @return
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
@@ -2082,12 +2083,12 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 * @throws ResourceNotFoundException
 	 * @throws Exception
 	 */
-	public String readResourceChecksum(String resourceId, AuthToken authToken)
+	public String readResourceChecksum(String resourceId, Token token)
 	    throws ClassNotFoundException, SQLException, UnauthorizedException,
 	    ResourceNotFoundException, Exception {
 
 		String checksum = null;
-		String user = authToken.getUserId();
+		String user = TokenUtility.getLoginIdentity(token).getIdentifier();
 
 		try {
 			DataPackageRegistry dataPackageRegistry = new DataPackageRegistry(
@@ -2097,7 +2098,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 			 * Check whether user is authorized to read the data package report
 			 */
 			Authorizer authorizer = new Authorizer(dataPackageRegistry);
-			boolean isAuthorized = authorizer.isAuthorized(authToken, resourceId,
+			boolean isAuthorized = authorizer.isAuthorized(token, resourceId,
 			    Rule.Permission.read);
 			if (!isAuthorized) {
 				String gripe = "User " + user
@@ -2132,7 +2133,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 * it exists; otherwise, throw a ResourceNotFoundException.
 	 * 
 	 * @param resourceId
-	 * @param authToken
+	 * @param token
 	 * @return
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
@@ -2140,12 +2141,12 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 * @throws ResourceNotFoundException
 	 * @throws Exception
 	 */
-	public String readResourceDoi(String resourceId, AuthToken authToken)
+	public String readResourceDoi(String resourceId, Token token)
 	    throws ClassNotFoundException, SQLException, UnauthorizedException,
 	    ResourceNotFoundException, Exception {
 
 		String doi = null;
-		String user = authToken.getUserId();
+		String user = TokenUtility.getLoginIdentity(token).getIdentifier();
 
 		try {
 			DataPackageRegistry dataPackageRegistry = new DataPackageRegistry(
@@ -2155,7 +2156,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 			 * Check whether user is authorized to read the data package report
 			 */
 			Authorizer authorizer = new Authorizer(dataPackageRegistry);
-			boolean isAuthorized = authorizer.isAuthorized(authToken, resourceId,
+			boolean isAuthorized = authorizer.isAuthorized(token, resourceId,
 			    Rule.Permission.read);
 			if (!isAuthorized) {
 				String gripe = "User " + user
@@ -2225,12 +2226,12 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 *          service and then to Metacat
 	 * @param user
 	 *          The user name value
-	 * @param authToken
+	 * @param token
 	 *          The authentication token object
 	 * @return The resultset XML string
 	 */
 	public String searchDataPackages(String queryString, String user,
-	    AuthToken authToken) throws ClientProtocolException, IOException,
+	    Token token) throws ClientProtocolException, IOException,
 	    Exception {
 		String resultsetXML = null;
 
@@ -2238,7 +2239,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 		    pastaUser);
 		String metacatXML = metadataCatalog.query(queryString);
 		ResultSet resultSet = new ResultSet(metacatXML);
-		resultsetXML = resultSet.toPastaFormat(authToken);
+		resultsetXML = resultSet.toPastaFormat();
 
 		return resultsetXML;
 	}
@@ -2276,7 +2277,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 *          The identifier value
 	 * @param user
 	 *          The user value
-	 * @param authToken
+	 * @param token
 	 *          The authorization token
 	 * @param transaction
 	 *          The transaction identifier
@@ -2285,7 +2286,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 */
   public String updateDataPackage(File emlFile, String scope,
                                   Integer identifier, String user,
-                                  String authSystem, AuthToken authToken,
+                                  String authSystem, Token token,
                                   String transaction)
       throws ClientProtocolException, FileNotFoundException, IOException,
                  UserErrorException, Exception {
@@ -2390,7 +2391,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 			String resourceId = composeResourceId(ResourceType.dataPackage, scope,
 			    identifier, newestRevision, entityId);
 			Authorizer authorizer = new Authorizer(dataPackageRegistry);
-			boolean isAuthorized = authorizer.isAuthorized(authToken, resourceId,
+			boolean isAuthorized = authorizer.isAuthorized(token, resourceId,
 			    Rule.Permission.write);
 			if (!isAuthorized) {
 				String message = "User " + user
@@ -2402,7 +2403,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 			boolean isUpdate = true;
 			resourceMap = createDataPackageAux(emlFile, levelZeroDataPackage,
 			    dataPackageRegistry, packageId, scope, identifier, revision, user,
-			    authSystem, authToken, isUpdate, isEvaluate, transaction);
+			    authSystem, token, isUpdate, isEvaluate, transaction);
 		}
 
 		// Return the resource map
@@ -2474,7 +2475,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 *          The revision value of the data package
 	 * @param userId
 	 *          The user identifier of the owner of the data package
-	 * @param authToken
+	 * @param token
 	 *          The authentication token of the user requesting the archive
 	 * @param transaction
 	 *          The transaction id of the request
@@ -2483,7 +2484,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 	 * @throws IOException
 	 */
 	public String createDataPackageArchive(String scope, Integer identifier,
-	    Integer revision, String userId, AuthToken authToken, String transaction)
+	    Integer revision, String userId, Token token, String transaction)
 	    throws Exception {
 
 		String archiveName = null;
@@ -2499,7 +2500,7 @@ public class DataPackageManager implements DatabaseConnectionPoolInterface {
 		if (archive != null) {
 			try {
 				archiveName = archive.createDataPackageArchive(scope, identifier, revision, userId,
-				    authToken, transaction);
+				    token, transaction);
 			} catch (Exception e) {
 				throw e;
 			}

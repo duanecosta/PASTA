@@ -31,6 +31,7 @@ import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import edu.lternet.pasta.common.security.authentication.jaxb.Token;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
@@ -117,7 +118,7 @@ public class DataPackageArchive {
 	 *          The revision value of the data package
 	 * @param userId
 	 *          The user identifier of the owner of the data package
-	 * @param authToken
+	 * @param token
 	 *          The authentication token of the user requesting the archive
 	 * @param transaction
 	 *          The transaction id of the request
@@ -125,7 +126,7 @@ public class DataPackageArchive {
 	 * @throws Exception
 	 */
 	public String createDataPackageArchive(String scope, Integer identifier,
-	    Integer revision, String userId, AuthToken authToken, String transaction)
+	    Integer revision, String userId, Token token, String transaction)
 	    throws Exception {
 
 		String zipName = transaction + ".zip";
@@ -175,7 +176,7 @@ public class DataPackageArchive {
 
 			try {
 				map = dpm.readDataPackage(scope, identifier, revision.toString(),
-				    authToken, userId);
+				    token, userId);
 			} catch (Exception e) {
 				logger.error(e.getMessage());
 				e.printStackTrace();
@@ -198,7 +199,7 @@ public class DataPackageArchive {
 
 					try {
 						file = dpm.getMetadataFile(scope, identifier, revision.toString(),
-						    userId, authToken);
+						    userId, token);
 						objectName = emlPackageId.toString() + ".xml";
 					} catch (ClassNotFoundException e) {
 						logger.error(e.getMessage());
@@ -226,7 +227,7 @@ public class DataPackageArchive {
 
 					try {
 						file = dpm.readDataPackageReport(scope, identifier,
-						    revision.toString(), emlPackageId, authToken, userId);
+						    revision.toString(), emlPackageId, token, userId);
 						objectName = emlPackageId.toString() + ".report.xml";
 					} catch (ClassNotFoundException e) {
 						logger.error(e.getMessage());
@@ -262,12 +263,12 @@ public class DataPackageArchive {
 
 					try {
 						entityName = dpm.readDataEntityName(dataPackageResourceId,
-						    entityResourceId, authToken);
+						    entityResourceId, token);
 						xml = dpm.readMetadata(scope, identifier, revision.toString(),
-						    userId, authToken);
+						    userId, token);
 						objectName = dpm.findObjectName(xml, entityName);
 						file = dpm.getDataEntityFile(scope, identifier,
-						    revision.toString(), entityId, authToken, userId);
+						    revision.toString(), entityId, token, userId);
 					} catch (UnauthorizedException e) {
 						logger.error(e.getMessage());
 						e.printStackTrace();
