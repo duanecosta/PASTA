@@ -192,7 +192,7 @@ public class ResultSet {
    * 
    * @return   the result set XML in PASTA format
    */
-  public String toPastaFormat(AuthToken authToken) {
+  public String toPastaFormat() {
     String pastaFormatXML = this.resultSetXML;
     
     if (pastaFormatXML != null) {
