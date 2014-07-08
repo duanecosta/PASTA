@@ -24,6 +24,8 @@
 
 package edu.lternet.pasta.metadatafactory;
 
+import static edu.lternet.pasta.common.security.authentication
+                  .IdentityFactory.getGlobalIdentity;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -31,13 +33,17 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import edu.lternet.pasta.common.security.authentication.IdentityFactory;
+import edu.lternet.pasta.common.security.authentication.jaxb.ObjectFactory;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -47,11 +53,10 @@ import org.w3c.dom.Node;
 import edu.lternet.pasta.common.EmlPackageId;
 import edu.lternet.pasta.common.ResourceNotFoundException;
 import edu.lternet.pasta.common.XmlUtility;
-import edu.lternet.pasta.common.security.token.AuthToken;
 import edu.lternet.pasta.datapackagemanager.ConfigurationListener;
 import edu.lternet.pasta.datapackagemanager.DataPackageManager;
-import edu.lternet.pasta.datapackagemanager.DataPackageManagerResource;
 import edu.lternet.pasta.datapackagemanager.DataPackageManagerResourceTest;
+import edu.lternet.pasta.common.security.authentication.jaxb.Token;
 import edu.ucsb.nceas.utilities.Options;
 
 public class TestMetadataFactory {
@@ -83,7 +88,7 @@ public class TestMetadataFactory {
 
   private Document doc;
   private MetadataFactory factory;
-  private AuthToken token;
+  private Token token;
 
   
   /*
@@ -184,7 +189,13 @@ public class TestMetadataFactory {
         String xml = "<eml id=\"1\"><dataset><methods/></dataset></eml>";
         doc = XmlUtility.xmlStringToDoc(xml);
         factory = new MetadataFactory();
-        token = UserCreds.getAuthToken();
+        ObjectFactory objectFactory = new ObjectFactory();
+        token = objectFactory.createToken();
+        List<Token.Identity> tokenIdentities = token.getIdentity();
+        Token.Identity tokenIdentity;
+        Date now = new Date();
+        token.setExpires(BigInteger.valueOf(now.getTime()));
+        tokenIdentities.add(getGlobalIdentity(IdentityFactory.GlobalId.PUBLIC));
     }
 
     
