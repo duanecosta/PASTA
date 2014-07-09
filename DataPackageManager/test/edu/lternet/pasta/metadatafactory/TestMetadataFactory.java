@@ -195,7 +195,10 @@ public class TestMetadataFactory {
         Token.Identity tokenIdentity;
         Date now = new Date();
         token.setExpires(BigInteger.valueOf(now.getTime()));
-        tokenIdentities.add(getGlobalIdentity(IdentityFactory.GlobalId.PUBLIC));
+        tokenIdentity = objectFactory.createTokenIdentity();
+        tokenIdentity.setId(Token.Identity.LOGIN);
+        tokenIdentity.setIdentifier("user=uid=ucarroll,o=LTER,dc=ecoinformatics,dc=org");
+        tokenIdentity.setProvider("https://pasta.lternet.edu/authentication");
     }
 
     
