@@ -91,13 +91,13 @@ public class TokenTest {
     identities = token.getIdentity();
 
     identity = new Token.Identity();
-    identity.setId("identity");
+    identity.setId(Token.Identity.LOGIN);
     identity.setIdentifier("uid=ucarroll,o=LTER,dc=ecoinformatics,dc=org");
     identity.setProvider("https://pasta.lternet.edu/authentication");
     identities.add(identity);
 
     identity = new Token.Identity();
-    identity.setId("mapped");
+    identity.setId(Token.Identity.MAP);
     identity.setIdentifier("utah.carroll@gmail.com");
     identity.setProvider("https://google.com");
     identities.add(identity);
@@ -130,11 +130,11 @@ public class TokenTest {
     StringBuilder xml = new StringBuilder();
     xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
     xml.append("<token nickName=\"Dusty\" givenName=\"Utah\" surName=\"Carroll\" expires=\"1389903375597\">\n");
-    xml.append("    <identity id=\"identity\">\n");
+    xml.append("    <identity id=\"login\">\n");
     xml.append("        <identifier>uid=ucarroll,o=LTER,dc=ecoinformatics,dc=org</identifier>\n");
     xml.append("        <provider>https://pasta.lternet.edu/authentication</provider>\n");
     xml.append("    </identity>\n");
-    xml.append("    <identity id=\"mapped\">\n");
+    xml.append("    <identity id=\"map\">\n");
     xml.append("        <identifier>utah.carroll@gmail.com</identifier>\n");
     xml.append("        <provider>https://google.com</provider>\n");
     xml.append("    </identity>\n");
