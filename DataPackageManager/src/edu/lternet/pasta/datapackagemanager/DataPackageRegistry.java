@@ -362,21 +362,22 @@ public class DataPackageRegistry {
 	 * @param revision     The revision value
 	 * @param entityId     The entityId value (may be null if this is not a data entity resource)
 	 * @param entityName   The entityName value (may be null if this is not a data entity resource)
-	 * @param principalOwner The user (principal) who owns the the resource
-   * @param authSystem   The user's authentication system
+	 * @param principalOwner The user (principal) who owns the the resource 
+	 * @param formatType   The format type, currently used for metadata resources only,
+	 *                       may be null, e.g. "eml://ecoinformatics.org/eml-2.1.1"
 	 * @param mayOverwrite If true, an existing resource with the same resourceId may
 	 *                     be overwritten by the new resource by updating its creation date.
 	 *                     This would be typically be set true only for evaluation resources
 	 *                     such as evaluation reports. If false, an error is generated.
 	 */
-  public void addDataPackageResource(
-    String resourceId,
-    DataPackageManager.ResourceType
-        resourceType,
-    String resourceLocation,
-    String packageId, String scope, Integer identifier, Integer revision,
-    String entityId, String entityName, String principalOwner, String authSystem,
-    boolean mayOverwrite) throws ClassNotFoundException, SQLException {
+ 	public void addDataPackageResource(
+ 	   String resourceId, 
+ 	   DataPackageManager.ResourceType resourceType,
+ 	   String resourceLocation,
+ 	   String packageId, String scope, Integer identifier, Integer revision,
+ 	   String entityId, String entityName, String principalOwner, String formatType,
+ 	   boolean mayOverwrite)
+          throws ClassNotFoundException, SQLException {
     Connection connection = null;
 	  java.sql.Timestamp ts = new java.sql.Timestamp(System.currentTimeMillis());
 	  
@@ -416,19 +417,17 @@ public class DataPackageRegistry {
                                                 RESOURCE_REGISTRY + 
                                                 "(");
       if (resourceType == ResourceType.data) {
-        insertSQL.append("resource_id, resource_type, package_id, scope, " +
+        insertSQL.append("resource_id, resource_type, package_id, scope, identifier, " + 
                              "identifier, " +
-                             "revision, resource_location, entity_id, " +
+                         "revision, resource_location, entity_id, entity_name, principal_owner, date_created) " + 
                              "entity_name, principal_owner, auth_system, " +
                              "date_created) " +
-                             "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
+                         "VALUES(?,?,?,?,?,?,?,?,?,?,?)");
       }
       else {
-        insertSQL.append("resource_id, resource_type, package_id, scope, " +
-                             "identifier, " +
-                             "revision, principal_owner, auth_system, " +
-                             "date_created) " +
-                             "VALUES(?,?,?,?,?,?,?,?,?)");
+        insertSQL.append("resource_id, resource_type, package_id, scope, identifier, " + 
+                         "revision, principal_owner, date_created, format_type) " + 
+                         "VALUES(?,?,?,?,?,?,?,?,?)");
       }
       String insertString = insertSQL.toString();
       logger.debug("insertString: " + insertString);
@@ -454,6 +453,7 @@ public class DataPackageRegistry {
           pstmt.setString(7, principalOwner);
           pstmt.setString(8, authSystem);
           pstmt.setTimestamp(9, ts);
+          pstmt.setString(10, formatType);
         }
         pstmt.executeUpdate();
         if (pstmt != null) {
@@ -971,6 +971,56 @@ public class DataPackageRegistry {
     return doi;
     
   }
+
+
+	/**
+	 * Gets the format type value for a given resourceId.
+	 * 
+	 * @param resourceId
+	 *            the resource identifier
+	 * @return the value of the 'format_type' field matching the specified
+	 *         resourceId ('resource_id') value
+	 */
+	public String getFormatType(String resourceId)
+			throws ClassNotFoundException, SQLException {
+
+		String formatType = null;
+
+		Connection connection = null;
+		String selectString = "SELECT format_type FROM " + RESOURCE_REGISTRY
+				+ "  WHERE resource_id='" + resourceId + "'";
+
+		Statement stmt = null;
+
+		try {
+			connection = getConnection();
+			stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery(selectString);
+
+			while (rs.next()) {
+				formatType = rs.getString(1);
+				if (formatType != null) { formatType = formatType.trim(); }
+			}
+
+			if (stmt != null)
+				stmt.close();
+		}
+		catch (ClassNotFoundException e) {
+			logger.error("ClassNotFoundException: " + e.getMessage());
+			e.printStackTrace();
+			throw (e);
+		}
+		catch (SQLException e) {
+			logger.error("SQLException: " + e.getMessage());
+			e.printStackTrace();
+			throw (e);
+		}
+		finally {
+			returnConnection(connection);
+		}
+
+		return formatType;
+	}
 
 
   /**
@@ -2076,6 +2126,65 @@ public class DataPackageRegistry {
 
 	
 	/**
+	 * Returns an array list of resources that are lacking format_type
+	 * values in the resource registry.
+	 * 
+	 * @return Array list of resources
+	 * @throws SQLException
+	 */
+	public ArrayList<Resource> listFormatlessResources() throws SQLException {
+
+		ArrayList<Resource> resourceList = new ArrayList<Resource>();
+
+		Connection conn = null;
+		try {
+			conn = this.getConnection();
+		} catch (ClassNotFoundException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+
+		String queryString = "SELECT resource_id, resource_type, scope, identifier, revision, entity_id"
+		    + " FROM datapackagemanager.resource_registry WHERE"
+		    + " resource_type != 'dataPackage' AND format_type IS NULL;";
+
+		Statement stat = null;
+		try {
+			stat = conn.createStatement();
+			ResultSet result = stat.executeQuery(queryString);
+
+			while (result.next()) {
+				Resource resource = new Resource();
+				String resourceId = result.getString("resource_id");
+				String resourceType = result.getString("resource_type");
+				String scope = result.getString("scope");
+				Integer identifier = new Integer(result.getInt("identifier"));
+				Integer revision = new Integer(result.getInt("revision"));
+				String packageId = scope + "." + identifier + "." + revision;
+				String entityId = result.getString("entity_id");
+				resource.setResourceId(resourceId);
+				resource.setResourceType(resourceType);
+				resource.setScope(scope);
+				resource.setIdentifier(identifier);
+				resource.setRevision(revision);
+				resource.setPackageId(packageId);
+				resource.setEntityId(entityId);
+				resourceList.add(resource);
+			}
+
+		} catch (SQLException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			conn.close();
+		}
+
+		return resourceList;
+
+	}
+
+	
+	/**
 	 * Returns an array list of resources that are both publicly accessible and
 	 * lacking DOIs.
 	 * 
@@ -2283,6 +2392,59 @@ public class DataPackageRegistry {
   }
 
   
+  /**
+   * Update the format_type field of a resource in the resource registry.
+   * 
+   * @param resourceId
+   *          The resource identifier of the resource to be updated
+   * @param formatType
+   *          The value to be stored in the format_type field.
+   * @throws ClassNotFoundException, IllegalArgumentException, SQLException
+   */
+	public void updateFormatType(String resourceId, String formatType)
+			throws ClassNotFoundException, SQLException {
+		Connection conn = null;
+
+		if (formatType == null) {
+			throw new IllegalArgumentException("Format type is null");
+		}
+
+		try {
+			conn = this.getConnection();
+		}
+		catch (ClassNotFoundException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			throw (e);
+		}
+
+		String queryString = String.format(
+			"UPDATE datapackagemanager.resource_registry SET format_type='%s' WHERE resource_id='%s'",
+			formatType, resourceId);
+
+		try {
+			Statement statement = conn.createStatement();
+			int rowCount = statement.executeUpdate(queryString);
+			if (rowCount != 1) {
+				String msg = String.format(
+						"When updating format_type, expected 1 row updated, instead %d rows were updated.",
+						rowCount);
+				throw new SQLException(msg);
+			}
+		}
+		catch (SQLException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			throw (e);
+		}
+		finally {
+			if (conn != null)
+				conn.close();
+		}
+
+  }
+
+	
   /**
    * Update the SHA-1 checksum of a resource to the resource registry.
    * 
