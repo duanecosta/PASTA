@@ -6,7 +6,7 @@
 *LTER NIS Documentation*
 ========================
 
-This website is the official documentation for the *LTER Network Information System* and, more specifically, the *Provenance Aware Synthesis Tracking Architecture* (PASTA).
+This website is the official documentation of the *LTER Network Information System* and, more specifically, the *Provenance Aware Synthesis Tracking Architecture* (PASTA).
 
 *Site contents:*
 
