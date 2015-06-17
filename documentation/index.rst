@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-*LTER NIS Documentation*
-========================
+*User/Developer Documentation*
+==============================
 
 This website is the official documentation of the *LTER Network Information System* and, more specifically, the *Provenance Aware Synthesis Tracking Architecture* (PASTA).
 
