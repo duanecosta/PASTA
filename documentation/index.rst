@@ -16,7 +16,9 @@ To assist the weary web traveler in deciding what category to peruse, a short sy
 
 #. **Documentation for Developers using the PASTA API:** Documentation for the PASTA API and general information and suggestions for software developers who would like to build an application that interacts with the PASTA API.
 
-#. **Documentation for PASTA Developers:** Design documentation of the PASTA framework for developers who plan on extending, fixing, refactoring the core components of PASTA and their associated web-services.
+#. **Documentation for PASTA Developers:** Design documentation of the PASTA framework for developers who plan on extending, fixing, refactoring the core components of PASTA and their associated web-services. Documentation for `DataONE`_'s Generic Member Node deployment and GMN's adapter for harvesting data from PASTA.
+
+.. _dataONE: https://dataone.org
 
 #. **General FAQ for the LTER NIS and PASTA:** A list of the most commonly asked questions and their answers about the LTER NIS and PASTA.
 
