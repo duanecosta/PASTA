@@ -2739,7 +2739,7 @@ ul, ol {
     -moz-border-radius:         10px; /* end ie5win hack */
 }
  
-th {
+th, .tablehead {
     text-align:                 left;
     font-weight:                700;
 } 
@@ -3017,6 +3017,12 @@ dd + dt {
 
 .form-no-margin {
 	margin: 0 0 0 0;
+}
+
+td.nis-provenance-label {
+	text-align: right;
+	vertical-align: top;
+	padding-right: 5px;
 }
 
 /*

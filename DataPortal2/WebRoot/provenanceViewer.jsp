@@ -22,19 +22,11 @@
   }
 */
   
-  String message = (String) request.getAttribute("message");
-  String type = (String) request.getAttribute("type");
+  String provenanceXML = (String) request.getAttribute("provenanceXML");
+  String provenanceHTML = (String) request.getAttribute("provenanceHTML");
   String packageid = (String) request.getAttribute("packageid");
-
-  if (type == null) {
-    type = "";
-  }
-          
-	boolean showProvenance = false;	
-	if (message != null && !type.equals("warning")) {
-		showProvenance = true;
-	}
-			
+  boolean showProvenance = ((provenanceXML != null) && (packageid != null));
+  
 %>
 
 <!DOCTYPE html>
@@ -92,25 +84,48 @@
 							<div class="span12">
 								<!-- Content -->
 
+							<p>Provenance metadata should be included in a derived data package to 
+							   document its sources. This can be accomplished by adding a separate 
+							   <strong>&lt;methodStep&gt;</strong> element in the derived data package 
+							   for each of the source data packages from which it is derived.</p>
+							
 							<c:set var="showProv" value="<%= showProvenance %>"/>						
 							<c:choose>
 							
 								<c:when test="${showProv}">
-									<div class="display-table">										
-										<div class="table-row">										
-											<div class="table-cell">
-												<label class="labelBold">Package Identifier:</label>
-											</div>											
-											<div class="table-cell"><%= packageid %></div>											
-										</div>
+								
+								<p>A data package derived from <strong><%= packageid %></strong> as one of its 
+								   source data packages should include the <strong>&lt;methodStep&gt;</strong>
+								   element shown below as a sub-element within its 
+								   <strong>&lt;methods&gt;</strong> element.</p>
+								<br/>
+								<div class="tabbable">
+									<ul class="nav nav-tabs">
+										<li class="active">
+										  <a data-toggle="tab" href="#htmlTab">Provenance Metadata HTML</a> 
+										</li>
+										<li>
+										  <a data-toggle="tab" href="#xmlTab">Provenance Metadata XML</a>
+										</li>
+									</ul>	
+								</div>
+												
+								<div class="tab-content">
+								
+									<div id="htmlTab" class="tab-pane active">
+										<%= provenanceHTML %>
 									</div>
-									<p></p>
-									<pre><%= message %></pre>							
+									
+									<div id="xmlTab"class="tab-pane">
+										<pre><%= provenanceXML %></pre>
+									</div>
+								</div>
+										    
 								</c:when>
 								
 								<c:otherwise>
 
-								<p>View provenance metadata of a data package using the package identifier.</p>
+								<p>Enter the package identifier of the source data package whose provenance metadata you wish to embed in your derived data package:</p>
 								<div class="section">
 									<form id="provenanceviewer" action="provenanceViewer" method="post" name="provenanceviewer">
 						        <div class="display-table">
@@ -126,7 +141,7 @@
 											</div>
 											<div class="table-row">
 												<div class="table-cell">
-												  <input class="btn btn-info btn-default" name="view" type="submit" value="View" />
+												  <input class="btn btn-info btn-default" name="view" type="submit" value="Generate Metadata" />
 												  <input class="btn btn-info btn-default" name="reset" type="reset" value="Clear" />
 												</div>
 											</div>
